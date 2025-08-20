@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: '[data-theme="my_dark"]',
   content: [
     './templates/**/*.html',
     './templates/**/*.html',
@@ -29,18 +28,19 @@ module.exports = {
     },
   },
   plugins: [
-    require('daisyui'),
-    // Plugin per le varianti custom dei temi
-    function({ addVariant }) {
-      addVariant('my_light', '[data-theme="my_light"] &')
-      addVariant('my_dark', '[data-theme="my_dark"] &')
-    }
+    // Plugin temporaneamente disabilitati per la migrazione v4
+    // require('daisyui'),
+    // function({ addVariant }) {
+    //   addVariant('my_light', '[data-theme="my_light"] &')
+    //   addVariant('my_dark', '[data-theme="my_dark"] &')
+    // }
   ],
-  daisyui: {
-    themes: false,
-    darkTheme: "my_dark",
-    base: true,
-    styled: true,
-    utils: true,
-  }
+  // Configurazione DaisyUI temporaneamente disabilitata
+  // daisyui: {
+  //   themes: false,
+  //   darkTheme: "my_dark",
+  //   base: true,
+  //   styled: true,
+  //   utils: true,
+  // }
 }
