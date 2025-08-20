@@ -1,0 +1,207 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Posizionamento impianto
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="h-full inner_form_div"> 
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Dove verrà installato l'impianto?*</h1>
+        <a href="/documentazione/#dove" target="_blank" >
+        <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert"  alt="" >
+        </a>
+    </div>  
+    <div class="container_form">
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/1_casa.png' %}" alt="">
+            <label class="my_label_where p">
+                <input type="checkbox" class="my_checkbox" name="location" value="TL" onclick="enableNextButton(this)" {% if mounting == 'TL' %} checked {% endif %}>
+                Tetto a falda su laterizio
+            </label>
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="TG" onclick="enableNextButton(this)" {% if mounting == 'TG' %} checked {% endif %}>
+                Tetto a falda su lamiera grecata
+            </label>
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="TF" onclick="enableNextButton(this)" {% if mounting == 'TF' %} checked {% endif %}>
+                Tetto a falda su lamiera aggraffata
+            </label>
+        </div>
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/6_tetto_piano.png' %}" alt="">
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="TP" onclick="enableNextButton(this)" {% if mounting == 'TP' %} checked {% endif %}>
+                Tetto a copertura piana
+            </label>
+        </div>
+
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/3_cappannone.png' %}" alt="">
+            <label class="my_label_where p disabled">
+                <input type="checkbox" class="my_checkbox" name="location" class="my_checkbox" value="tetto-su-capannone-industriale-a-cupoline" onclick="enableNextButton(this)" {% if mounting == 'tetto-su-capannone-industriale-a-cupoline' %} checked {% endif %}>
+                Capannone con tetto a cupoline
+            </label>
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="tetto-a-shed" onclick="enableNextButton(this)" {% if mounting == 'tetto-a-shed' %} checked {% endif %}>
+                Capannone con tetto a shed
+            </label>
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="tetto-a-botte" onclick="enableNextButton(this)" {% if mounting == 'tetto-a-volte' %} checked {% endif %}>
+                Capannone con tetto a botte
+            </label>
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="tetto-a-volte" onclick="enableNextButton(this)" {% if mounting == 'tetto-a-volte' %} checked {% endif %}>
+                Capannone con tetto a volta
+            </label>
+        </div>
+
+    </div>
+    <div class="container_form">
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/4-parcheggio.png' %}" alt="">
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="pensilina-solare-carport" onclick="enableNextButton(this)" {% if mounting == 'pensilina-solare-carport' %} checked {% endif %}>
+                Pensilina solare (carport)
+            </label>
+        </div>
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/5_a_terra.png' %}" alt="">
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="SP" onclick="enableNextButton(this)" {% if mounting == 'SP' %} checked {% endif %}>
+                A terra su superficie piana
+            </label>
+
+        </div>
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/5_a_terra.png' %}" alt="">
+            <p class="p mb-[10px]">Parchi solari, agrivoltaico e utility-scale</p>
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="AG" onclick="enableNextButton(this)" {% if mounting == 'AG' %} checked {% endif %}>
+                A terra
+            </label>
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="AF" onclick="enableNextButton(this)" {% if mounting == 'AF' %} checked {% endif %}>
+                Su fune
+            </label>
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="AP" onclick="enableNextButton(this)" {% if mounting == 'AP' %} checked {% endif %}>
+                Su pali
+            </label>
+        </div>
+    </div>
+    <div class="container_form">
+        <div class="form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/2_copertura_piana.png' %}" alt="">
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="condomini-multiutenza" onclick="enableNextButton(this)" {% if mounting == 'condomini-multiutenza' %} checked {% endif %}>
+                Condomini multiutenza
+            </label>
+        </div>
+        <div class="opacity-0 form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/4-parcheggio.png' %}" alt="">
+            <label class="my_label_where p disabled">
+                <input type="checkbox" name="location" class="my_checkbox" value="pensilina-solare-carport" onclick="enableNextButton(this)" {% if mounting == 'pensilina-solare-carport' %} checked {% endif %}>
+                Pensilina solare (carport)
+            </label>
+        </div>
+        <div class="opacity-0 form_inner where_form">
+            <img class="img_form_where" src="{% static 'image/location_images/5_a_terra.png' %}" alt="">
+            <label class="my_label_where p">
+                <input type="checkbox" name="location" class="my_checkbox" value="SP" onclick="enableNextButton(this)" {% if mounting == 'SP' %} checked {% endif %}>
+                Installazione a terra su superficie piana
+            </label>
+
+        </div>
+
+    </div>
+    {% include 'components/navigation_btn.html' %}
+
+    
+    <button id="resetbtn" class="absolute bottom-0 left-0 reset_btn">Resetta il progetto
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M14 2.54625L11.4538 0L7 4.45375L2.54625 0L0 2.54625L4.45375 7L0 11.4538L2.54625 14L7 9.54625L11.4538 14L14 11.4538L9.54625 7L14 2.54625Z" fill="#EFB90B"/>
+            </svg>
+            
+    </button>
+</div>
+
+<script>
+    var project_code = parseFloat('{{ project_code|escapejs }}');
+    localStorage.setItem('visited_dove', 'true');
+    
+    // Previeni la navigazione indietro con il pulsante back del browser
+    (function() {
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function() {
+            window.history.pushState(null, "", window.location.href);
+            window.location.href = "{% url 'operation_not_allowed' %}";
+        };
+    })();
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    const nextButton = document.getElementById('nextButton');
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            nextButton.classList.remove('disabled');
+        }
+    });
+});
+
+    document.getElementById('resetbtn').addEventListener('click', function () {
+        window.location.href = "http://127.0.0.1:8000/project/clear_session/";
+    });
+
+    function enableNextButton(checkbox) {
+        const nextButton = document.getElementById('nextButton');
+        nextButton.classList.remove('disabled');
+
+        // Deseleziona tutti gli altri checkbox
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(cb => {
+            if (cb !== checkbox) {
+                cb.checked = false;
+            }
+        });
+    }
+
+    function submitSelection() {
+        const selectedLocation = document.querySelector('input[name="location"]:checked').value;
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/save_where/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrftoken
+            },
+            body: new URLSearchParams({
+                'mounting': selectedLocation,
+                'project_code':project_code
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    window.location.href = '/project/tipo';  // Redirect to the next page
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+</script>
+    <style>
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .button_back{
+            pointer-events: none;
+            opacity: 0.5;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="{{currentTheme}}">
+
+<head>
+    <script>
+        // Script per controllare il tema corrente - eseguito prima del caricamento del DOM
+        const currentTheme = localStorage.getItem('theme');
+        // Imposta immediatamente il tema sull'elemento HTML se presente nel localStorage
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    {% load custom_filters %}
+    {% csrf_token %}
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/logos/favicon.ico' %}">
+    <link href="{% static 'output.css' %}?v={{ time.time }}" rel="stylesheet">
+    <script src="{% static 'js/functions.js' %}?v={{ time.time }}" defer></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+
+    <title>{% block title %}{% endblock %} {{ APP_NAME }}</title>
+</head>
+
+<!-- header dell'autenticazione  -->
+{% include 'components/navbar_def.html' %}
+
+<body class="background_our_main_100p font-nunito-sans">
+
+    <div class="relative full_h_100">
+        <div class="icon_bars">
+            <img src="{% static 'image/icons/house.svg' %}" id="where-icon" alt="">
+            <img src="{% static 'image/icons/solar.svg' %}" id="type-icon" alt="">
+            <img src="{% static 'image/icons/inclination.svg' %}" id="subfields-icon" alt="">
+            <img src="{% static 'image/icons/cloude_sun.svg' %}" id="ombreggiamento-icon" alt="">
+            <img src="{% static 'image/icons/wrench.svg' %}" id="config_plant" alt="">
+            <img src="{% static 'image/icons/folder_file.svg' %}" id="project_data" alt="">
+            <img src="{% static 'image/icons/checkpoint.svg' %}" id="user_choise" alt="">
+            <img src="{% static 'image/icons/single_user.svg' %}" id="anagrafical_data_1" alt="">
+            <img src="{% static 'image/icons/multi_user.svg' %}" id="anagrafical_data_2" alt="">
+            <img src="{% static 'image/icons/recap.svg' %}" id="final_report" alt="">
+        </div>
+        <div id="reportbar"
+            class="fixed bottom-[20px] right-0 z-20 text-center transition-all duration-500 -translate-y-1/2">
+            <button class="p-2 rounded-l-lg bg-secondary" id="reportToggle">
+                <i class="text-xl text-white fa-solid fa-chart-bar"></i>
+            </button>
+        </div>
+
+        <div id="content_report" class="fixed right-0 w-0 overflow-hidden  border-l dark:border-none border-primary dark:text-white transition-all duration-500 bg-base-100 bottom-0-0 h-calc-100-minus-100 z-[999]">
+            <div class="w-[800px] px-[30px] pt-[30px]">
+                <hr class="h-[2px] w-full bg-primary border-primary mb-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="14" height="20" viewBox="0 0 14 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M7 9.5C6.33696 9.5 5.70107 9.23661 5.23223 8.76777C4.76339 8.29893 4.5 7.66304 4.5 7C4.5 6.33696 4.76339 5.70107 5.23223 5.23223C5.70107 4.76339 6.33696 4.5 7 4.5C7.66304 4.5 8.29893 4.76339 8.76777 5.23223C9.23661 5.70107 9.5 6.33696 9.5 7C9.5 7.3283 9.43534 7.65339 9.3097 7.95671C9.18406 8.26002 8.99991 8.53562 8.76777 8.76777C8.53562 8.99991 8.26002 9.18406 7.95671 9.3097C7.65339 9.43534 7.3283 9.5 7 9.5ZM7 0C5.14348 0 3.36301 0.737498 2.05025 2.05025C0.737498 3.36301 0 5.14348 0 7C0 12.25 7 20 7 20C7 20 14 12.25 14 7C14 5.14348 13.2625 3.36301 11.9497 2.05025C10.637 0.737498 8.85652 0 7 0Z"
+                                    fill="#EFB90B" />
+                            </svg>
+                            Localizzazione
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 w-3/4 gap-x-[90px]">
+                        <p class="p"> <strong>Lat: <br></strong> {{project.latitude|floatformat:6}}</p>
+                        <p class="p"> <strong>Lng: <br></strong> {{project.longitude|floatformat:6}}</p>
+                        {% if project.altitude == 'undefined' %}
+                        <p class="p"> Altitude: <br> N.D.</p>
+                        {% else %}
+                        <p class="p"> <strong>Altitude: <br></strong> {{project.altitude}}m</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="18" height="21" viewBox="0 0 18 21" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M18 3.63861V10.2921L12.4 13.6188V7.06931L18 3.63861ZM11.8 7.06931V13.6188L6.2 10.2921V3.63861L11.8 7.06931ZM11.8 14.3465V21L6.2 17.6733V11.0198L11.8 14.3465ZM5.6 3.32673V9.9802L0 6.65347V0L5.6 3.32673Z"
+                                    fill="#EFB90B" />
+                            </svg>
+
+                            Aree di interesse
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 w-3/4">
+                        <p class="mb-2 text-center p">Numero di campi: <br> {{ project.generator|length }}</p>
+                        {% if project.generator %}
+                        <div class="">
+                            <p class="mb-2 text-center p"> Numero di sottocampi: <br>{{project.generator.items|length}}</p>
+                        </div>
+                        <div>
+                            <p class="mb-2 text-center p">Area totale: <br>{{ project.generator|calculate_total_area|floatformat:0 }} mq</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="20" height="17" viewBox="0 0 20 17" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 17V11H12V17H17V9H20L10 0L0 9H3V17H8Z" fill="#EFB90B" />
+                            </svg>
+
+
+                            Posizione
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-2 w-3/4">
+                        <p class="p">{{project.mounting|format_location}}</p>
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1.33008 14H9.00008V11H2.00008L1.33008 14Z" fill="#EFB90B" />
+                                <path d="M11 14H18.67L18 11H11V14Z" fill="#EFB90B" />
+                                <path d="M19.11 16H11V20H20L19.11 16Z" fill="#EFB90B" />
+                                <path d="M0 20H9V16H0.89L0 20Z" fill="#EFB90B" />
+                                <path d="M11 6H9V9H11V6Z" fill="#EFB90B" />
+                                <path
+                                    d="M15.1788 3.79088L13.7646 5.20508L15.8859 7.32638L17.3001 5.91218L15.1788 3.79088Z"
+                                    fill="#EFB90B" />
+                                <path
+                                    d="M4.82638 3.79081L2.70508 5.91211L4.11928 7.32631L6.24058 5.20501L4.82638 3.79081Z"
+                                    fill="#EFB90B" />
+                                <path d="M4 0H1V2H4V0Z" fill="#EFB90B" />
+                                <path d="M19 0H16V2H19V0Z" fill="#EFB90B" />
+                                <path d="M10 5C12.76 5 15 2.76 15 0H5C5 2.76 7.24 5 10 5Z" fill="#EFB90B" />
+                            </svg>
+                            Tipologia 
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 w-3/4">
+                        <p class="p">{% if project.grid_connected == '1' %} Connesso alla rete{% else %} Non connesso alla rete{% endif %}</p>
+                        <p class="p">{% if project.storage == '1' %} Con sistema di accumulo{% else %} Senza sistema di accumulo{% endif %}</p>
+                        <p class="p"></p>
+                        <p class="p">{% if project.self_consumption == '1' %} Con autoconsumo{% else %} Senza autoconsumo{% endif %}</p>
+                        <p class="p">{% if project.rid == '1' %} Con RID{% else %} Senza RID{% endif %}</p>
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="21" height="21" viewBox="0 0 21 21" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M11.7396 4.47031C14.0996 5.50031 15.3496 8.03031 14.9196 10.4603C16.1896 11.5603 16.9996 13.1903 16.9996 15.0003V15.1703C17.3096 15.0603 17.6496 15.0003 17.9996 15.0003C18.7952 15.0003 19.5583 15.3164 20.1209 15.879C20.6835 16.4416 20.9996 17.2047 20.9996 18.0003C20.9996 18.796 20.6835 19.559 20.1209 20.1216C19.5583 20.6842 18.7952 21.0003 17.9996 21.0003H4.99957C3.9387 21.0003 2.92129 20.5789 2.17114 19.8287C1.421 19.0786 0.99957 18.0612 0.99957 17.0003C0.99957 15.9394 1.421 14.922 2.17114 14.1719C2.92129 13.4217 3.9387 13.0003 4.99957 13.0003H5.26957C3.99957 11.4503 3.59957 9.24031 4.49957 7.26031C5.71957 4.50031 8.96957 3.24031 11.7396 4.47031ZM10.9296 6.30031C9.15957 5.50031 7.08957 6.31031 6.30957 8.07031C5.84957 9.09031 5.92957 10.2203 6.40957 11.1303C7.49957 9.83031 9.15957 9.00031 10.9996 9.00031C11.6996 9.00031 12.3796 9.12031 12.9996 9.34031C12.9396 8.06031 12.1796 6.86031 10.9296 6.30031ZM12.5496 2.64031C11.9996 2.40031 11.4496 2.23031 10.8796 2.12031L13.3696 0.820312L14.2696 3.71031C13.7596 3.29031 13.1896 2.93031 12.5496 2.64031ZM5.08957 3.44031C4.59957 3.79031 4.16957 4.19031 3.79957 4.63031L3.90957 1.82031L6.86957 2.50031C6.24957 2.71031 5.64957 3.03031 5.08957 3.44031ZM16.9996 8.71031C16.9096 8.12031 16.7796 7.55031 16.5896 7.00031L18.9696 8.50031L16.9196 10.7303C17.0296 10.0803 17.0496 9.40031 16.9996 8.71031ZM2.03957 10.3003C2.10957 10.9003 2.23957 11.4703 2.42957 12.0003L0.0595703 10.5003L2.09957 8.28031C1.99957 8.93031 1.96957 9.61031 2.03957 10.3003ZM17.9996 17.0003H14.9996V15.0003C14.9996 13.9394 14.5781 12.922 13.828 12.1719C13.0779 11.4217 12.0604 11.0003 10.9996 11.0003C9.9387 11.0003 8.92129 11.4217 8.17114 12.1719C7.421 12.922 6.99957 13.9394 6.99957 15.0003H4.99957C4.46914 15.0003 3.96043 15.211 3.58536 15.5861C3.21028 15.9612 2.99957 16.4699 2.99957 17.0003C2.99957 17.5307 3.21028 18.0395 3.58536 18.4145C3.96043 18.7896 4.46914 19.0003 4.99957 19.0003H17.9996C18.2648 19.0003 18.5191 18.895 18.7067 18.7074C18.8942 18.5199 18.9996 18.2655 18.9996 18.0003C18.9996 17.7351 18.8942 17.4807 18.7067 17.2932C18.5191 17.1057 18.2648 17.0003 17.9996 17.0003Z"
+                                    fill="#EFB90B" />
+                            </svg>
+
+                            Albedo
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 w-3/4 gap-x-[60px]">
+                        {% if project.albedo %}
+                        <p class="p"> <strong>Albedo: <br></strong> {{project.albedo|format_albedo_short}}</p>
+
+                        <p class="col-span-2 p"> <strong>Ombreggiamento clinometrico: </strong> <br>
+                            {{project.shading_horizon|format_shading_horizon}}</p>
+                        {% else %}
+                        <p class="p"></p>
+                        {% endif%}
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <div class="flex justify-between items-center">
+                    <div class="w-1/4">
+                        <p class="flex p items-center gap-[10px]">
+                            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M17.0917 15.9096L15.9083 17.093C15.7522 17.2482 15.541 17.3353 15.3208 17.3353C15.1007 17.3353 14.8895 17.2482 14.7333 17.093L4.83334 7.20964C4.56235 7.28814 4.28211 7.33018 4.00001 7.33464C3.46943 7.33426 2.9466 7.20723 2.475 6.96411C2.0034 6.72098 1.59665 6.3688 1.28856 5.93683C0.980476 5.50485 0.779959 5.00558 0.703682 4.48051C0.627404 3.95544 0.677571 3.41975 0.85001 2.91797L2.96668 5.03464L3.40834 4.59297L4.59168 3.40964L5.03334 2.96797L2.91668 0.851302C3.41845 0.678863 3.95415 0.628697 4.47922 0.704974C5.00429 0.781251 5.50356 0.981768 5.93553 1.28985C6.3675 1.59794 6.71969 2.00469 6.96281 2.47629C7.20593 2.9479 7.33296 3.47072 7.33334 4.0013C7.32889 4.2834 7.28685 4.56365 7.20834 4.83464L17.0917 14.7346C17.2469 14.8908 17.334 15.102 17.334 15.3221C17.334 15.5423 17.2469 15.7535 17.0917 15.9096ZM0.908343 14.7346C0.753134 14.8908 0.666016 15.102 0.666016 15.3221C0.666016 15.5423 0.753134 15.7535 0.908343 15.9096L2.09168 17.093C2.24781 17.2482 2.45902 17.3353 2.67918 17.3353C2.89933 17.3353 3.11054 17.2482 3.26668 17.093L7.82501 12.543L5.46668 10.1846M15.6667 0.667969L12.3333 2.33464V4.0013L10.525 5.80964L12.1917 7.4763L14 5.66797H15.6667L17.3333 2.33464L15.6667 0.667969Z"
+                                    fill="#EFB90B" />
+                            </svg>
+                            Configurazione
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-3 w-3/4 gap-x-[90px]">
+                        {% if project.peak_power %}
+                        <p class="col-span-1 p"> <strong>Potenza: <br></strong> {{project.peak_power.value}}
+                            {{project.peak_power.unit}}</p>
+                        <p class="col-span-2 p"> <strong>Scopo: <br></strong> {{project.plant_scope | format_plant_scope}}
+                            {{project.consumption.unit}}</p>
+                        {% else %}
+                        <p class="p"></p>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr class="h-[2px] w-full dark:bg-white bg-primary border-primary my-[20px]" />
+                <!-- Resto del contenuto -->
+            </div>
+        </div>
+        <div class="inner_content_forms">
+            {% block content %}
+            {% endblock %}
+
+        </div>
+    </div>
+
+    <script>
+        const reportToggle = document.getElementById('reportToggle');
+        const reportBar = document.getElementById('reportbar');
+        const contentReport = document.getElementById('content_report');
+
+        reportToggle.addEventListener('click', () => {
+            contentReport.classList.toggle('slide-open');
+            reportBar.classList.toggle('button-slide');
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const icons = {
+                'dove': {
+                    id: 'where-icon',
+                    url: '/project/dove/',
+                    text: 'Posizione'
+                },
+                'tipo': {
+                    id: 'type-icon',
+                    url: '/project/tipo/',
+                    text: 'Tipologia'
+                },
+                'sottocampi': {
+                    id: 'subfields-icon',
+                    url: '/project/subfields_conf/',
+                    text: 'Sottocampi'
+                },
+                'ombreggiamento': {
+                    id: 'ombreggiamento-icon',
+                    url: '/project/solare_ed_ombreggiamento/',
+                    text: 'Ombreggiamento'
+                },
+                'configurazione_impianto': {
+                    id: 'config_plant',
+                    url: '/project/configurazione_impianto/',
+                    text: 'Configurazione'
+                },
+                'anagrafy_data': {
+                    id: 'anagrafical_data_1',
+                    url: '/project/anagrafy_data/',
+                    text: 'Anagrafica 1'
+                },
+                'project_data': {
+                    id: 'project_data',
+                    url: '/project/project_data/',
+                    text: 'Dati progetto'
+                },
+                'user_choise': {
+                    id: 'user_choise',
+                    url: '/project/user_choise/',
+                    text: 'Checkpoint'
+                },
+                'anagrafy_data_2': {
+                    id: 'anagrafical_data_2',
+                    url: '/project/anagrafy_data_2/',
+                    text: 'Anagrafica 2'
+                },
+                'final_report': {
+                    id: 'final_report',
+                    url: '/project/report_page/',
+                    text: 'Report finale'
+                }
+            };
+
+            const currentPath = window.location.pathname;
+
+            for (let page in icons) {
+                let iconElement = document.getElementById(icons[page].id);
+                let container = document.createElement('div');
+                container.className = 'icon-container icona_disabled';
+
+                // Crea il contenuto base (per icone non visitate)
+                let content = document.createElement('div');
+                content.className = 'icon-link';
+                content.appendChild(iconElement.cloneNode(true));
+
+                if (currentPath === icons[page].url) {
+                    let textSpan = document.createElement('p');
+                    textSpan.className = 'icon-text';
+                    textSpan.textContent = icons[page].text;
+                    content.appendChild(textSpan);
+                    container.classList.add('icon_container_open');
+                } else {
+                    container.classList.add('icon_container_close');
+                }
+
+                // Se l'icona è stata visitata, sostituisci il div con un link
+                if (localStorage.getItem('visited_' + page) === 'true') {
+                    let link = document.createElement('a');
+                    link.href = icons[page].url;
+                    link.className = 'icon-link';
+                    link.innerHTML = content.innerHTML;
+                    content = link;
+
+                    container.classList.add('icona_visited');
+                    container.classList.remove('icona_disabled');
+                }
+
+                container.appendChild(content);
+                iconElement.parentNode.replaceChild(container, iconElement);
+            }
+        });
+
+
+    </script>
+    <style>
+        .slide-open {
+            width: 800px !important;
+        }
+
+        .button-slide {
+            transform: translate(-800px, -50%) !important;
+        }
+
+        .block {
+            pointer-events: none;
+        }
+
+        .content_report {
+            display: none;
+
+
+        }
+
+        .open {
+            position: absolute;
+            right: 100px;
+            z-index: 100;
+            margin-top: 100px;
+            display: block;
+            width: 50vw;
+            height: 100%;
+            background-color: #242424;
+            border-radius: 10px;
+            padding: 20px 30px;
+        }
+    </style>
+</body>
+
+</html>

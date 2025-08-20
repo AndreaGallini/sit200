@@ -1,0 +1,720 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}
+Risultati di progetto
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load user_agents %}
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.35.3"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@3.35.3/dist/apexcharts.css">
+<div class="flex flex-col items-center inner_content_report">
+    {% if request.user_agent.is_mobile %}
+    <!-- Bottone mobile -->
+    <button onclick="toggleDownloadPanel()" class="fixed right-4 bottom-4 z-50 p-3 rounded-full shadow-lg bg-main_color md:hidden">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+          <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+        </svg>
+   </button>
+   
+   <!-- Pannello download -->
+   <div id="downloadPanel" class="fixed right-0 bottom-0 left-0 p-4 pb-10 bg-yellow-100 rounded-t-2xl transition-transform duration-300 transform translate-y-full md:hidden">
+    <div class="flex flex-row gap-4 items-center pb-8">
+      <div class="flex flex-col justify-start items-center w-1/3" id="downloadPdfBtn"  onclick="downloadPdf()">
+        <div class="p-3 mb-2 bg-white rounded-full">
+          <img src="{% static 'image/icons/pdf-btn.svg' %}" alt="" class="w-[30px]">
+        </div>
+        <span style="font-size: 14px !important;">Scarica .pdf</span>
+      </div>
+      <div class="flex flex-col justify-start items-center w-1/3"> 
+        <div class="p-3 mb-2 bg-white rounded-full">
+            <img src="{% static 'image/icons/word-btn.svg' %}" alt="" class="w-[30px]">
+        </div>
+        <span style="font-size: 14px !important;">Scarica .docx</span>
+      </div>
+   
+      <div class="flex flex-col justify-start items-center w-1/3">
+        <div class="p-3 mb-2 bg-white rounded-full">
+            <img src="{% static 'image/icons/word-btn.svg' %}" alt="" class="w-[30px]">
+        </div>
+        <span style="font-size: 14px !important;">Scarica distinta base</span>
+      </div>
+    </div>
+   </div>
+   {% if project.keopebank.data.generator_power %}
+   <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-1 mt-[30px] gap-6">
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.first_subfield.generator_power}}</p>
+                <p class="unit">kWp</p>
+                <p class="title_result">Potenza nominale di picco</p>
+            </div>
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.data.ao1.total_energy_production}}</p>
+                <p class="unit">kWh</p>
+                <p class="title_result">Produzione annuale di energia elettrica</p>
+            </div>
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.system_efficiency.0}}</p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.system_efficiency.1}}</p>
+                <p class="title_result">Efficienza di sistema</p>
+            </div>
+        </div>
+    </div>
+    <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
+            <div class="flex justify-center items-center">
+                <p class="title_result_big">Producibilità specifica annua</p>
+            </div>
+            <div class="flex flex-col justify-center items-center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_energy_yield.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_energy_yield.1}}</p>
+            </div>
+            <div>
+                <div id="monthlyChartYield"></div>
+            </div>
+        </div>
+    </div>
+    <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
+            <div class="flex justify-center items-center">
+                <p class="title_result_big">Irradianza sul piano dei moduli</p>
+            </div>
+            <div class="flex flex-col justify-center items-center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.1}}</p>
+            </div>
+            <div>
+                <div id="monthly_plane_of_array_irradiance"></div>
+            </div>
+        </div>
+    </div>
+    <div class="w-[90%] mx-auto content_report pb-[30px] mb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
+            <div class="flex justify-center items-center">
+                <p class="title_result_big">Energia utile annua</p>
+            </div>
+            <div class="flex flex-col justify-center items-center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.1}}</p>
+            </div>
+            <div>
+                <div id="monthly_net_energy"></div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="mt-[150px] mb-[150px] px-10 text-center">
+        <h4 class="h4">Si prega di notare che il progetto è scaricabile. Tuttavia, i dati non sono attualmente visualizzabili direttamente sulla pagina a causa di recenti aggiornamenti che hanno modificato la struttura del layout.</>
+    </div>
+    {% endif %}        
+    {% else %}
+    <div class="download_btns">
+        <a href="" class="btn_download disabled" id="downloadPdfBtn" onclick="downloadPdf()">
+            Scarica il pdf
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.7778 0H2.22222C1 0 0 1 0 2.22222V17.7778C0 19 1 20 2.22222 20H17.7778C19 20 20 19 20 17.7778V2.22222C20 1 19 0 17.7778 0ZM7.22222 9.44444C7.22222 10.3333 6.44444 11.1111 5.55556 11.1111H4.44444V13.3333H2.77778V6.66667H5.55556C6.44444 6.66667 7.22222 7.44444 7.22222 8.33333V9.44444ZM12.7778 11.6667C12.7778 12.5556 12 13.3333 11.1111 13.3333H8.33333V6.66667H11.1111C12 6.66667 12.7778 7.44444 12.7778 8.33333V11.6667ZM17.2222 8.33333H15.5556V9.44444H17.2222V11.1111H15.5556V13.3333H13.8889V6.66667H17.2222V8.33333ZM10 8.33333H11.1111V11.6667H10V8.33333ZM4.44444 8.33333H5.55556V9.44444H4.44444V8.33333Z" fill="#fafafa" />
+            </svg>
+        </a>
+        <a {% if project.keopebank.data.print_report == True %} class="btn_download" {% else %} class="btn_download disabled" {% endif %} {% if request.user.id == 30 or request.user.id == 20 or request.user.id == 6 %} onclick="window.location.href='{% url 'secure_word_download' project_code %}'" {% endif %}>
+            Scarica il progetto
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.8889 15.5556H12.2222L10 7.22222L7.77778 15.5556H6.11111L3.44444 4.44444H5.33333L7.04445 12.7778L9.22222 4.44444H10.7778L12.9667 12.7778L14.6667 4.44444H16.5556M17.7778 0H2.22222C0.988889 0 0 0.988889 0 2.22222V17.7778C0 18.3671 0.234126 18.9324 0.650874 19.3491C1.06762 19.7659 1.63285 20 2.22222 20H17.7778C18.3671 20 18.9324 19.7659 19.3491 19.3491C19.7659 18.9324 20 18.3671 20 17.7778V2.22222C20 0.988889 19 0 17.7778 0Z" fill="#fafafa"/>
+            </svg>
+        </a>
+        <a class="btn_download" {% if request.user.id == 30 or request.user.id == 20 or request.user.id == 6 %} onclick="window.location.href='{% url 'secure_design_download' project_code %}'" {% endif %}>
+            Scarica la distinta base
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.11111 11.6667L8.88889 15L12.7778 10L17.7778 16.6667H2.22222M20 17.7778V2.22222C20 0.988889 19 0 17.7778 0H2.22222C1.63285 0 1.06762 0.234126 0.650874 0.650874C0.234126 1.06762 0 1.63285 0 2.22222V17.7778C0 18.3671 0.234126 18.9324 0.650874 19.3491C1.06762 19.7659 1.63285 20 2.22222 20H17.7778C18.3671 20 18.9324 19.7659 19.3491 19.3491C19.7659 18.9324 20 18.3671 20 17.7778Z" fill="#fafafa"/>
+        </svg>
+        </a>
+    </div>
+    {% if project.keopebank.data.generator_power %}
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000]  border-opacity-15">
+        <div class="grid w-full grid-cols-3 mt-[50px]">
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.data.generator_power}}</p>
+                <p class="unit">kWp</p>
+                <p class="title_result">Potenza nominale di picco</p>
+            </div>
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.data.ao1.total_energy_production}}</p>
+                <p class="unit">kWh</p>
+                <p class="title_result">Produzione annuale di energia elettrica</p>
+            </div>
+            <div class="big_result_div">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.system_efficiency.0}}</p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.system_efficiency.1}}</p>
+                <p class="title_result">Efficienza del primo sottocampo</p>
+            </div>
+        </div>
+    </div>
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-3 mt-[50px]">
+            <div class="flex justify-center items-center left">
+                <p class="title_result_big">Producibilità specifica annua</p>
+            </div>
+            <div class="flex flex-col justify-center items-center center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_energy_yield.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_energy_yield.1}}</p>
+            </div>
+            <div class="right">
+                <div id="monthlyChartYield"></div>
+            </div>
+        </div>
+    </div>
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-3 mt-[50px]">
+            <div class="flex justify-center items-center left">
+                <p class="title_result_big">Irradianza sul piano dei moduli</p>
+            </div>
+            <div class="flex flex-col justify-center items-center center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_solar_radiation.1}}</p>
+            </div>
+            <div class="right">
+                <div id="monthly_plane_of_array_irradiance"></div>
+            </div>
+        </div>
+    </div>
+    <div
+        class="w-[90%] mx-auto content_report pb-[50px] mb-[100px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        <div class="grid w-full grid-cols-3 mt-[50px]">
+            <div class="flex justify-center items-center left">
+                <p class="title_result_big">Energia utile annua</p>
+            </div>
+            <div class="flex flex-col justify-center items-center center">
+                <p class="result_big">{{project.keopebank.data.ao1.first_subfield.annual_net_energy.0}} </p>
+                <p class="unit">{{project.keopebank.data.ao1.first_subfield.annual_net_energy.1}}</p>
+            </div>
+            <div class="right">
+                <div id="monthly_net_energy"></div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="mt-[150px] mb-[150px] px-10 text-center">
+        <h4 class="h4">Si prega di notare che il progetto è scaricabile. Tuttavia, i dati non sono attualmente visualizzabili direttamente sulla pagina a causa di recenti aggiornamenti che hanno modificato la struttura del layout.</>
+    </div>
+    {% endif %} 
+    <div class="download_btns">
+        <a href="" class="btn_download disabled" id="downloadPdfBtn" onclick="downloadPdf()">
+            Scarica il pdf
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.7778 0H2.22222C1 0 0 1 0 2.22222V17.7778C0 19 1 20 2.22222 20H17.7778C19 20 20 19 20 17.7778V2.22222C20 1 19 0 17.7778 0ZM7.22222 9.44444C7.22222 10.3333 6.44444 11.1111 5.55556 11.1111H4.44444V13.3333H2.77778V6.66667H5.55556C6.44444 6.66667 7.22222 7.44444 7.22222 8.33333V9.44444ZM12.7778 11.6667C12.7778 12.5556 12 13.3333 11.1111 13.3333H8.33333V6.66667H11.1111C12 6.66667 12.7778 7.44444 12.7778 8.33333V11.6667ZM17.2222 8.33333H15.5556V9.44444H17.2222V11.1111H15.5556V13.3333H13.8889V6.66667H17.2222V8.33333ZM10 8.33333H11.1111V11.6667H10V8.33333ZM4.44444 8.33333H5.55556V9.44444H4.44444V8.33333Z" fill="#fafafa" />
+            </svg>
+        </a>
+        <a {% if project.keopebank.data.print_report == True %} class="btn_download" {% else %} class="btn_download disabled" {% endif %} {% if request.user.id == 30 or request.user.id == 20 or request.user.id == 6 %} onclick="window.location.href='{% url 'secure_word_download' project_code %}'" {% endif %}>
+            Scarica il progetto
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.8889 15.5556H12.2222L10 7.22222L7.77778 15.5556H6.11111L3.44444 4.44444H5.33333L7.04445 12.7778L9.22222 4.44444H10.7778L12.9667 12.7778L14.6667 4.44444H16.5556M17.7778 0H2.22222C0.988889 0 0 0.988889 0 2.22222V17.7778C0 18.3671 0.234126 18.9324 0.650874 19.3491C1.06762 19.7659 1.63285 20 2.22222 20H17.7778C18.3671 20 18.9324 19.7659 19.3491 19.3491C19.7659 18.9324 20 18.3671 20 17.7778V2.22222C20 0.988889 19 0 17.7778 0Z" fill="#fafafa"/>
+            </svg>
+        </a>
+        <a class="btn_download" {% if request.user.id == 30 or request.user.id == 20 or request.user.id == 6 %} onclick="window.location.href='{% url 'secure_design_download' project_code %}'" {% endif %}>
+            Scarica la distinta base
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6.11111 11.6667L8.88889 15L12.7778 10L17.7778 16.6667H2.22222M20 17.7778V2.22222C20 0.988889 19 0 17.7778 0H2.22222C1.63285 0 1.06762 0.234126 0.650874 0.650874C0.234126 1.06762 0 1.63285 0 2.22222V17.7778C0 18.3671 0.234126 18.9324 0.650874 19.3491C1.06762 19.7659 1.63285 20 2.22222 20H17.7778C18.3671 20 18.9324 19.7659 19.3491 19.3491C19.7659 18.9324 20 18.3671 20 17.7778Z" fill="#fafafa"/>
+        </svg>
+        </a>
+    </div>
+
+    {% endif %}
+    <div class="flex justify-center w-full return_btn mt-[50px] mb-[50px]">
+        <a href="/dashboard/" class="btn btn-primary">Torna alla dashboard</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var project_code = parseFloat('{{ project_code|escapejs }}');
+
+    function downloadWord() {
+        // Crea un link invisibile
+        const link = document.createElement('a');
+        link.href = `/download-word/${project_code}/`;
+        link.download = `Report_${project_code}.docx`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function toggleDownloadPanel() {
+        const panel = document.getElementById('downloadPanel');
+        panel.classList.toggle('translate-y-full');
+    }
+
+    function downloadPdf() {
+        window.location.href = `/download-pdf/${project_code}/`;
+    }
+    var outputsData = {{ outputs_data_json }};
+    var keopedata = {{ ao1_data| safe }};
+    var ao1_data = keopedata.data.ao1
+    var monthly_energy_yeld = ao1_data.first_subfield.monthly_energy_yield
+    var monthly_plane_of_array_irradiance = ao1_data.first_subfield.monthly_plane_of_array_irradiance
+    var monthly_net_energy = ao1_data.first_subfield.monthly_net_energy
+    var monthly_net_energy_chart_max = ao1_data.first_subfield.monthly_net_energy_chart_max
+    var monthly_energy_yield_chart_max = ao1_data.first_subfield.monthly_energy_yield_chart_max
+    var monthly_plane_of_array_irradiance_chart_max = ao1_data.first_subfield.monthly_plane_of_array_irradiance_chart_max
+
+    var previousTheme = localStorage.getItem('theme') || 'my_light';
+    var chartYield; // Per il primo grafico
+    var chartIrradiance; // Per il secondo grafico
+    var chartNetEnergy;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        displayMonthlyChartEnergyYield(monthly_energy_yeld, monthly_energy_yield_chart_max);
+        displayMonthlyChartIrradiance(monthly_plane_of_array_irradiance, monthly_plane_of_array_irradiance_chart_max)
+        displayMonthlyChartNetEnergy(monthly_net_energy, monthly_net_energy_chart_max)
+        // Controllo periodico del tema
+        setInterval(function () {
+            var currentTheme = localStorage.getItem('theme') || 'my_light';
+            if (currentTheme !== previousTheme) {
+                previousTheme = currentTheme;
+                // Aggiorna i grafici e la tabella con il nuovo tema
+                displayMonthlyChartEnergyYield(monthly_energy_yeld, monthly_energy_yield_chart_max);
+                displayMonthlyChartIrradiance(monthly_plane_of_array_irradiance, monthly_plane_of_array_irradiance_chart_max)
+                displayMonthlyChartNetEnergy(monthly_net_energy, monthly_net_energy_chart_max)
+            }
+        }, 100); // Controlla ogni 100 millisecondi
+    });
+
+    function displayMonthlyChartEnergyYield(monthlyData, monthly_energy_yield_chart_max) {
+        // Recupera il tema dal localStorage
+        var currentTheme = localStorage.getItem('theme') || 'my_light';
+
+        // Imposta le variabili per i colori in base al tema
+        var isDarkMode = currentTheme === 'my_dark';
+        var textColor = isDarkMode ? '#fff' : '#000';
+        var gridColor = isDarkMode ? '#555' : '#e0e0e0';
+        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var bg_color = isDarkMode ? '#001622' : '#fff'
+
+        // Ordine corretto dei mesi
+        const monthOrder = ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'];
+
+        // Map per convertire le abbreviazioni in nomi completi
+        const monthNames = {
+            'GEN': 'Gennaio',
+            'FEB': 'Febbraio',
+            'MAR': 'Marzo',
+            'APR': 'Aprile',
+            'MAG': 'Maggio',
+            'GIU': 'Giugno',
+            'LUG': 'Luglio',
+            'AGO': 'Agosto',
+            'SET': 'Settembre',
+            'OTT': 'Ottobre',
+            'NOV': 'Novembre',
+            'DIC': 'Dicembre'
+        };
+
+        // Ordina i dati secondo l'ordine corretto dei mesi
+        const sortedData = monthOrder.map(month => {
+            return {
+                month: monthNames[month],
+                value: monthlyData[month][0] // Prende solo il valore numerico
+            };
+        });
+
+        // Prepara i dati per il grafico
+        const months = sortedData.map(item => item.month);
+        const values = sortedData.map(item => item.value);
+
+        // Configurazione del grafico
+        var options = {
+            chart: {
+                type: 'bar',
+                height: '350px',
+                width: '100%',
+                background: bg_color
+            },
+            series: [{
+                name: 'Producibilità mensile (kWh/kWp)',
+                data: values
+            }],
+            colors: ['#f0b90b'],
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: months,
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            yaxis: {
+                min: 0,
+                max: monthly_energy_yield_chart_max,  // Aumentiamo leggermente il massimo
+                tickAmount: 5,  // Riduciamo il numero di tick
+                title: {
+                    text: 'Producibilità (kWh/kWp)',
+                    style: {
+                        color: textColor
+                    }
+                },
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            title: {
+                text: 'Producibilità specifica annua',
+                align: 'center',
+                style: {
+                    color: textColor
+                }
+            },
+            grid: {
+                borderColor: gridColor
+            },
+            tooltip: {
+                theme: tooltipTheme
+            },
+            legend: {
+                labels: {
+                    colors: textColor
+                }
+            },
+        };
+
+        // Se il grafico esiste già, distruggilo prima di crearne uno nuovo
+        if (chartYield) {
+            chartYield.destroy();
+        }
+
+        // Creare e renderizzare il grafico
+        chartYield = new ApexCharts(document.querySelector("#monthlyChartYield"), options);
+        chartYield.render();
+    }
+
+    function displayMonthlyChartIrradiance(monthlyData, monthly_plane_of_array_irradiance_chart_max) {
+        // Recupera il tema dal localStorage
+        var currentTheme = localStorage.getItem('theme') || 'my_light';
+
+        // Imposta le variabili per i colori in base al tema
+        var isDarkMode = currentTheme === 'my_dark';
+        var textColor = isDarkMode ? '#fff' : '#000';
+        var gridColor = isDarkMode ? '#555' : '#e0e0e0';
+        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var bg_color = isDarkMode ? '#001622' : '#fff'
+
+        // Ordine corretto dei mesi
+        const monthOrder = ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'];
+
+        // Map per convertire le abbreviazioni in nomi completi
+        const monthNames = {
+            'GEN': 'Gennaio',
+            'FEB': 'Febbraio',
+            'MAR': 'Marzo',
+            'APR': 'Aprile',
+            'MAG': 'Maggio',
+            'GIU': 'Giugno',
+            'LUG': 'Luglio',
+            'AGO': 'Agosto',
+            'SET': 'Settembre',
+            'OTT': 'Ottobre',
+            'NOV': 'Novembre',
+            'DIC': 'Dicembre'
+        };
+
+        // Ordina i dati secondo l'ordine corretto dei mesi
+        const sortedData = monthOrder.map(month => {
+            return {
+                month: monthNames[month],
+                value: monthlyData[month][0] // Prende solo il valore numerico
+            };
+        });
+
+        // Prepara i dati per il grafico
+        const months = sortedData.map(item => item.month);
+        const values = sortedData.map(item => item.value);
+
+        // Configurazione del grafico
+        var options = {
+            chart: {
+                type: 'bar',
+                height: '350px',
+                width: '100%',
+                background: bg_color
+            },
+            series: [{
+                name: 'Irradianza mensile (kWh/m2)',
+                data: values
+            }],
+            colors: ['#f0b90b'],
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: months,
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            yaxis: {
+                min: 0,
+                max: monthly_plane_of_array_irradiance_chart_max,  // Aumentiamo leggermente il massimo
+                tickAmount: 5,  // Riduciamo il numero di tick
+                title: {
+                    text: 'Irradianza (kWh/m2)',
+                    style: {
+                        color: textColor
+                    }
+                },
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            title: {
+                text: 'Irradianza sul piano dei moduli',
+                align: 'center',
+                style: {
+                    color: textColor
+                }
+            },
+            grid: {
+                borderColor: gridColor
+            },
+            tooltip: {
+                theme: tooltipTheme
+            },
+            legend: {
+                labels: {
+                    colors: textColor
+                }
+            }
+        };
+
+        // Se il grafico esiste già, distruggilo prima di crearne uno nuovo
+        if (chartIrradiance) {
+            chartIrradiance.destroy();
+        }
+
+        // Creare e renderizzare il grafico
+        chartIrradiance = new ApexCharts(document.querySelector("#monthly_plane_of_array_irradiance"), options);
+        chartIrradiance.render();
+    }
+
+    function displayMonthlyChartNetEnergy(monthlyData, monthly_net_energy_chart_max) {
+        // Recupera il tema dal localStorage
+        var currentTheme = localStorage.getItem('theme') || 'my_light';
+
+        // Imposta le variabili per i colori in base al tema
+        var isDarkMode = currentTheme === 'my_dark';
+        var textColor = isDarkMode ? '#fff' : '#000';
+        var gridColor = isDarkMode ? '#555' : '#e0e0e0';
+        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var bg_color = isDarkMode ? '#001622' : '#fff'
+
+        // Ordine corretto dei mesi
+        const monthOrder = ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'];
+
+        // Map per convertire le abbreviazioni in nomi completi
+        const monthNames = {
+            'GEN': 'Gennaio',
+            'FEB': 'Febbraio',
+            'MAR': 'Marzo',
+            'APR': 'Aprile',
+            'MAG': 'Maggio',
+            'GIU': 'Giugno',
+            'LUG': 'Luglio',
+            'AGO': 'Agosto',
+            'SET': 'Settembre',
+            'OTT': 'Ottobre',
+            'NOV': 'Novembre',
+            'DIC': 'Dicembre'
+        };
+
+        // Ordina i dati secondo l'ordine corretto dei mesi
+        const sortedData = monthOrder.map(month => {
+            return {
+                month: monthNames[month],
+                value: monthlyData[month][0] // Prende solo il valore numerico
+            };
+        });
+
+        // Prepara i dati per il grafico
+        const months = sortedData.map(item => item.month);
+        const values = sortedData.map(item => item.value);
+
+        // Configurazione del grafico
+        var options = {
+            chart: {
+                type: 'bar',
+                height: '350px',
+                width: '100%',
+                background: bg_color
+            },
+            series: [{
+                name: 'Energia mensile utile (kWh/m2)',
+                data: values
+            }],
+            colors: ['#f0b90b'],
+            plotOptions: {
+                bar: {
+                    dataLabels: {
+                        position: 'top'
+                    }
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: months,
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            yaxis: {
+                min: 0,
+                max: monthly_net_energy_chart_max,  // Aumentiamo leggermente il massimo
+                tickAmount: 5,  // Riduciamo il numero di tick
+                title: {
+                    text: 'Energia utile (kWh/m2)',
+                    style: {
+                        color: textColor
+                    }
+                },
+                labels: {
+                    style: {
+                        colors: textColor
+                    }
+                },
+                axisBorder: {
+                    show: true,
+                    color: textColor
+                },
+                axisTicks: {
+                    show: true,
+                    color: textColor
+                }
+            },
+            title: {
+                text: 'Energia utile annua',
+                align: 'center',
+                style: {
+                    color: textColor
+                }
+            },
+            grid: {
+                borderColor: gridColor
+            },
+            tooltip: {
+                theme: tooltipTheme
+            },
+            legend: {
+                labels: {
+                    colors: textColor
+                }
+            }
+        };
+
+        // Se il grafico esiste già, distruggilo prima di crearne uno nuovo
+        if (chartNetEnergy) {
+            chartNetEnergy.destroy();
+        }
+
+        // Creare e renderizzare il grafico
+        chartNetEnergy = new ApexCharts(document.querySelector("#monthly_net_energy"), options);
+        chartNetEnergy.render();
+    }
+
+
+</script>
+
+<style>
+    #monthlyChartYield {
+        width: 100%;
+        height: 100%;
+    }
+
+    .container_dashboard_no_flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .inner_div_2_col {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .inner_div_full_width {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    #monthlyDataTable {
+        margin-top: 20px;
+    }
+
+    .disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}

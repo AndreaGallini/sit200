@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+{% block title %}
+Inizializzazione Progetto
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+
+<style>
+.notes{
+    
+    padding: 20px 40px;
+    border-radius: 30px;
+}
+
+</style>
+<div class="relative inner_form_div">
+    <h2 class="text-center h2 mt-[50px]">Seleziona i campi ed i sottocampi necessari per il progettto</h2>
+    <div class="text-center mt-[50px]">
+        <h4 class="mb-5 h4">Quanti campi devi creare?</h4>
+        <select name="mainField" id="mainField" onchange="generateFields()" class="select select-primary">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+        </select>
+    </div>
+
+    <!-- Container per i campi dinamici -->
+    <div id="fieldsContainer" class="mt-[30px] mb-[70px] space-y-4 grid-cols-2">
+    </div>
+    <div class="notes">
+        <p class="p text-[14px]">Legenda:</p>
+        <p class="p text-[14px]"> Sottocampo: insieme di stringhe con uguale inclinazione e orientamento. I moduli in un sottocampo operano in condizioni di irraggiamento omogenee.</p>
+        <p class="p text-[14px]"> Campo: insieme di uno o più sottocampi elettricamente connessi. Costituisce una sezione funzionale dell’impianto.</p>
+        <p class="p text-[14px]"> Generatore fotovoltaico: insieme completo di tutti i campi dell’impianto. Rappresenta la totalità dei moduli FV installati per la conversione dell’energia solare in energia elettrica.</p>
+    </div>
+    <div class="notes">
+        <p class="p text-[14px]">Tips di utilizzo:</p>
+        <p class="p text-[14px]">Avvicinarsi il più possibile alla mappa per disegnare aree di interesse: migliora la precisione nella stima della superficie.</p>      
+        <p class="p text-[14px]">Ogni sottocampo è caratterizzato da pannelli con medesimo tilt ed orientamento.</p>
+    </div>
+    <!-- Pulsante Salva -->
+    <div class="flex justify-center items-end mt-[30px] pb-[50px]">
+        <button onclick="saveStructure()" class="btn btn-primary w-[250px]">
+            Salva Struttura
+        </button>
+    </div>
+</div>
+
+<script>
+// Commento: Funzione per generare i campi dinamicamente in base alla selezione
+function generateFields() {
+    const mainSelect = document.getElementById('mainField');
+    const container = document.getElementById('fieldsContainer');
+    const numberOfFields = parseInt(mainSelect.value);
+    const letters = ['A', 'B', 'C', 'D'];
+    
+    // Pulisce il container
+    container.innerHTML = '';
+
+    if (numberOfFields == 1) {
+        container.classList.remove('grid')
+    } else {
+        container.classList.add('grid')
+    }
+    
+    // Genera i campi necessari
+    for(let i = 0; i < numberOfFields; i++) {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'text-center mt-[20px]';
+        
+        const label = document.createElement('h4');
+        label.className = 'h4';
+        label.innerHTML = `Campo ${letters[i]} <br> <span class="text-[20px]"> Seleziona il numero di sottocampi: </span>`;
+        
+        const select = document.createElement('select');
+        select.className = 'select select-primary w-[100px] mt-4'
+        select.name = `field_${letters[i]}`;
+        select.id = `field_${letters[i]}`;
+        
+        // Aggiunge le opzioni alla select
+        for(let j = 1; j <= 4; j++) {
+            const option = document.createElement('option');
+            option.value = j;
+            option.textContent = j;
+            select.appendChild(option);
+        }
+        
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(select);
+        container.appendChild(fieldDiv);
+    }
+}
+
+// Commento: Funzione per salvare la struttura
+async function saveStructure() {
+    const mainSelect = document.getElementById('mainField');
+    const numberOfFields = parseInt(mainSelect.value);
+    const letters = ['A', 'B', 'C', 'D'];
+    
+    // Prepara i dati da inviare
+    const fields = [];
+    for(let i = 0; i < numberOfFields; i++) {
+        const select = document.getElementById(`field_${letters[i]}`);
+        fields.push({
+            subfields: parseInt(select.value)
+        });
+    }
+    
+    try {
+        const response = await fetch('/save_generator_structure/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ fields: fields })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Qui puoi aggiungere la redirezione alla prossima pagina se necessario
+            window.location.href = '/project/';
+        } else {
+            alert('Errore durante il salvataggio: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Errore:', error);
+        alert('Si è verificato un errore durante il salvataggio');
+    }
+}
+
+// Inizializza i campi al caricamento della pagina
+document.addEventListener('DOMContentLoaded', generateFields);
+</script>
+
+{% endblock %}

@@ -1,0 +1,9 @@
+<html>
+    <p>{{ project.session_data }}</p>
+    <p id="message"></p>
+</html>
+<script>
+        window.addEventListener('load', function() {
+            document.getElementById('message').textContent = globalVariable;
+        });
+</script>

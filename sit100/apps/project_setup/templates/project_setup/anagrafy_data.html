@@ -1,0 +1,242 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Anagrafica progetto
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<form class="inner_form_div form-group">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Committente e proponente</h1>
+        <a href="/documentazione/#committente_proponente" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>  
+    <div class="grid grid-cols-2">
+        <!-- Sezione Committente -->
+        <div class="container_form_no_flex_center">
+            <h3 class="font-normal h4">Committente</h3>
+            <div class="flex flex-col gap-4 justify-center items-center mb-4 w-full">
+                <label class="floating-label">
+                    <input type="text" placeholder="Denominazione" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="client_name" value="{{ project.client_data.client_name }}" {% if 'client_name' in required_fields %}required{% endif %} />
+                    <span>Denominazione {% if 'client_name' in required_fields %}*{% endif %}</span>
+                  </label>
+                  <label class="floating-label">
+                    <textarea type="text" placeholder="Indirizzo, mail, tel, pec, ecc." class="input input-primary w-[300px] h-[150px]" id="client_additional_info" placeholder=" " rows="6">{{ project.client_data.client_additional_info|default:'' }}</textarea>
+                    <span>Indirizzo, mail, tel, pec, ecc.</span>
+                  </label>
+                  <div class="flex flex-col">
+                    <span class="p">Logo</span>
+                    <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="client_logo" name="client_logo" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                    <small class="file-info">Formati accettati: jpg,jpeg,png. Max 3MB</small>
+                    <div class="file-name file-name1" id="clientFileNameDisplay" style="display: none;">
+                        {% if project.client_data.client_logo %}
+                        Logo caricato: {{ project.client_data.client_logo|split:'/' }}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    <div id="preview_client_logo" class="mt-2">
+                        {% if project.images_url.client_logo %}
+                        <div class="text-xs text-base-content">Logo caricato:</div>
+                        <img src="{{project.images_url.client_logo}}" alt="" class="max-w-full h-[100px] rounded border border-gray-300">
+                        {% else %}
+                        <div class="text-xs text-gray-500">Nessun logo caricato</div>
+                        {% endif %}
+                    </div>
+                  </div>
+            </div>
+        </div>
+        <div class="container_form_no_flex_center">
+            <h3 class="font-normal h4">Proponente</h3>
+            <div class="flex flex-col gap-4 justify-center items-center mb-4 w-full">
+                <label class="floating-label">
+                    <input type="text" placeholder="Denominazione" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="proposer_name" value="{{ project.proposer_data.proposer_name }}" {% if 'proposer_name' in required_fields %}required{% endif %} />
+                    <span>Denominazione {% if 'proposer_name' in required_fields %}*{% endif %}</span>
+                  </label>
+                  <label class="floating-label">
+                    <textarea type="text" placeholder="Indirizzo, mail, tel, pec, ecc." class="input input-primary w-[300px] h-[150px]" id="proposer_additional_info"  rows="6">{{ project.proposer_data.proposer_additional_info|default:'' }}</textarea>
+                    <span>Indirizzo, mail, tel, pec, ecc. </span>
+                  </label>
+                  <div class="flex flex-col">
+                    <span class="p">Logo</span>
+                    <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="proposer_logo" name="proposer_logo" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                    <small class="file-info">Formati accettati: jpg,jpeg,png. Max 3MB</small>
+                    <div class="file-name file-name1" id="proposerFileNameDisplay" style="display: none;">
+                        {% if project.proposer_data.proposer_logo %}
+                        Logo caricato: {{ project.proposer_data.proposer_logo|split:'/' }}
+                        {% else %}
+                        {% endif %}
+                    </div>
+                    <div id="preview_proposer_logo" class="mt-2">
+                        {% if project.images_url.proposer_logo %}
+                        <div class="text-sm text-base-content">Logo caricato:</div>
+                        <img src="{{project.images_url.proposer_logo}}" alt="" class="max-w-full h-[100px] rounded border border-gray-300">
+                        {% else %}
+                        <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                        {% endif %}
+                    </div>
+                  </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+{% include 'components/navigation_btn.html' with backroute='/project/user_choise/' %}
+
+<script>
+    var project_code = parseFloat('{{ project_code|escapejs }}');
+    localStorage.setItem('visited_anagrafy_data', 'true');
+    // Funzione per mostrare l'anteprima dell'immagine
+    function showImagePreview(input, previewId) {
+        const previewElement = document.getElementById(previewId);
+        if (!previewElement) return;
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewElement.innerHTML = `
+                    <div class="text-sm text-base-content">Anteprima:</div>
+                    <img src="${e.target.result}" alt="Anteprima" class="max-w-full h-[100px] rounded border border-gray-300">
+                `;
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+        }
+    }
+
+    // Funzione per gestire il cambio del file
+    function handleFileChange(input, nameElement) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Controlla la dimensione del file (3MB = 3145728 bytes)
+            if (file.size > 3145728) {
+                input.value = '';
+                nameElement.textContent = 'Logo';
+                alert('Il file è troppo grande. Dimensione massima: 3MB');
+                return;
+            }
+
+            // Controlla l'estensione del file
+            const validExtensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExtension)) {
+                input.value = '';
+                nameElement.textContent = 'Logo';
+                alert('Formato file non valido. Formati accettati: jpg, jpeg, png');
+                return;
+            }
+
+            nameElement.textContent = file.name;
+            
+            // Mostra l'anteprima dell'immagine
+            const inputId = input.id;
+            if (inputId === 'client_logo') {
+                showImagePreview(input, 'preview_client_logo');
+            } else if (inputId === 'proposer_logo') {
+                showImagePreview(input, 'preview_proposer_logo');
+            }
+        } else {
+            nameElement.textContent = 'Logo';
+            // Rimuovi l'anteprima se presente
+            const inputId = input.id;
+            if (inputId === 'client_logo') {
+                const previewElement = document.getElementById('preview_client_logo');
+                if (previewElement) {
+                    previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+                }
+            } else if (inputId === 'proposer_logo') {
+                const previewElement = document.getElementById('preview_proposer_logo');
+                if (previewElement) {
+                    previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+                }
+            }
+        }
+    }
+
+    // Inizializzazione al caricamento della pagina
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestione file input per client_logo
+        const clientLogoInput = document.getElementById('client_logo');
+        const clientFileNameDisplay = document.getElementById('clientFileNameDisplay');
+        if (clientLogoInput && clientFileNameDisplay) {
+            clientLogoInput.addEventListener('change', function() {
+                handleFileChange(this, clientFileNameDisplay);
+            });
+        }
+
+        // Gestione file input per proposer_logo
+        const proposerLogoInput = document.getElementById('proposer_logo');
+        const proposerFileNameDisplay = document.getElementById('proposerFileNameDisplay');
+        if (proposerLogoInput && proposerFileNameDisplay) {
+            proposerLogoInput.addEventListener('change', function() {
+                handleFileChange(this, proposerFileNameDisplay);
+            });
+        }
+    });
+
+    // Funzione per inviare i dati
+    function submitSelection() {
+        const required_fields = {{ required_fields|safe }};
+        
+        // Check required fields first
+        for (const field of required_fields) {
+            const element = document.getElementById(field);
+            if (element && !element.value) {
+                return;
+            }
+        }
+
+        const formData = new FormData();
+        
+        // Dati committente
+        formData.append('client_name', document.getElementById('client_name').value);
+        const client_logo = document.getElementById('client_logo').files[0];
+        if (client_logo) {
+            formData.append('client_logo', client_logo);
+        }
+        formData.append('client_additional_info', document.getElementById('client_additional_info').value);
+
+        // Dati proponente
+        formData.append('proposer_name', document.getElementById('proposer_name').value);
+        const proposer_logo = document.getElementById('proposer_logo').files[0];
+        if (proposer_logo) {
+            formData.append('proposer_logo', proposer_logo);
+        }
+        formData.append('proposer_additional_info', document.getElementById('proposer_additional_info').value);
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Effettua la richiesta con FormData
+        fetch('/save_anagrafy_data_1/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+            if (data.message) {
+                window.location.href = '/project/anagrafy_data_2/';
+            } else {
+                console.error('Error response:', data.error);
+            }
+        })
+        .catch(error => console.error('Fetch error:', error));
+    }
+
+    
+</script>
+
+{% endblock %}

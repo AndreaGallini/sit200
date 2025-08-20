@@ -1,0 +1,723 @@
+
+
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Anagrafica Progettisti
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+
+
+<style>
+    .hide{
+        display: none;
+    }
+</style>
+<div class="relative inner_form_div" style="height: 100vh !important; padding: 50px 70px;">
+    <div id="notification-container" class="fixed top-[110px] right-4 z-[10000] space-y-2"></div>
+
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Progettisti e collaboratori</h1>
+        <a href="/documentazione/#progettisti_collaboratori" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>  
+    <div class="flex flex-col items-center">
+        <h2 class="text-center mt-7 mb-[5px] h4">Progettisti</h2>
+        <div class="w-[500px] flex justify-between">
+            <button id="loadDesignersButton" class="mt-5 btn btn-secondary" onclick="loadDesigners()">Carica i miei dati personali</button>
+            <button class="mt-5 btn btn-secondary" onclick="openAddPopup()">Aggiungi Progettista</button>
+        </div>
+        
+        <!-- Tabella dei progettisti -->
+        <table class="w-[500px] mt-4  p">
+            <tbody id="designer-table-body" class="p">
+                {% for designer in designers %} 
+                <tr id="designer-{{ designer.id }}" class="flex justify-between">
+                    <td>{{ designer.designer_name }}</td>
+                    <td class="text-right">
+                        <i class="fa fa-pencil-alt edit-icon" onclick="openEditPopup('{{ designer.id }}')"></i>
+                        <i class="fa fa-trash" onclick="deleteDesigner('{{ designer.id }}')"></i>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Popup nascosto per aggiungere/modificare progettisti -->
+    <div id="designer-popup" class="hide popup_container my_popup">
+        <div class="form-group">
+            <h3 class="pb-10 font-normal text-center h4" id="popup-title">Aggiungi Progettista</h3>
+            <!-- Campo Nominativo -->
+             <div class="flex flex-col gap-5">
+                <label class="floating-label">
+                    <input type="text" placeholder="Nominativo" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="designer_name" required />
+                    <span>Nominativo*</span>
+                  </label>
+                  <label class="floating-label">
+                    <textarea type="text" placeholder="Indirizzo, mail, tel, pec, ecc." class="input input-primary w-[300px] h-[150px]" id="designer_additional_info" rows="4"></textarea>
+                    <span>Indirizzo, mail, tel, pec, ecc.</span>
+                  </label>
+                  <div class="flex flex-col">
+                    <span class="p">Logo</span>
+                    <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="designer_logo" name="designer_logo" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                    <small class="file-info">Formati accettati: jpg,jpeg,png. Max 3MB</small>
+                    <div class="file-name" id="fileNameDisplay">
+                    </div>
+                    <div id="preview_designer_logo" class="mt-2">
+                        {% if project.images_url.designer_logo %}
+                        <div class="text-sm text-base-content">Logo caricato:</div>
+                        <img src="{{project.images_url.designer_logo}}" alt="" class="max-w-full h-[100px] rounded border border-gray-300">
+                        {% else %}
+                        <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                        {% endif %}
+                    </div>
+                  </div>
+            </div>
+        
+            <div class="flex justify-around mt-3 w-full">
+                <button class="btn btn-secondary" onclick="saveDesigner()">Salva</button>
+                <button class="btn btn-secondary" onclick="closePopup()">Annulla</button>
+            </div>
+        </div>
+    </div>
+    <!-- Collaboratori -->
+    <div class="flex flex-col items-center">
+        <h2 class="text-center mt-[50px] mb-[5px] h4">Collaboratori</h2>
+        <button class="mt-5 btn btn-secondary" onclick="openAddCollaboratorPopup()">Aggiungi Collaboratore</button>
+
+        <table class="w-[500px] mt-4  p">
+
+            <tbody id="collaborator-table-body" class="p">
+                {% for collaborator in collaborators %}
+                <tr id="collaborator-{{ collaborator.id }}" class="py-2">
+                    <td class="collab_name">{{ collaborator.name }}</td>
+                    <td class="text-right">
+                        <i class="fa fa-pencil-alt edit-icon" onclick="openEditCollaboratorPopup('{{ collaborator.id }}')"></i>
+                        <i class="fa fa-trash" onclick="deleteCollaborator('{{ collaborator.id }}')"></i>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Popup nascosto per collaboratori -->
+    <div id="collaborator-popup" class="hide popup_container my_popup">
+        <div class="form-group2">
+            
+            <h4 class="py-4 font-normal text-center h4" id="popup-title-collaborator">Aggiungi Collaboratore</h4>
+            <label class="floating-label">
+                <input type="text" placeholder="Nome e Cognome" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="collaborator_name" required />
+                <span>Nome e Cognome</span>
+            </label>
+            
+            <div class="flex justify-around mt-5 w-full">
+                <button class="btn btn-secondary" onclick="saveCollaborator()">Salva</button>
+                <button class="btn btn-secondary" onclick="closeCollaboratorPopup()">Annulla</button>
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/navigation_btn.html' with backroute='/project/anagrafy_data/' %}
+</div>
+
+<script>
+    localStorage.setItem('visited_anagrafy_data_2', 'true');
+    // Variabili globali
+    let currentDesignerId = null; // Variabile per tenere traccia del designer corrente
+    let designerId = 1;
+    let collaboratorId = 1; // ID incrementale per i collaboratori
+    let progettisti = []; 
+    let collaboratori = []; // Array per memorizzare i collaboratori
+    let deletedDesigners = []; // Array per memorizzare gli ID dei progettisti eliminati
+    let deletedCollaborators = [];
+    let currentCollaboratorId = null; 
+    
+    // Array per memorizzare i progettisti localmente
+    progettisti = [
+        {% for designer in designers %}
+        {
+            id: "{{ designer.id|escapejs }}",
+            designer_name: "{{ designer.designer_name|escapejs }}",
+            designer_additional_info: "{{ designer.designer_additional_info|escapejs }}",
+            designer_logo: "{{ designer.designer_logo|default_if_none:'#'|escapejs }}",  // Percorso del logo esistente o placeholder
+            designer_logo_url: "{{ designer.designer_logo_url|default_if_none:'#'|escapejs }}"  // URL del logo per l'anteprima
+        }
+        {% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Debug: stampa i progettisti caricati
+    
+    collaboratori = [
+        {% for collaborator in collaborators %}
+        {
+            id: "{{ collaborator.id|escapejs }}",
+            name: "{{ collaborator.name|escapejs }}"
+        }
+        {% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    
+    // Funzione per aprire il popup di aggiunta progettista
+    function openAddPopup() {
+        resetForm(); // Resetta il form
+        let last_designer_id = progettisti.length > 0 ? progettisti[progettisti.length - 1].id : 0;
+        currentDesignerId = parseInt(last_designer_id) + 1;
+        document.getElementById('popup-title').innerText = 'Aggiungi Progettista';
+        document.getElementById('designer-popup').classList.remove('hide'); // Mostra il popup
+    }
+    
+    // Funzione per resettare il form
+    function resetForm() {
+        document.getElementById('designer_name').value = '';
+        document.getElementById('designer_additional_info').value = '';
+        document.getElementById('designer_logo').value = '';
+        
+        // Reset del nome file
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        
+        // Reset dell'anteprima logo
+        const logoPreview = document.getElementById('preview_designer_logo');
+        if (logoPreview) {
+            logoPreview.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+        }
+        
+        // Pulisci gli URL degli oggetti per evitare memory leak
+        if (window.currentObjectURL) {
+            URL.revokeObjectURL(window.currentObjectURL);
+            window.currentObjectURL = null;
+        }
+    }
+    
+        // Funzione per aprire il popup di modifica progettista
+    function openEditPopup(designerId) {
+        const designer = progettisti.find(d => d.id == designerId);
+        if (!designer) {
+            return;
+        }
+
+
+        document.getElementById('popup-title').innerText = 'Modifica Progettista';
+        document.getElementById('designer_name').value = designer.designer_name || '';
+        document.getElementById('designer_additional_info').value = designer.designer_additional_info || '';
+
+        // Gestione del logo e del nome file
+        const logoPreview = document.getElementById('preview_designer_logo');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        
+        // Controlla se il designer ha un logo caricato
+        if (designer.designer_logo && designer.designer_logo !== '#' && designer.designer_logo !== 'null' && designer.designer_logo !== 'None') {
+            let fileName = '';
+            let logoUrl = null;
+            
+            if (designer.designer_logo instanceof File) {
+                // Se è un oggetto File (nuovo upload), usa il nome del file
+                fileName = designer.designer_logo.name;
+                // Crea URL temporaneo per l'anteprima
+                if (window.currentObjectURL) {
+                    URL.revokeObjectURL(window.currentObjectURL);
+                }
+                logoUrl = URL.createObjectURL(designer.designer_logo);
+                window.currentObjectURL = logoUrl;
+            } else if (typeof designer.designer_logo === 'string') {
+                // Se è una stringa (percorso dal database), usa il designer_logo_url presigned
+                fileName = designer.designer_logo.split('/').pop(); // Estrai solo il nome del file
+                logoUrl = designer.designer_logo_url; // Usa l'URL presigned dalla sessione
+            }
+            
+            
+            // Mostra l'anteprima del logo
+            if (logoUrl && logoUrl !== '#' && logoUrl !== 'null' && logoUrl !== 'None') {
+                logoPreview.innerHTML = `
+                    <div class="text-sm text-base-content">Logo caricato:</div>
+                    <img src="${logoUrl}" alt="Logo designer" class="max-w-full h-[100px] rounded border border-gray-300" 
+                         onerror="this.parentElement.innerHTML='<div class=\\'text-sm text-red-500\\'>Errore caricamento logo</div>'">
+                `;
+            } else {
+                logoPreview.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+            }
+        } else {
+            // Nessun logo disponibile
+            logoPreview.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+            fileNameDisplay.textContent = '';
+        }
+    
+        currentDesignerId = designer.id; 
+        document.getElementById('designer-popup').classList.remove('hide');
+    }
+    
+    // Funzione per salvare i dati del progettista nel popup
+    function saveDesigner() {
+        const designer_name = document.getElementById('designer_name').value;
+        const designer_additional_info = document.getElementById('designer_additional_info').value;
+        const designer_logo_input = document.getElementById('designer_logo');
+        const designer_logo_file = designer_logo_input.files[0];    
+        let existing_designer_logo = null;
+        if (currentDesignerId !== null) {
+            const existing_designer = progettisti.find(d => d.id == currentDesignerId);
+            existing_designer_logo = existing_designer ? existing_designer.designer_logo : null;
+        }
+    
+        if (designer_name) {
+            const designerData = {
+                id: currentDesignerId,  // Usa currentDesignerId per modificare
+                designer_name: designer_name,
+                designer_additional_info: designer_additional_info,
+                designer_logo: designer_logo_file || existing_designer_logo
+            };
+            if (progettisti.length === 0){
+                progettisti.push(designerData);
+                addDesignerToTable(designerData);
+                closePopup();
+            }else{
+                let des_find = null
+                for (let i = 0; i < progettisti.length; i++) {
+                    const prog = progettisti[i];
+                    if (prog.id == currentDesignerId) {
+                        des_find = progettisti[i];
+                        break;
+                    }
+                }
+                if (des_find != null){
+                    des_find.designer_name = designer_name;
+                    des_find.designer_additional_info = designer_additional_info;
+                    // Preserva l'URL del logo esistente se non viene caricato un nuovo file
+                    if (designer_logo_file) {
+                        des_find.designer_logo = designer_logo_file;
+                        // Per i nuovi file, l'URL verrà generato dal server al salvataggio
+                        des_find.designer_logo_url = URL.createObjectURL(designer_logo_file);
+                    } else {
+                        // Mantieni il logo esistente e il suo URL presigned
+                        // Non modificare questi valori se non c'è un nuovo file
+                    }
+                    updateDesignerRow(des_find, designer_name);
+                    closePopup();
+                }else{
+                    progettisti.push(designerData);
+                    addDesignerToTable(designerData);
+                    closePopup();
+                }
+            }
+        } else {
+            showNotification('Per favore, compila tutti i campi obbligatori.')
+        }
+    }
+    
+    // Funzione per aggiungere un progettista alla tabella
+    function addDesignerToTable(designer) {
+        const tableBody = document.getElementById('designer-table-body');
+        const newRow = document.createElement('tr');
+        newRow.className = 'flex justify-between'
+        newRow.id = `designer-${designer.id}`;
+        newRow.innerHTML = `
+            <td class="p">${designer.designer_name}</td>
+            <td class="text-right">
+            <i class="fa fa-pencil-alt edit-icon" onclick="openEditPopup('${designer.id}')"></i>
+            <i class="fa fa-trash" onclick="deleteDesigner('${designer.id}')"></i>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+    }
+    
+    // Funzione per aggiornare una riga esistente
+    function updateDesignerRow(designer, designer_name) {
+        const row = document.getElementById(`designer-${designer.id}`);
+        if (row) {
+            row.innerHTML = `
+            <td class="p">${designer.designer_name}</td>
+            <td class="text-right">
+            <i class="fa fa-pencil-alt edit-icon" onclick="openEditPopup('${designer.id}')"></i>
+            <i class="fa fa-trash" onclick="deleteDesigner('${designer.id}')"></i>
+            </td>
+            `;
+        }
+    }
+    
+    // Funzione per eliminare un progettista
+    function deleteDesigner(designerId) {
+        deletedDesigners.push(designerId);
+        progettisti = progettisti.filter(d => d.id != designerId);
+        const row = document.getElementById(`designer-${designerId}`);
+        if (row) {
+            row.remove();
+        }
+    }
+    
+    // Funzione per aprire il popup di aggiunta collaboratore
+    function openAddCollaboratorPopup() {
+        document.getElementById('popup-title-collaborator').innerText = 'Aggiungi Collaboratore';
+        let last_collaborator_id = collaboratori.length > 0 ? collaboratori[collaboratori.length - 1].id : 0;
+        currentCollaboratorId = parseInt(last_collaborator_id) + 1;
+        resetCollaboratorForm(); // Resetta il form
+        document.getElementById('collaborator-popup').classList.remove('hide');
+    }
+    
+    // Funzione per resettare il form collaboratore
+    function resetCollaboratorForm() {
+        document.getElementById('collaborator_name').value = '';
+    }
+    
+    // Funzione per aprire il popup di modifica collaboratore
+    function openEditCollaboratorPopup(collaboratorId) {
+        const collaborator = collaboratori.find(c => c.id == collaboratorId);
+        if (collaborator) {
+            document.getElementById('popup-title-collaborator').innerText = 'Modifica Collaboratore';
+            document.getElementById('collaborator_name').value = collaborator.name;
+            currentCollaboratorId = collaboratorId;
+            document.getElementById('collaborator-popup').classList.remove('hide');
+        }
+    }
+    
+    // Funzione per salvare i dati del collaboratore
+    function saveCollaborator() {
+        const collaborator_name = document.getElementById('collaborator_name').value;
+        if (collaborator_name) {
+            const collaboratorData = {
+                id: currentCollaboratorId,
+                name: collaborator_name
+            };
+            if(collaboratori.length === 0){
+                collaboratori.push(collaboratorData);
+                addCollaboratorToTable(collaboratorData);
+                closeCollaboratorPopup();
+            }else{
+                let col_find = null
+                for (let i = 0; i < collaboratori.length; i++) {
+                    const coll = collaboratori[i];
+                    if (coll.id == currentCollaboratorId) {
+                        col_find = collaboratori[i]
+                        break;
+                    }
+                }
+                if (col_find != null){
+                    updateCollaboratorRow(col_find, collaborator_name);
+                    col_find.name = collaborator_name
+                    closeCollaboratorPopup();
+                }else{
+                    collaboratori.push(collaboratorData);
+                    addCollaboratorToTable(collaboratorData);
+                    closeCollaboratorPopup();
+                }
+            }
+        }
+    }
+    
+    // Funzione per aggiungere un collaboratore alla tabella
+    function addCollaboratorToTable(collaborator) {
+        const tableBody = document.getElementById('collaborator-table-body');
+        const newRow = document.createElement('tr');
+        newRow.id = `collaborator-${collaborator.id}`;
+        newRow.innerHTML = `
+            <td class="p">${collaborator.name}</td>
+            <td class="text-right">
+                <i class="fa fa-pencil-alt edit-icon" onclick="openEditCollaboratorPopup('${collaborator.id}')"></i>
+                <i class="fa fa-trash" onclick="deleteCollaborator('${collaborator.id}')"></i>
+            </td>
+        `;
+        tableBody.appendChild(newRow);
+    }
+    
+    // Funzione per aggiornare una riga esistente di collaboratore
+    function updateCollaboratorRow(collaborator, collaborator_name) {
+        const row = document.getElementById(`collaborator-${collaborator.id}`);
+        if (row) {
+            row.innerHTML = `
+                <td>${collaborator_name}</td>
+                <td class="text-right">
+                    <i class="fa fa-pencil-alt edit-icon" onclick="openEditCollaboratorPopup('${collaborator.id}')"></i>
+                    <i class="fa fa-trash" onclick="deleteCollaborator('${collaborator.id}')"></i>
+                </td>
+            `;
+        }
+    }
+    
+    // Funzione per eliminare un collaboratore
+    function deleteCollaborator(collaborator_id) {
+        deletedCollaborators.push(collaborator_id);
+        collaboratori = collaboratori.filter(c => c.id != collaborator_id);
+        const row = document.getElementById(`collaborator-${collaborator_id}`);
+        if (row) {
+            row.remove();
+        }
+    }
+    
+    // Funzione per chiudere il popup progettista
+    function closePopup() {
+        document.getElementById('designer-popup').classList.add('hide');
+        
+        // Pulisci gli URL degli oggetti per evitare memory leak
+        if (window.currentObjectURL) {
+            URL.revokeObjectURL(window.currentObjectURL);
+            window.currentObjectURL = null;
+        }
+    }
+    
+    // Funzione per chiudere il popup collaboratore
+    function closeCollaboratorPopup() {
+        document.getElementById('collaborator-popup').classList.add('hide');
+    }
+    
+    // Funzione per inviare tutti i progettisti e collaboratori al server
+    function submitSelection() {
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        const formData = new FormData();
+    
+        // Aggiungi progettisti a formData
+        progettisti.forEach((designer, index) => {
+            formData.append(`designer_id_${index}`, designer.id); 
+            formData.append(`designer_name_${index}`, designer.designer_name);
+            formData.append(`designer_additional_info_${index}`, designer.designer_additional_info || '');
+    
+            // Gestione del logo
+            if (designer.designer_logo instanceof File) {
+                formData.append(`designer_logo_${index}`, designer.designer_logo);
+            } else if (designer.designer_logo && designer.designer_logo !== '#') {
+                formData.append(`designer_logo_existing_${index}`, designer.designer_logo);
+            } else {
+                formData.append(`designer_logo_existing_${index}`, designer.designer_logo);
+            }
+        });
+    
+        // Aggiungi collaboratori a formData
+        collaboratori.forEach((collaborator, index) => {
+            formData.append(`collaborator_id_${index}`, collaborator.id); 
+            formData.append(`collaborator_name_${index}`, collaborator.name);
+        });
+    
+        // Aggiungi gli ID degli elementi eliminati
+        deletedDesigners.forEach((designerId, index) => {
+            formData.append(`deleted_designer_${index}`, designerId);
+        });
+    
+        deletedCollaborators.forEach((collaboratorId, index) => {
+            formData.append(`deleted_collaborator_${index}`, collaboratorId);
+        });
+    
+        // Esegui il fetch per inviare i dati al server
+        fetch('/save_designers_and_collaborators/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = '/project/report_page/';
+            } else {
+                console.error('Errore nel salvataggio:', data.error);
+                alert('Errore nel salvataggio: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Errore durante la richiesta:', error);
+            alert('Errore durante la richiesta: ' + error.message);
+        });
+    }
+    
+
+    
+    // Funzione per caricare i designer dal server
+    function loadDesigners() {
+        fetch('/get_designers_data/', {  // Assicurati che l'URL sia corretto
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',  // Indica una richiesta AJAX
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Errore nella richiesta: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const designers = data.designers;
+
+            designers.forEach((designer, index) => {
+                let last_designer_id = progettisti.length > 0 ? progettisti[progettisti.length - 1].id : 0;
+                currentDesignerId = parseInt(last_designer_id) + 1;
+                designer.id = currentDesignerId;
+                
+                
+                // Mappa i campi del designer ai nuovi campi semplificati
+                // Usa direttamente i valori dal server che dovrebbero già avere gli URL presigned
+                let logoValue = designer.designer_logo || '#';
+                let logoUrl = designer.designer_logo_url || '#';
+                
+                
+                const simplifiedDesigner = {
+                    id: designer.id,
+                    designer_name: designer.designer_name || designer.name || '',
+                    designer_additional_info: designer.designer_additional_info || '',
+                    designer_logo: logoValue,
+                    designer_logo_url: logoUrl
+                };
+                addDesignerToTable(simplifiedDesigner);
+                progettisti.push(simplifiedDesigner);
+            });
+        })
+        .catch(error => {
+            console.error('Errore durante il caricamento dei progettisti:', error);
+            alert('Errore durante il caricamento dei progettisti.');
+        });
+    }
+
+    
+    // Assicurati che le funzioni siano accessibili globalmente
+    window.openAddPopup = openAddPopup;
+    window.openEditPopup = openEditPopup;
+    window.saveDesigner = saveDesigner;
+    window.deleteDesigner = deleteDesigner;
+    window.openAddCollaboratorPopup = openAddCollaboratorPopup;
+    window.openEditCollaboratorPopup = openEditCollaboratorPopup;
+    window.saveCollaborator = saveCollaborator;
+    window.deleteCollaborator = deleteCollaborator;
+    window.submitSelection = submitSelection;
+    window.closePopup = closePopup;
+    window.closeCollaboratorPopup = closeCollaboratorPopup;
+    window.loadDesigners = loadDesigners;
+
+    document.getElementById('designer_logo').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+    
+    if (file.size > maxSize) {
+        alert('Il file è troppo grande! La dimensione massima è 3MB');
+        this.value = ''; // Resetta l'input
+        return;
+    }
+});
+const fileInputs = [
+    { inputId: 'designer_logo', nameClass: 'file-name' },
+
+];
+
+// Funzione per mostrare l'anteprima dell'immagine
+function showImagePreview(input, previewId) {
+    const previewElement = document.getElementById(previewId);
+    if (!previewElement) return;
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            previewElement.innerHTML = `
+                <div class="text-sm text-base-content">Anteprima:</div>
+                <img src="${e.target.result}" alt="Anteprima" class="max-w-full h-[100px] rounded border border-gray-300">
+            `;
+        };
+        
+        reader.readAsDataURL(file);
+    } else {
+        previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+    }
+}
+
+// Funzione per gestire il cambio del file
+function handleFileChange(input, nameElement) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Controlla la dimensione del file (3MB = 3145728 bytes)
+        if (file.size > 3145728) {
+            alert('Il file è troppo grande. La dimensione massima è 3MB');
+            input.value = '';
+            return;
+        }
+
+        // Controlla l'estensione del file
+        const validExtensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!validExtensions.includes(fileExtension)) {
+            alert('Formato file non valido. Utilizzare jpg, jpeg o png');
+            input.value = '';
+            return;
+        }
+
+        
+        // Mostra l'anteprima dell'immagine
+        showImagePreview(input, 'preview_designer_logo');
+        
+        // Se stiamo modificando un progettista, aggiorna anche l'array locale
+        if (currentDesignerId !== null) {
+            const designer = progettisti.find(d => d.id == currentDesignerId);
+            if (designer) {
+                designer.designer_logo = file;
+                // Crea un URL temporaneo per l'anteprima del nuovo file
+                designer.designer_logo_url = URL.createObjectURL(file);
+            }
+        }
+    } else {
+        // Rimuovi l'anteprima se presente
+        const previewElement = document.getElementById('preview_designer_logo');
+        if (previewElement) {
+            previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+        }
+    }
+}
+
+// Inizializza tutti i file input
+document.addEventListener('DOMContentLoaded', function() {
+    fileInputs.forEach(config => {
+        const input = document.getElementById(config.inputId);
+        const nameElement = document.querySelector('.' + config.nameClass);
+        
+        if (input && nameElement) {
+            // Aggiungi l'event listener
+            input.addEventListener('change', function() {
+                handleFileChange(this, nameElement);
+            });
+        }
+    });
+    
+    // Gestione file input per designer_logo
+    const designerLogoInput = document.getElementById('designer_logo');
+    const designerFileNameDisplay = document.getElementById('fileNameDisplay');
+    if (designerLogoInput && designerFileNameDisplay) {
+        designerLogoInput.addEventListener('change', function() {
+            handleFileChange(this, designerFileNameDisplay);
+        });
+    }
+});
+
+function showNotification(message, type = 'error') {
+        const container = document.getElementById('notification-container');
+        if (!container) return;
+        
+        // Rimuovi tutte le notifiche esistenti
+        const existingNotifications = container.querySelectorAll('.alert');
+        existingNotifications.forEach(notification => notification.remove());
+        
+        const notification = document.createElement('div');
+        notification.className = `alert alert-${type} shadow-lg max-w-md z-[9999]`;
+        notification.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>${message}</span>
+            <button class="btn btn-sm btn-ghost" onclick="this.parentElement.remove()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Rimuovi automaticamente dopo 5 secondi
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+</script>
+
+{% endblock %}

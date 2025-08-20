@@ -1,0 +1,220 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Log di Accesso
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<!-- Contenitore principale per i log di accesso -->
+<div class="container px-4 py-8 mx-auto">
+    <!-- Header della sezione -->
+    <div class="mb-8">
+        <h1 class="mb-2 text-3xl font-bold text-base-content">
+            <i class="mr-3 fas fa-history"></i>Log di Accesso
+        </h1>
+        <p class="text-base-content">
+            Storico degli accessi al tuo account
+        </p>
+    </div>
+
+    <!-- Tabella responsive per i log -->
+    <div class="overflow-x-auto">
+        <table class="table w-full table-zebra">
+            <!-- Header della tabella -->
+            <thead>
+                <tr class="bg-base-200 dark:bg-base-300">
+                    <th class="font-semibold text-left text-base-content">
+                        <i class="mr-2 fas fa-desktop"></i>Dispositivo
+                    </th>
+                    <th class="font-semibold text-left text-base-content">
+                        <i class="mr-2 fas fa-map-marker-alt"></i>Posizione
+                    </th>
+                    <th class="font-semibold text-left text-base-content">
+                        <i class="mr-2 fas fa-clock"></i>Data e Ora
+                    </th>
+                </tr>
+            </thead>
+            
+            <!-- Corpo della tabella -->
+            <tbody id="logsTableBody">
+                <!-- I dati verranno caricati dinamicamente via JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Messaggio quando non ci sono log -->
+    <div id="noLogsMessage" class="hidden py-12 text-center">
+        <div class="text-base-content">
+            <i class="mb-4 text-4xl fas fa-info-circle"></i>
+            <p class="text-lg">Nessun log di accesso disponibile</p>
+            <p class="mt-2 text-sm">I tuoi accessi appariranno qui</p>
+        </div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loadingSpinner" class="py-12 text-center">
+        <div class="loading loading-spinner loading-lg text-primary"></div>
+        <p class="mt-4 text-base-content">Caricamento log...</p>
+    </div>
+</div>
+
+<!-- Script per caricare e visualizzare i log -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funzione per formattare la data
+    function formatDateTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('it-IT', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    // Funzione per pulire le informazioni del dispositivo
+    function cleanDeviceInfo(deviceInfo) {
+        if (!deviceInfo) return 'Dispositivo sconosciuto';
+        
+        // Rimuove spazi extra e formatta meglio
+        return deviceInfo
+            .replace(/\s+/g, ' ')
+            .replace(/Dispositivo:/g, '')
+            .replace(/Sistema operativo:/g, 'OS: ')
+            .replace(/Browser:/g, 'Browser: ')
+            .trim();
+    }
+
+    // Funzione per creare una riga della tabella
+    function createTableRow(log) {
+        const row = document.createElement('tr');
+        row.className = 'hover:bg-base-200 dark:hover:bg-base-300 transition-colors duration-200';
+        
+        row.innerHTML = `
+            <td class="px-4 py-4">
+                <div class="flex items-center">
+                    <div class="flex justify-center items-center mr-3 w-8 h-8 rounded-full bg-primary/10">
+                        <i class="text-sm fas fa-desktop text-primary"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-base-content">${cleanDeviceInfo(log.device)}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-4">
+                <div class="flex items-center">
+                    <div class="flex justify-center items-center mr-3 w-8 h-8 rounded-full bg-secondary/10">
+                        <i class="text-sm fas fa-map-marker-alt text-secondary"></i>
+                    </div>
+                    <div>
+                        <p class="text-base-content">${log.location || 'Posizione sconosciuta'}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-4 py-4">
+                <div class="flex items-center">
+                    <div class="flex justify-center items-center mr-3 w-8 h-8 rounded-full bg-accent/10">
+                        <i class="text-sm fas fa-clock text-accent"></i>
+                    </div>
+                    <div>
+                        <p class="font-mono text-sm text-base-content">${formatDateTime(log.access_time)}</p>
+                    </div>
+                </div>
+            </td>
+        `;
+        
+        return row;
+    }
+
+    // Funzione per caricare i log
+    function loadLogs() {
+        const tableBody = document.getElementById('logsTableBody');
+        const noLogsMessage = document.getElementById('noLogsMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        
+        // Simula un breve caricamento per una migliore UX
+        setTimeout(() => {
+            try {
+                // I dati sono già disponibili nel contesto Django
+                const logsData = JSON.parse('{{ logs|escapejs }}');
+                
+                // Nasconde il loading spinner
+                loadingSpinner.classList.add('hidden');
+                
+                if (logsData && logsData.length > 0) {
+                    // Ordina i log per data (più recenti prima)
+                    const sortedLogs = logsData.sort((a, b) => 
+                        new Date(b.access_time) - new Date(a.access_time)
+                    );
+                    
+                    // Popola la tabella
+                    sortedLogs.forEach(log => {
+                        const row = createTableRow(log);
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    // Mostra il messaggio quando non ci sono log
+                    noLogsMessage.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Errore nel caricamento dei log:', error);
+                loadingSpinner.classList.add('hidden');
+                noLogsMessage.classList.remove('hidden');
+                noLogsMessage.innerHTML = `
+                    <div class="text-error">
+                        <i class="mb-4 text-4xl fas fa-exclamation-triangle"></i>
+                        <p class="text-lg">Errore nel caricamento dei log</p>
+                        <p class="mt-2 text-sm">Riprova più tardi</p>
+                    </div>
+                `;
+            }
+        }, 500);
+    }
+
+    // Carica i log quando la pagina è pronta
+    loadLogs();
+});
+</script>
+
+<!-- Stili aggiuntivi per migliorare l'aspetto -->
+<style>
+    /* Animazione per le righe della tabella */
+    .table tbody tr {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Responsive design per dispositivi mobili */
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.875rem;
+        }
+        
+        .table td, .table th {
+            padding: 0.5rem 0.25rem;
+        }
+        
+        .table td div {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .table td div > div {
+            margin-bottom: 0.25rem;
+        }
+    }
+</style>
+
+{% endblock %}

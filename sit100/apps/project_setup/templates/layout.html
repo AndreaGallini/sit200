@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="{{currentTheme}}">
+
+<head>
+    <script>
+        // Script per controllare il tema corrente - eseguito prima del caricamento del DOM
+        const currentTheme = localStorage.getItem('theme');
+        // Imposta immediatamente il tema sull'elemento HTML se presente nel localStorage
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/logos/favicon.ico' %}">
+    <link href="{% static 'output.css' %}?v={{ time.time }}" rel="stylesheet">
+    <script src="{% static 'js/functions.js' %}" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+
+    <title>{% block title %}{% endblock %} {{ APP_NAME }}</title>
+</head>
+
+<!-- header dell'autenticazione  -->
+{% include 'components/navbar.html' %}
+
+<body class="background_our_main font-nunito-sans">
+    {% block content %}
+    {% endblock %}
+
+</body>
+{% include 'components/footer.html' %}
+
+</html>

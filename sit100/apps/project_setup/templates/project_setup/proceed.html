@@ -1,0 +1,39 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Checkpoint
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="inner_form_div">
+    <h1 class="text-center h2 mt-[50px]">Dati dell'impianto completati!</h1>
+    <div class="text-center mt-[40px]">
+        <p class="p">Hai completato l’inserimento dei dati relativi all’impianto. Ora puoi:</p>
+    </div>
+    <div class="mx-[100px] flex mt-[40px]">
+        <div class="w-[50%] flex flex-col gap-[60px] text-center items-center px-[100px]">
+            <p class="p h-[100px]">Procedere con l’inserimento delle anagrafiche di committente, proponente, progettisti e collaboratori nei prossimi due step.</p>
+            <button id="nextButton" class="btn btn-primary w-[300px] h-[100px] px-[20px]">              
+                Procedi con le anagrafiche
+            </button>
+        </div>
+        <div class="w-[50%] flex flex-col gap-[60px] text-center items-center px-[100px]">
+            <p class="p h-[100px]">Passare direttamente al riepilogo finale: le anagrafiche non saranno incluse nel riepilogo, ma potrai eventualmente aggiungerle manualmente nel documento Word finale del progetto.</p>
+            <button id="endButton" class="btn btn-primary w-[300px] h-[100px] px-[20px]">              
+                Vai al riepilogo
+            </button>
+        </div>
+    </div>
+
+
+</div>
+<script>
+    localStorage.setItem('visited_user_choise', 'true');
+    document.getElementById('nextButton').addEventListener('click', function () {
+        window.location.href = '/project/anagrafy_data/';
+    });
+    document.getElementById('endButton').addEventListener('click', function () {
+        window.location.href = '/project/report_page/';
+    });
+</script>
+{% endblock %}

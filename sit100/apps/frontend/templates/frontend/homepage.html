@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block title %}
+Homepage
+{% endblock %}
+{% block content %}
+{% load static %}
+<!--<div class="flex justify-center items-center h-calc-100-minus-200">
+    <a href="/fe" class="btn">Crea progetto</a>
+</div> -->
+<div class="relative bg-contain dashboard_container">
+    <div class="inner_dashboard">
+        <!-- Mobile/Tablet View -->
+        <div class="block sm:block md:block lg:hidden p-4 mt-[130px] text-center">
+            <div class="navbar_btn">
+                <a href="/project/archivio_progetti" class="text_navbar">
+                    <img src="{% static 'image/navbar/button_vector/Eye.svg' %}" alt="">
+                    Visualizza tutti i progetti
+                </a>
+            </div>
+        </div>
+
+        <!-- Desktop View -->
+        <div class="hidden flex-col gap-2 items-center lg:flex">
+            <img src="{% static 'image/icons/solar_panel_single.svg' %}" alt="" class="w-[50px] h-[50px]">
+            <h1 class="h3">Inizia progetto</h1>
+            <p class="p"></p>
+            <div class="btn btn-primary">
+                <a href="/project/clear_session" class="flex gap-x-4">
+                    <img src="{% static 'image/navbar/button_vector/Plus.svg' %}" alt="" class="">
+                    Crea nuovo progetto
+                </a>
+            </div>
+        </div>
+    </div>
+    <img class="absolute bottom-0 left-0 w-full" src="{% static 'image/illustrations/ill_solar_panel.png' %}" alt="">
+</div>
+{% endblock %}

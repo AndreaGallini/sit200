@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="{{currentTheme}}">
+<head>
+    <script>
+        // Script per controllare il tema corrente - eseguito prima del caricamento del DOM
+        const currentTheme = localStorage.getItem('theme');
+        // Imposta immediatamente il tema sull'elemento HTML se presente nel localStorage
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Favicon -->
+
+    {% load static %}
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/logos/favicon.ico' %}">
+    <link href="{% static 'output.css' %}?v={{ time.time }}" rel="stylesheet">
+    <script src="{% static 'js/functions.js' %}?v={{ time.time }}" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <title>{% block title %}{% endblock %} {{ APP_NAME }}</title>
+</head>
+
+<!-- header dell'autenticazione  -->   
+{% include 'components/navbar_def.html' %}
+{% load user_agents %}
+
+<body class="relative background_our_main_100p font-nunito-sans">
+    <div class="flex h-full inner_user min-h-[100vh]">
+        {% if request.user_agent.is_mobile %}
+        
+        {% else %}
+                <div class="w-[18%] sidebar hidden lg:block dark:bg-bg_gradient_to_right pt-[100px] border-r border-[#6B7280] border-opacity-15 dark:border-none fixed h-full my_dark:bg-gradient-to-r my_dark:from-[#081B2E] my_dark:to-[#020E1C] ">
+                    <div class="user_sidebar_menu">
+                        <a href="/user/" class="p ancore_user">Profilo</a>
+                        <a href="/user/logs/" class="p ancore_user">Accessi</a>
+                        <a href="/user/save_designer_data/" class="block p ancore_user">Dati progettista</a>
+                       <!--  <a href="/#" class="p ancore_user">Impostazioni</a> --> 
+                        <a href="/user/sicurezza/" class="p ancore_user">Sicurezza</a>
+                        <a href="/user/assistenza/" class="p ancore_user">Assistenza</a>
+                        <a href="/user/questionario/" class="p ancore_user">Questionario Feedback</a>
+                        <hr class="hr_user_sidebar">
+                    </div>
+                     <!-- <div class="user_sidebar_menu">
+                        <a href="/dashboard/" class="p ancore_user">Dashboard</a>
+                        <a href="/#" class="p ancore_user">Progetti</a>
+                        <a href="/#" class="p ancore_user">Documenti</a>
+                        <a href="/#" class="p ancore_user">Cartella condivisa</a>
+                        <hr class="hr_user_sidebar">
+                    </div>
+                    <div class="user_sidebar_menu">
+                        <a href="/#" class="p ancore_user">Amministrazione</a>
+                        <a href="/#" class="p ancore_user">Fatturazione</a>
+                        <a href="/#" class="p ancore_user">Permessi utente</a>
+                        
+                    </div> -->    
+                </div>
+        {% endif %}
+        <!-- Button to open the sidebar on mobile -->
+
+        <div class="flex-1 lg:ml-[18%]"> <!-- Aggiunto margin-left per compensare la sidebar -->
+            <div class="w-[90%] text-center mx-auto lg:w-3/4 main_user py-[100px] relative overflow-y-auto">    
+                {% block content %}
+                {% endblock %}
+            </div>
+            {% if not request.user_agent.is_mobile %}
+                {% include 'components/footer.html' %}
+            {% endif %}
+        </div>
+
+
+
+
+</body>
+<!-- footer dell'autenticazione
+
+
+    <div class="footer_div footer h-[100px] p">
+        <p><i class="fa-solid fa-globe"></i> Italiano</p>
+        <p>Cookies</p>
+        <p>Termini</p>
+        <p>Privacy</p>
+    </div> -->
+
+    <script>
+
+    </script>
+    
+</html>
+<style>
+    .ancore_user{
+        font-size: 18px !important;
+    }
+</style>

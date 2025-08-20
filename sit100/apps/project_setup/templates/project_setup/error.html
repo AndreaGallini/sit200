@@ -1,0 +1,46 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Errore
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="inner_form_div">
+    <div class="flex flex-col justify-center items-center text-center">
+        <div class="mb-8">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm0-8h2v6h-2V7z" fill="#EFB90B"/>
+            </svg>
+        </div>
+        
+        <h1 class="mb-4 titles_forms">Si è verificato un errore</h1>
+        
+        <p class="mb-8 p">
+            Si è verificato un errore durante l'elaborazione della richiesta. 
+            Si prega di ricominciare il progetto.
+        </p>
+        
+        <div class="navigation_buttons w-[200px]">
+            <button id="reset_btn" class="btn btn-primary w-[200px]">              
+                Ricomincia il progetto
+                <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0 10.58L4.58 6L0 1.41L1.41 0L7.41 6L1.41 12L0 10.58Z" fill="#001522"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+        document.getElementById('reset_btn').addEventListener('click', function () {
+        window.location.href = "http://127.0.0.1:8000/project/clear_session/";
+    });
+</script>
+<style>
+    .inner_form_div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+    }
+</style>
+{% endblock %}

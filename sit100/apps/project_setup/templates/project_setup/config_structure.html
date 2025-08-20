@@ -1,0 +1,454 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Configurazione impianto
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class="inner_form_div">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Configurazione dell'impianto</h1>
+        <a href="/documentazione/#configurazione" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>  
+
+    <form id="configForm">
+        {% csrf_token %}
+        <input type="hidden" name="project_code" value="{{ project_code }}">
+        <div class="grid grid-cols-2">
+            <div class="h-full">
+                <h4 class="text-center h4">Potenza nominale desiderata</h4>
+                <p class="p text-[12px] text-center">Indicare la potenza dell'intero generatore fotovoltaico (facoltativo)</p>
+                <div class="flex flex-col justify-start mt-[30px] items-center h-full">
+                    <p class="hidden p mb-[20px] alert alert-error text-center" id="error">Valori di potenza non minori di 3 kWp, solo valori interi</p>
+                    <p class="hidden p mb-[20px] alert alert-error text-center" id="powerExceedsError">La potenza indicata eccede l'attuale massimo consentito dal sistema {% if project.mounting == 'AG' %} 1 MWp. {% else %} (max 100 kW per sottocampo).  {% endif %}</p>
+                    <p class="hidden p mb-[20px] alert alert-error text-center" id="subAreaExceedsError">La potenza desiderata eccede il massimo consentito dall'area selezionata sulla mappa.</p>
+                    <div class="flex">
+                        <input type="number" name="peak_power_value" id="valore_potenza" class="input input-primary" value="{{ project.peak_power.value }}" maxlength="4"  onchange="validateForm()" {% if 'valore_potenza' in required_fields %}required{% endif %}>
+                        <select name="peak_power_unit" id="um_potenza" class="select select-primary w-[100px]">
+                            <option {% if project.peak_power.unit == "kWp" %}selected{% endif %} value="kWp">kWp</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h4 class="mb-5 text-center h4">Scopo principale dell'impianto fotovoltaico*</h4>
+                <div class="flex flex-col gap-x-5 pl-[100px]">
+                    {% if grid_connected == "1" %}
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="autoconsumo-residenziale" {% if project.plant_scope == 'autoconsumo-residenziale' %} checked {% endif %}>
+                        Autoconsumo residenziale
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="autoconsumo-industriale" {% if project.plant_scope == 'autoconsumo-industriale' %} checked {% endif %}>
+                        Autoconsumo industriale
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="cer" {% if project.plant_scope == 'cer' %} checked {% endif %}>
+                        Partecipazione a una Comunità Energetica Rinnovabile (CER)
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="produzione-vendita-industriale" {% if project.plant_scope == 'produzione-vendita-industriale' %} checked {% endif %}>
+                        Produzione per la vendita e uso industriale
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="vendita" {% if project.plant_scope == 'vendita' %} checked {% endif %}>
+                        Vendita dell'energia prodotta senza autoconsumo
+                    </label>
+                    {% else %}
+                    <!-- Off-grid options here -->
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="autosufficienza-permanente" {% if project.plant_scope == 'autosufficienza-permanente' %} checked {% endif %}>
+                        Autosufficienza energetica permanente
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="abitazione-isolata" {% if project.plant_scope == 'abitazione-isolata' %} checked {% endif %}>
+                        Alimentazione di abitazione o edificio isolato
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="uso-stagionale" {% if project.plant_scope == 'uso-stagionale' %} checked {% endif %}>
+                        Fornitura di energia per uso stagionale o temporaneo
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="backup-energetico" {% if project.plant_scope == 'backup-energetico' %} checked {% endif %}>
+                        Backup energetico per emergenze o aree con rete instabile
+                    </label>
+                    <label class="my_label_where p">
+                        <input type="checkbox" class="my_checkbox" name="scope_1" value="utenze-mobili" {% if project.plant_scope == 'utenze-mobili' %} checked {% endif %}>
+                        Utenze mobili (es. camper, cantieri, container, barche)
+                    </label>
+                    {% endif %}
+                </div>
+            </div>
+            <div>
+                {% if mounting != "AG" and mounting != "SP" %}
+                <!-- Installazione su abitazione privata -->
+                <div id="privateHomeSection" class="mt-4 input_config_container">
+                    <h4 class="h4">Installazione su abitazione privata*</h4>
+                    <div class="flex space-x-4">
+                        <label class="my_label_where p">
+                            <input type="checkbox" class="my_checkbox" name="scope_3" value="si" {% if project.private_house == 'si' %} checked {% endif %}>
+
+                            Si
+                        </label>
+                        <label class="my_label_where p">
+                            <input type="checkbox" class="my_checkbox" name="scope_3" value="no" {% if project.private_house == 'no' %} checked {% endif %}>
+
+                            No
+                        </label>
+                    </div>
+                </div>
+                {% else %}
+                <div></div>
+                {% endif %}
+            </div>
+            <div>
+                {% if self_consumption == "1" and grid_connected == "1" %}
+                <div class="w-full">
+                    <!-- Scopi legati all'autoconsumo -->
+                    <div id="autoconsumoPurposeSection" class="mt-4">
+                        <h4 class="mt-4 mb-5 text-center h4">Scopi legati all'autoconsumo*</h4>
+                        <div class="pl-[100px]">
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-high" {% if project.auto_consumption == 'auto-high' %} checked {% endif %}>
+    
+                                Massimizzare l'autosufficienza e ridurre il prelievo dalla rete
+                            </label>
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-med" {% if project.auto_consumption == 'auto-med' %} checked {% endif %}>
+    
+                                Risparmio energetico con consumi concentrati nelle ore serali/notturne
+                            </label>
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-low" {% if project.auto_consumption == 'auto-low' %} checked {% endif %}>
+    
+                                Autoconsumo con consumi costanti durante il giorno e consumi serali/notturni limitati
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if grid_connected == "0" %}
+                <div id="offGridSection" class="w-full">
+                    <div class="w-full">
+                        <h4 class="mt-4 mb-5 text-center h4">Profilo dei consumi elettrici giornalieri*</h4>
+                        <div class="pl-[100px]">
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-ultra" {% if project.auto_consumption == 'auto-ultra' %} checked {% endif %}>
+    
+                                Uso continuativo con alta autosufficienza, senza generatore di backup
+                            </label>
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-high" {% if project.auto_consumption == 'auto-high' %} checked {% endif %}>
+    
+                                Uso stagionale o saltuariamente presidiato (es. rifugi, baite)
+                            </label>
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-med" {% if project.auto_consumption == 'auto-med' %} checked {% endif %}>
+    
+                                Uso temporaneo o con generatore di backup attivo
+                            </label>
+                            <label class="my_label_where p">
+                                <input type="checkbox" class="my_checkbox" name="scope_2" value="auto-low" {% if project.auto_consumption == 'auto-low' %} checked {% endif %}>
+    
+                                Uso prevalentemente diurno, con consumi ridotti di notte
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+
+        {% include 'components/navigation_btn.html' with backroute='/project/solare_ed_ombreggiamento/' %}
+    </form>
+</div>
+
+<script>
+    const required_fields = {{ required_fields|safe }};
+    const project_data = {{project|safe}};
+    
+    // Verifica se mounting è definito, altrimenti usa un valore di default
+    const mounting = project_data.mounting || '';
+    const autoconsumo = project_data.self_consumption || '';
+    const minPower = 3;
+    // Costanti per il controllo di coerenza
+    const AP = 2.1; // mq, area media per pannello
+    const PM = 450; // W, potenza media per pannello
+    const AP_AG = 3.1; // mq, area media per pannello
+    const PM_AG = 650; // W, potenza media per pannello
+    const GCR = {
+        "TL": 0.9,
+        "TG": 0.9,
+        "TF": 0.9,
+        "TP": 0.6,
+        "SP": 0.5,
+        "AG":0.5
+    };
+    
+    localStorage.setItem('visited_configurazione_impianto', 'true');
+
+    // Funzione per gestire la selezione di un solo checkbox alla volta
+    function setupCheckboxHandlers() {
+        const checkboxes = document.querySelectorAll('input[name="scope_1"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Deseleziona tutti gli altri checkbox
+                    checkboxes.forEach(cb => {
+                        if (cb !== this) {
+                            cb.checked = false;
+                        }
+                    });
+
+                }
+                validateForm();
+            });
+        });
+    }
+    function setupCheckboxHandlers2() {
+        const checkboxes = document.querySelectorAll('input[name="scope_2"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Deseleziona tutti gli altri checkbox
+                    checkboxes.forEach(cb => {
+                        if (cb !== this) {
+                            cb.checked = false;
+                        }
+                    });
+   
+                }
+                validateForm();
+            });
+        });
+    }
+    function setupCheckboxHandlers3() {
+        const checkboxes = document.querySelectorAll('input[name="scope_3"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    // Deseleziona tutti gli altri checkbox
+                    checkboxes.forEach(cb => {
+                        if (cb !== this) {
+                            cb.checked = false;
+                        }
+                    });
+
+                }
+                validateForm();
+            });
+        });
+    }
+
+    // Inizializza i gestori degli eventi quando il DOM è pronto
+    document.addEventListener('DOMContentLoaded', function() {
+        setupCheckboxHandlers();
+        setupCheckboxHandlers2();
+        setupCheckboxHandlers3();
+    });
+
+    
+    document.getElementById('configForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new URLSearchParams(new FormData(this));
+        
+        fetch('/save_configuration/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.message) {
+                window.location.href = '/project/project_data/';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    // Funzione per estrarre le aree dalle sottoaree
+    function extractSubAreas() {
+        const generator = project_data.generator;
+        if (!generator) return [];
+        
+        const areas = [];
+        
+        // Itera su tutti i gruppi (A, B, C, ecc.)
+        for (const groupKey in generator) {
+            const group = generator[groupKey];
+            
+            // Itera su tutte le sottoaree del gruppo (A1, A2, B1, B2, ecc.)
+            for (const subAreaKey in group) {
+                const subArea = group[subAreaKey];
+                if (subArea.area) {
+                    areas.push(subArea.area);
+                }
+            }
+        }
+        
+        return areas;
+    }
+
+    // Funzione per validare la coerenza potenza e sottocampi
+    function validatePowerCoherence(potenza_totale_desiderata_kWp) {
+        //default controllo
+        let powerExceeds;
+        let subAreaExceeds;
+        // Converti potenza desiderata da kWp a W
+        const potenza_totale_desiderata_W = potenza_totale_desiderata_kWp * 1000;
+        // Ottieni i dati dal project_data
+        const tipo_supporto = project_data.mounting || '';
+        const lista_sottoaree = extractSubAreas();
+        // Calcolo area totale
+        const totale_area = lista_sottoaree.reduce((sum, area) => sum + area, 0);
+        // Se non abbiamo i dati necessari, salta la validazione
+        if (!tipo_supporto || !lista_sottoaree || lista_sottoaree.length === 0) {
+            return { isValid: true, powerExceeds: false, subAreaExceeds: false };
+        }
+
+        // CONTROLLO 0: Controllo per agrivoltaico
+        if(tipo_supporto === "AG"){
+            const gcr_ag = GCR[tipo_supporto] || 0.5;
+            const area_totale_reale_ag = totale_area * gcr_ag;
+            const potenza_teorica_ag = area_totale_reale_ag / AP_AG * PM_AG;
+            const limite_teorico_ag = 1000000
+            // Controllo 0-A
+            let powerExceeds = potenza_totale_desiderata_W > 1000000
+
+            // Controllo 0-B
+            let subAreaExceeds = false
+            if (potenza_totale_desiderata_W > potenza_teorica_ag) {
+                subAreaExceeds = true;
+            }
+            
+            return {
+            isValid: !powerExceeds && !subAreaExceeds,
+            powerExceeds: powerExceeds,
+            subAreaExceeds: subAreaExceeds
+            };
+        }else{
+
+            const numero_sottocampi_totale = lista_sottoaree.length;
+            // CONTROLLO 1: numero_sottocampi_totale * 100 kW > potenza_totale_desiderata
+            const limite_teorico_W = numero_sottocampi_totale * 100 * 1000; // 100 kW per sottocampo convertiti in W
+            let powerExceeds = potenza_totale_desiderata_W > limite_teorico_W;
+            // Calcolo potenze attese per ogni sottoarea (in W)
+            const lista_potenza_desiderata_W = lista_sottoaree.map(sottoarea => 
+                potenza_totale_desiderata_W * (sottoarea / totale_area)
+            );
+            
+            // Calcolo potenze teoriche massime per ogni sottoarea (in W)
+            const gcr_corrente = GCR[tipo_supporto] || 0.9; // Default se tipo non trovato
+            const lista_potenza_teorica_max_W = lista_sottoaree.map(sottoarea => 
+                sottoarea * gcr_corrente * (PM / AP)
+            );
+
+            // Controllo 2: potenza attesa vs potenza teorica max per ogni sottoarea
+            let subAreaExceeds = false;
+            for (let i = 0; i < lista_sottoaree.length; i++) {
+                const area = lista_sottoaree[i];
+                const potenza_desiderata_W = lista_potenza_desiderata_W[i];
+                const potenza_max_teorica_W = lista_potenza_teorica_max_W[i];
+                if (potenza_desiderata_W > potenza_max_teorica_W) {
+                    subAreaExceeds = true;
+                }
+            }
+            return {
+            isValid: !powerExceeds && !subAreaExceeds,
+            powerExceeds: powerExceeds,
+            subAreaExceeds: subAreaExceeds
+            };
+        }
+        
+    }
+
+    // Function to validate the form
+    function validateForm() {
+        const peakPowerInput = document.getElementById('valore_potenza');
+        const nextButton = document.getElementById('nextButton');
+        const error = document.getElementById('error');
+        const powerExceedsError = document.getElementById('powerExceedsError');
+        const subAreaExceedsError = document.getElementById('subAreaExceedsError');
+        // Get values
+        const powerValue = parseInt(peakPowerInput.value);
+
+        const selectedScope = document.querySelector('input[name="scope_1"]:checked');
+        const selectedScope2 = document.querySelector('input[name="scope_2"]:checked');
+        const selectedScope3 = document.querySelector('input[name="scope_3"]:checked');
+        
+        // Check if power value is valid
+        const isValidInteger = /^\d+$/.test(powerValue);
+        const numericPowerValue = parseInt(powerValue);
+        const isPowerValid = numericPowerValue >= minPower;
+        
+        // Check if plant scope is selected
+        const isScopeValid = selectedScope !== null;
+
+        const isScope2Visible =  autoconsumo === '1' || autoconsumo === 1;
+        const isScopeValid2 = isScope2Visible ? selectedScope2 !== null : true;
+        
+        // Controlla se la sezione scope_3 è visibile (solo se mounting non è AG o SP)
+        const isScope3Visible = mounting !== 'AG' && mounting !== 'SP';
+        const isScopeValid3 = isScope3Visible ? selectedScope3 !== null : true;
+
+        // Controllo di coerenza potenza e sottocampi
+        let coherenceValid = true;
+        if (isPowerValid && numericPowerValue) {
+            const coherenceResult = validatePowerCoherence(numericPowerValue);
+            coherenceValid = coherenceResult.isValid;
+
+            // Mostra/nascondi errori di coerenza
+            if (coherenceResult.powerExceeds) {
+                powerExceedsError.classList.remove('hidden');
+            } else {
+                powerExceedsError.classList.add('hidden');
+            }
+            
+            if (coherenceResult.subAreaExceeds && coherenceResult.subAreaExceeds !== undefined) {
+                subAreaExceedsError.classList.remove('hidden');
+            } else {
+                subAreaExceedsError.classList.add('hidden');
+            }
+        } else {
+            // Nascondi errori di coerenza se la potenza non è valida
+            powerExceedsError.classList.add('hidden');
+            subAreaExceedsError.classList.add('hidden');
+        }
+
+        // Show/hide error message for power
+        if (!isPowerValid && powerValue !== "" && !isNaN(powerValue)) {
+            error.classList.remove('hidden');
+        } else {
+            error.classList.add('hidden');
+        }
+        
+        // Enable/disable the button based on all conditions
+        if ( isScopeValid && isScopeValid2 && isScopeValid3 && coherenceValid) {
+            nextButton.classList.remove('disabled_for_error');
+        } else {
+            nextButton.classList.add('disabled_for_error');
+        }
+    }
+
+    // Add event listeners
+    document.getElementById('valore_potenza').addEventListener('input', validateForm);
+
+</script>
+
+<style>
+    .disabled_for_error {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+    
+</style>
+
+{% endblock %}

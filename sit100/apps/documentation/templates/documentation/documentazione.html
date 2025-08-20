@@ -1,0 +1,427 @@
+{% extends "layout_docs.html" %}
+{% block title %}
+Documentazione
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+});
+</script>
+<style>
+    html {
+    scroll-padding-top: 100px; /* Aggiusta questo valore in base alle tue necessità */
+}
+ul {
+    padding-left: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    list-style-type: disc;
+    list-style-position: outside;
+
+}
+ol{
+    @apply space-y-2 list-decimal list-inside
+}
+ul li{
+    padding-left: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+
+}
+</style>
+
+<div class="mt-2 inner_docs">
+    <div class="flex">
+        <!-- Sidebar -->
+        <div class="fixed p-4 w-1/4 h-screen border-r border-gray-200 bg-base-100">
+            <h2 class="mb-4 h2">Indice</h2>
+            <ol class="space-y-2 list-decimal list-inside">
+                <li class="p"><a href="#mappa" class="hover:text-main_color p">Mappa</a></li>
+                <li class="p"><a href="#dove" class="hover:text-main_color p">Dove verrà installato l'impianto?</a></li>
+                <li class="p"><a href="#tipo" class="hover:text-main_color p">Tipologia dell'impianto</a></li>
+                <li class="p"><a href="#configurazione_sottocampi" class="hover:text-main_color p">Configurazione dei sottocampi</a></li>
+                <li class="p"><a href="#albedo" class="hover:text-main_color p">Albedo ed ombreggiamento</a></li>
+                <li class="p"><a href="#configurazione" class="hover:text-main_color p">Configurazione impianto</a></li>
+                <li class="p"><a href="#dati_generali" class="hover:text-main_color p">Dati generali di progetto</a></li>
+                <li class="p"><a href="#committente_proponente" class="hover:text-main_color p">Committente e proponente </a></li>
+                <li class="p"><a href="#progettisti_collaboratori" class="hover:text-main_color p">Progettisti e collaboratori </a></li>
+                <li class="p"><a href="#riepilogo" class="hover:text-main_color p">Riepilogo dati inseriti</a></li>
+                <li class="p"><a href="#esportazione_risultati" class="hover:text-main_color p">Esportazione dei risultati</a></li>
+            </ol>
+        </div>
+        <!-- Main content -->
+        <div class="w-3/4 ml-[25%] px-[70px]">
+            <h1 class="text-center h1">Documentazione</h1>
+            <h5 class="mb-8 text-center h5">Versione {{ version }}</h5>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="mappa">1. Come usare la mappa</h2>
+                <div class="h-[20px]"></div>
+                <p class="p"> La configurazione dell'impianto inizia con la fase della mappa, un passaggio fondamentale che permette di definire con precisione la posizione e l'area dell'installazione. Questa fase si articola in due step principali che guidano l'utente attraverso il processo di localizzazione e delimitazione dell'impianto.</p>
+                    <div class="h-[20px]"></div>
+                    <h3 class="h3">Fase 1: Selezione localizzazione</h3>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/mappa_1.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Per identificare la posizione esatta dell'impianto, il sistema offre tre modalità di selezione, garantendo la massima flessibilità nella scelta:</p>
+                    <ul class="dark:text-gray-300">
+                        <li class="p">Selezione diretta sulla mappa: è possibile individuare il punto desiderato cliccando direttamente sulla mappa interattiva</li>
+                        <li class="p">Inserimento delle coordinate geografiche: per una localizzazione precisa, si possono inserire le coordinate specifiche nella barra di ricerca</li>
+                        <li class="p">Ricerca per indirizzo: è possibile digitare l'indirizzo completo e dettagliato nella barra di ricerca per individuare la posizione</li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Una volta completata la selezione della posizione, il sistema visualizzerà un marker sul punto indicato e attiverà automaticamente il pulsante per procedere alla fase successiva.</p>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/mappa_con_marker.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <h3 class="h3">Fase 2: Definizione del perimetro</h3>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/area_interesse_full.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Nella seconda fase, l'interfaccia si arricchisce di due nuovi strumenti essenziali nella barra superiore: il pulsante per il disegno del perimetro e quello per il salvataggio dell'area definita.</p>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/area_interesse_con_disegno.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Il processo di definizione del perimetro segue una procedura intuitiva: attivando lo strumento di disegno, il cursore si trasforma in uno strumento di tracciamento. <br> Il primo click stabilisce il punto di partenza del perimetro, mentre i click successivi aggiungono nuovi vertici, permettendo di definire con precisione la forma dell'area. <br> Per completare il poligono, è sufficiente ricollegare l'ultimo punto al vertice iniziale.</p>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/area_di_interesse.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Il perimetro rimane modificabile finché mantiene il colore giallo. <br> Una volta soddisfatti del disegno, il pulsante di salvataggio apre una finestra di dialogo dove è possibile assegnare un nome identificativo all'area definita ed associargli il sottocampo di riferimento.</p>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/pop_up_salva.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Dopo il salvataggio, il nome del poligono con il suo sottocampo di riferimento viene visualizzato nella parte superiore dell'interfaccia, dove è anche presente l'opzione per eliminare l'area definita se necessario. </p>
+                    <div class="h-[20px]"></div>
+                    <img src="{% static 'image/docs/salva_poligono.png' %}" alt="mappa" class="w-full">
+                    <div class="h-[20px]"></div>
+                    <p class="p">Completata la definizione e il salvataggio di tutti i sottocampi, il sistema abilita il pulsante per procedere alle fasi successive della configurazione dell'impianto.</p>
+                    <div class="h-[20px]"></div>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="dove">2. Dove verrà installato l'impianto?</h2>
+                <div class="h-[20px]"></div>
+                <p class="p"> Questo parametro indica il tipo di superficie su cui verrà montato l'impianto fotovoltaico. La scelta influisce sulla tipologia di montaggio e sulle prestazioni dell'impianto. <br>
+                    Le opzioni attualmente disponibili sono:
+                    <ul class="dark:text-gray-300">
+                        <li class="p"><strong>Tetto a falda grecata</strong>: copertura inclinata con lastre metalliche grecate, comunemente utilizzata in edifici industriali, commerciali e agricoli.</li>
+                        <li class="p"><strong>Tetto a falda su laterizio</strong>: copertura inclinata con tegole in laterizio, tipica degli edifici residenziali.</li>
+                        <li class="p"><strong>Tetto su superficie piano</strong>: superficie orizzontale, comune negli edifici commerciali e industriali.</li>
+                        <li class="p"><strong>Installazione a terra su superficie piana</strong>: impianto montato direttamente sul suolo, con strutture di supporto per l'orientamento ottimale dei pannelli.</li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Altre opzioni aggiuntive sono in fase di sviluppo e verranno progressivamente integrate.</p>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">Dove verrà installato l'impianto? - <span class="docs_required">Obbligatorio </span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p">
+                <h2 class="h2" id="tipo">3. Tipologia dell'impianto</h2>
+                <div class="h-[20px]"></div>
+                <div class="specifications-container">
+                    <p class="p">Questa sezione consente di definire le caratteristiche principali dell'impianto fotovoltaico in base alla modalità di connessione alla rete elettrica e alla gestione dell'energia prodotta.</p>
+                    <div class="h-[20px]"></div>
+                    <ol>
+                        <li>
+                            <strong>Connessione alla rete</strong>
+                            <ul>
+                                <li>Grid-connected: l'impianto è connesso alla rete elettrica e può scambiare energia con essa.</li>
+                                <li>Off-grid: l'impianto è indipendente dalla rete elettrica e utilizza sistemi di accumulo per garantire l'autosufficienza energetica.</li>
+                            </ul>
+                        </li>
+                        
+                        <li>
+                            <strong>Sistema di accumulo</strong>
+                            <ul>
+                                <li>Con batteria: l'energia prodotta in eccesso viene immagazzinata in un sistema di accumulo per essere utilizzata quando necessario.</li>
+                                <li>Senza batteria: l'energia prodotta viene consumata immediatamente o immessa in rete.</li>
+                            </ul>
+                        </li>
+                        
+                        <li>
+                            <strong>Modalità di utilizzo dell'energia</strong>
+                            <ul>
+                                <li>Con autoconsumo: l'energia prodotta viene utilizzata direttamente per coprire i consumi dell'utente, riducendo il prelievo dalla rete.</li>
+                                <li>Senza autoconsumo: tutta l'energia prodotta viene immessa in rete.</li>
+                            </ul>
+                        </li>
+                        
+                        <li >
+                            <strong>Scambio sul posto</strong> (solo per impianti grid-connected, se previsto dalla normativa vigente)
+                            <ul>
+                                <li>Con scambio sul posto: l'energia immessa in rete può essere compensata con quella prelevata in momenti diversi, riducendo i costi energetici.</li>
+                                <li>Senza scambio sul posto: l'energia immessa in rete viene venduta secondo le tariffe previste dal gestore.</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">L’impianto è connesso alla rete? - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">L’impianto prevede un sistema di accumulo? - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">E’ previsto l’autoconsumo? - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">E’ prevista la vendita dell’energia tramite scambio sul posto? - <span class="docs_required">Obbligatorio </span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="configurazione_sottocampi">4. Configurazione dei sottocampi</h2>
+                <div class="h-[20px]"></div>
+                <p class="p">Nella pagina vengono selezionati i dati relativi ad inclinazione, orientamento ed ombreggiamento da ostacoli per ogni sottocampo. <br> Di seguito le descrizioni per ogni valore.</p>
+                <div class="h-[20px]"></div>
+                <h3 class="h3_light">4.1 Inclinazione:</h3>
+                <div class="h-[20px]"></div>
+                <p class="p"> L’inclinazione dei pannelli fotovoltaici (o tilt) è l’angolo formato tra la superficie dei pannelli e il piano orizzontale. Questo parametro influisce direttamente sull’efficienza dell’impianto, ottimizzando la captazione della radiazione solare in base alla latitudine e alla stagione. <br> Scelta dell’inclinazione:
+                    <div class="h-[20px]"></div>
+                    <ul class="dark:text-gray-300">
+                        <li class="p"><strong>Fissa</strong>: l’angolo viene impostato in fase di installazione e rimane invariato nel tempo.</li>
+                        <li class="p"><strong>Variabile (con struttura regolabile)</strong>: ): l’inclinazione può essere modificata manualmente o tramite sistemi automatici (tracker) per adattarsi alle stagioni.</li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Attualmente, il sistema consente la scelta dell’inclinazione fissa e non variabile (con struttura regolabile).</p>
+                    <div class="h-[20px]"></div>
+                    <h3 class="h3_light">4.2 Orientamento:</h3>
+                    <div class="h-[20px]"></div>
+                    <p class="p">L’orientamento dei pannelli fotovoltaici, detto anche azimuth, è l’angolo formato tra la direzione perpendicolare alla superficie dei pannelli e il Sud geografico. L’angolo è misurato positivamente da sud verso ovest. Questo parametro influisce sulla quantità di radiazione solare ricevuta e, quindi, sulla produzione dell’impianto.<br>
+                        Valori di riferimento:
+                        <ul class="">
+                            <li class="p"><strong>0° (Sud) </strong>: Orientamento ottimale nell’emisfero boreale per la massima produzione annuale.</li>
+                            <li class="p"><strong>90° (Ovest) / -90° (Est) </strong>: riduzione della produzione complessiva, ma maggiore resa nelle ore pomeridiane o mattutine.</li>
+                            <li class="p"><strong>180° (Nord) </strong>: sconsigliato nell’emisfero boreale, salvo casi particolari (riflessione da superfici chiare, necessità specifiche di consumo).</li>
+                        </ul>
+                        <div class="h-[20px]"></div>
+                        <p class="p">Scelta dell'orientamento:</p>
+                        <ul class="dark:text-gray-300">
+                            <li class="p"> <strong>Orientamento fisso</strong> : l'angolo viene impostato in fase di installazione e rimane invariato nel tempo.</li>
+                            <li class="p"> <strong>Orientamento variabile</strong> : l'angolo può essere modificato manualmente o tramite sistemi automatici (tracker) per adattarsi alle stagioni.</li>
+                        </ul>
+                        <div class="h-[20px]"></div>
+                        <p class="p">Attualmente la piattaforma consente la scelta dell’orientamento fisso.</p>
+                        <div class="h-[20px]"></div>
+                        <h3 class="h3_light">4.3 Ombreggiamento da ostacoli: </h3>
+                        <div class="h-[20px]"></div>
+                        <p class="p">L'ombreggiamento da ostacoli si riferisce alla riduzione dell'irraggiamento solare sui pannelli fotovoltaici causata dalla presenza di edifici, alberi, strutture o altri oggetti vicini che bloccano la luce solare diretta. Questo fenomeno può compromettere significativamente le prestazioni dell'impianto fotovoltaico, poiché l'energia prodotta dipende dalla quantità di luce che raggiunge i pannelli.</p>
+                    <p class="p">Effetti dell'ombreggiamento:</p>
+                    <ul class="dark:text-gray-300">
+                        <li class="p">Riduzione della produzione: anche una piccola area ombreggiata può ridurre l'efficienza di un intero pannello, poiché il pannello fotovoltaico funziona come un sistema elettrico connesso in serie, e una parte del pannello che non riceve luce può limitare la produzione complessiva.</li>
+                        <li class="p">Perdita parziale o totale di energia: in alcuni casi, l'ombreggiamento può causare perdite significative, specialmente se i pannelli non sono dotati di dispositivi di bypass per ridurre l'impatto dell'ombra.</li>
+                    </ul>
+                    <p class="p">Cause comuni di ombreggiamento:</p>
+                    <ul class="dark:text-gray-300">
+                        <li class="p">Edifici: case, uffici, o altre strutture che si trovano nelle vicinanze dell'impianto</li>
+                        <li class="p">Alberi o vegetazione: alberi ad alto fusto o rampicanti che si trovano nelle vicinanze.</li>
+                        <li class="p">Strutture esterne: camini, antenne, pergolati o pensiline che possono creare ombra.</li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Ombreggiamento Minimo</strong>: Perdite < 5% , dovuto a piccoli ostacoli come pali della luce o antenne che non incidono significativamente sulla produzione energetica. </p>
+                    <p class="p"><strong>Ombreggiamento Moderato </strong>: Perdite 5% - 15% Ombreggiamento intermittente, causato da ostacoli di medie dimensioni come alberi piccoli o edifici a distanza media.  </p>
+                    <p class="p"><strong>Ombreggiamento Significativo</strong>: Perdite 15% - 25% Ombreggiamento frequente e significativo, spesso dovuto a edifici vicini, grandi alberi o altre strutture che causano ombre durante diverse ore del giorno.  </p>
+                    <p class="p"><strong>Ombreggiamento Grave</strong>: Perdite >25% Ombreggiamento grave e continuo, che compromette fortemente la produzione energetica causato da ostacoli molto vicini o grandi strutture che bloccano la luce solare per periodi prolungati  </p>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">Inclinazione (tilt) - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Orientamento (azimuth) - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Ombreggiamento da ostacoli - <span class="docs_required">Obbligatorio </span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="albedo">5. Albedo ed ombreggiamento</h2>
+                <div class="h-[20px]"></div>
+                <p class="p">L’albedo è il termine utilizzato per indicare la riflettanza della superficie su cui è installato l’impianto fotovoltaico. E’ uguale al rapporto fra il flusso di radiazione riflesso da una superficie e quello della radiazione incidente. Rappresenta quindi la percentuale di luce solare che viene riflessa dalla superficie invece di essere assorbita. L’albedo gioca un ruolo fondamentale nell’efficienza dell’impianto fotovoltaico, poiché le superfici ad alta riflettanza possono aumentare la quantità di radiazione solare che raggiunge i pannelli, migliorando la loro produzione.
+                    <br>Valori di riflettanza per diverse superfici:
+                    <ul>
+                        <li><strong>Standard:</strong> 0,20</li>
+                        <li><strong>Neve (caduta di fresco o con film di ghiaccio):</strong> 0,75</li>
+                        <li><strong>Superfici acquose:</strong> 0,07</li>
+                        <li><strong>Suolo (creta, marne):</strong> 0,14</li>
+                        <li><strong>Strade sterrate:</strong> 0,04</li>
+                        <li><strong>Bosco di conifere d'inverno:</strong> 0,07</li>
+                        <li><strong>Bosco in autunno/campi con raccolti maturi e piante:</strong> 0,26</li>
+                        <li><strong>Asfalto invecchiato:</strong> 0,10</li>
+                        <li><strong>Calcestruzzo invecchiato:</strong> 0,22</li>
+                        <li><strong>Foglie morte:</strong> 0,30</li>
+                        <li><strong>Erba secca:</strong> 0,20</li>
+                        <li><strong>Erba verde:</strong> 0,26</li>
+                        <li><strong>Tetti o terrazzi in bitume:</strong> 0,13</li>
+                        <li><strong>Pietrisco:</strong> 0,20</li>
+                        <li><strong>Superfici scure di edifici (mattoni scuri, vernici scure, ecc.):</strong> 0,27</li>
+                        <li><strong>Superfici chiare di edifici (mattoni chiari, vernici chiare, ecc.):</strong> 0,60</li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Fonte: B.D. Hunn, D.O. Calefell: “Determination of average ground reflectivity for solar collectors. Solar Energy, 19, 87 (1977)”.</p>
+                    <div class="h-[20px]"></div>
+                    <div class="h-[20px]"></div>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Ombreggiamento clinometrico</strong></p>
+                    <p class="p">L’ombreggiamento clinometrico si riferisce all’effetto dell'ombreggiamento causato da ostacoli situati a diverse altezze, come colline, montagne, edifici o alberi, che possono bloccare la luce solare a seconda dell'inclinazione del terreno o della posizione degli ostacoli rispetto all'impianto fotovoltaico. Questo tipo di ombreggiamento è particolarmente rilevante quando si considerano impianti installati su terreni inclinati o in aree con variazioni altimetriche.</p>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Ombreggiamento Minimo < 5%</strong>: Aree aperte e pianeggianti senza rilievi significativi. Conformazione del terreno uniforme e priva di ostacoli naturali o artificiali. Pianure agricole, deserti, praterie e superfici piane ad alta quota. Ostacoli: Praticamente assenti. </p>
+                    <p class="p"><strong>Ombreggiamento Moderato 5-10%</strong>: Terreni leggermente ondulati o collinari con lievi variazioni altimetriche. Aree suburbane con poche costruzioni o alberi di altezza media. Colline basse, aree periferiche di città con spazi aperti, campi coltivati con alberi sparsi. Ostacoli: Colline basse, alberi di media altezza, edifici bassi e sparsi.  </p>
+                    <p class="p"><strong>Ombreggiamento Significativo 10-20%</strong>: Aree con rilievi più pronunciati e variazioni altimetriche evidenti. Zone montuose di media altitudine, aree urbane dense con edifici alti. Terreni montuosi, valli profonde, aree urbane con edifici di media altezza, boschi densi. Ostacoli: Montagne, colline alte, edifici alti, fitte aree boschive.  </p>
+                    <p class="p"><strong>Ombreggiamento Grave < 20% </strong>: Aree con rilievi estremamente pronunciati e profondi, presenza di ostacoli alti e vicini che causano ombreggiamento prolungato. Valli profonde e strette, aree urbane molto dense con grattacieli. Valli strette e profonde, pendii montuosi ripidi, centri urbani con grattacieli, aree forestali molto fitte con alberi molto alti. Ostacoli: Grattacieli, montagne alte e ripide, foreste con alberi molto alti e densi.  </p>
+
+                    <div class="h-[20px]"></div>
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">Albedo - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Ombreggiamento clinometrico - <span class="docs_required">Obbligatorio </span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="configurazione">6. Configurazione impianto</h2>
+                <div class="h-[20px]"></div>
+                    <p class="p"><strong>Potenza nominale</strong></p>
+                    <p class="p">La potenza nominale (kWp) desiderata per l’impianto fotovoltaico serve a orientare il dimensionamento del generatore fotovoltaico. 
+                        Attualmente il sistema consente la progettazione di impianti da 5kWp a 30kWp. Altre potenze saranno aggiunte progressivamente.
+                        </p>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Scopo dell’impianto</strong></p>
+                    <p class="p">Lo scopo dell’impianto definisce l’obiettivo principale per cui viene realizzato il sistema fotovoltaico. La scelta influisce sulla configurazione tecnica, sulla gestione dell’energia prodotta e sulle eventuali autorizzazioni richieste.
+                       <br> Le opzioni disponibili sono:
+                        </p>
+                        <ul>
+                            <li class="p"> <strong>Autoconsumo residenziale</strong>: l’impianto è progettato per coprire il fabbisogno energetico di un’abitazione, riducendo il prelievo dalla rete elettrica. L’energia prodotta viene consumata direttamente senza immissione in rete.</li>
+                            <li class="p"> <strong>Autoconsumo residenziale con immissione in rete dell’energia in surplus</strong>: l’impianto copre il fabbisogno energetico dell’abitazione e l’energia in eccesso viene immessa in rete. A seconda della normativa vigente, questa energia può essere compensata tramite meccanismi di scambio sul posto o venduta al gestore di rete.</li>
+                            <li class="p"> <strong>Autoconsumo industriale medio e vendita dell’eccedenza</strong>: l’impianto è destinato ad aziende di medie dimensioni per ridurre i costi energetici. L’energia prodotta viene prioritariamente utilizzata per le attività industriali, mentre l’eventuale surplus viene venduto alla rete.</li>
+                            <li class="p"> <strong>Produzione energetica per la vendita e uso industriale</strong>: l’impianto è progettato principalmente per la produzione di energia destinata alla vendita. Una parte dell’energia può essere utilizzata per il consumo industriale, ma l’obiettivo principale è la cessione dell’energia prodotta alla rete elettrica.</li>
+                        </ul>
+                    <div class="h-[20px]"></div>
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">Potenza nominale - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Scopo dell’impianto - <span class="docs_required">Obbligatorio </span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="dati_generali">7. Dati generali di progetto</h2>
+
+                    <p class="p"><strong>Ambito di intervento</strong></p>
+                    <p class="p">Il progetto è disciplinato dalle leggi e regolamenti vigenti in materia di energia rinnovabile e impianti fotovoltaici, che ne definiscono la tipologia di autorizzazione, le semplificazioni amministrative e gli eventuali incentivi o misure di supporto finanziario. In questa sezione può essere indicata la normativa e il riferimento legislativo applicabile nonché il piano di sviluppo o il finanziamento specifico previsti per l'area di intervento all’interno dei quali si inquadra la realizzazione del progetto. 
+                        </p>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Informazioni logistiche</strong></p>
+                    <p class="p">Questa sezione include la descrizione delle informazioni stradali e logistiche relative al sito dell’impianto fotovoltaico. <br> Queste informazioni possono includere:
+                        </p>
+                        <ul>
+                            <li class="p"> <strong>Tipologia dell’area</strong>: classificazione dell'area (ad esempio, agricola, residenziale, industriale) e le caratteristiche del terreno (ad esempio, collina, pianura).</li>
+                            <li class="p"> <strong>Accessibilità</strong>: accessi principali al sito, indicando le strade o vie di comunicazione utilizzabili, come strade comunali, interpoderali o provinciali.</li>
+                            <li class="p"> <strong>Confini del sito</strong>: descrizione dei limiti geografici dell'area di installazione, indicando i confini con altre zone, terreni o infrastrutture rilevanti (ad esempio, zone agricole, aree residenziali, discariche, ecc.).</li>
+                        </ul>
+                    <div class="h-[20px]"></div>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Revisione</strong></p>
+                    <p class="p">In questa sezione, non obbligatoria, vengono riportate le informazioni relative alla revisione del progetto, che documentano ogni modifica o aggiornamento effettuato. Ogni revisione del progetto deve essere tracciata e approvata da tutte le figure competenti.<br> Le informazioni da includere sono:
+                        </p>
+                        <ul>
+                            <li class="p"> <strong>Numero di revisione</strong>: identifica univocamente la revisione del progetto.</li>
+                            <li class="p"> <strong>Data</strong>: la data in cui è stata effettuata la revisione del progetto.</li>
+                            <li class="p"> <strong>Redatto da</strong>: sigla identificativa della persona che ha redatto la revisione del progetto.</li>
+                            <li class="p"> <strong>Verificato da</strong>: sigla identificativa della persona che ha verificato la correttezza della revisione.</li>
+                            <li class="p"> <strong>Approvato da</strong>: sigla identificativa della persona che ha approvato la revisione del progetto.</li>
+                        </ul>
+                    <div class="h-[20px]"></div>
+
+                    <p class="p">Elenco campi:</p>
+                    <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                        <li class="p">Titolo del progetto - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Denominazione - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Codice identificativo - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Indirizzo di installazione - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Comune - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Provincia - <span class="docs_required">Obbligatorio </span></li>
+                        <li class="p">Codici catastali - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Immagine di copertina - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Ambito di intervento - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Informazioni logistiche - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Data - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Numero di revisione - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Redatto da - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Verificato da - <span class="docs_required">Facoltativo </span></li>
+                        <li class="p">Approvato da - <span class="docs_required">Facoltativo </span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="committente_proponente">8. Committente e proponente </h2>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Committente: Anagrafica del committente:</strong></p>
+                    <ul class="">
+                        <li class="p">Denominazione - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Ulteriori informazioni - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Logo - <span class="docs_required">Facoltativo</span></li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <div class="h-[20px]"></div>
+                    <p class="p"> <strong>Proponente: Anagrafica del proponente:</strong></p>
+                    <ul class="">
+                        <li class="p">Denominazione - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Ulteriori informazioni - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Logo - <span class="docs_required">Facoltativo</span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="progettisti_collaboratori">9. Progettisti e collaboratori </h2>
+                    <div class="h-[20px]"></div>
+                    <p class="p"><strong>Progettisti: anagrafica di ogni progettista:</strong></p>
+                    <ul>
+                        <li class="p">Denominazione - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Ulteriori informazioni - <span class="docs_required">Facoltativo</span></li>
+                        <li class="p">Logo - <span class="docs_required">Facoltativo</span></li>
+                    </ul>
+                    <div class="h-[20px]"></div>
+                    <div class="h-[20px]"></div>
+                    <p class="p"> <strong>Collaboratori: nominativo di ogni collaboratore</strong></p>
+                    <ul class="">
+                        <li class="p">Nome e cognome - <span class="docs_required">Facoltativo</span></li>
+                    </ul>
+                </p>
+            </div>
+            <div class="mt-[30px] p ">
+                <h2 class="h2" id="riepilogo">10. Riepilogo dati inseriti</h2>
+                    <div class="h-[20px]"></div>
+                    <p class="p">In questa sezione viene fornito un riepilogo completo dei dati inseriti dall'utente fino a questo momento. Questo consente di verificare e confermare tutte le informazioni prima di procedere con la simulazione del progetto fotovoltaico. 
+                        Questa fase permette all'utente di rivedere e correggere eventuali errori prima di procedere con la simulazione. 
+                        Si consiglia di verificare con attenzione tutti i dati inseriti per garantire l'accuratezza del risultato. 
+                        </p>
+            </div>
+            <div class="mt-[30px] mb-[100px] p">
+                <h2 class="h2" id="esportazione_risultati">11. Esportazione dei risultati</h2>
+                <div class="h-[20px]"></div>
+                <p class="p">
+                    Al termine della simulazione, nella pagina dei risultati del progetto, sono disponibili le funzionalità di esportazione che permettono di scaricare il report completo in due formati:
+                </p>
+                <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                    <li class="p"><strong>Formato PDF (.pdf)</strong>: ideale per la visualizzazione e la condivisione</li>
+                    <li class="p"><strong>Formato Word (.docx)</strong>: utile per eventuali modifiche o personalizzazioni</li>
+                </ul>
+                <div class="h-[20px]"></div>
+                <p class="p">
+                    La pagina dei risultati rimane sempre accessibile, permettendo di visualizzare e scaricare il report tutte le volte che si desidera. Questo consente di:
+                </p>
+                <ul class="pl-4 space-y-2 list-disc list-inside dark:text-gray-300">
+                    <li class="p">Consultare i risultati in qualsiasi momento</li>
+                    <li class="p">Scaricare nuovamente i file in caso di necessità</li>
+                    <li class="p">Condividere facilmente i risultati con altri interessati</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

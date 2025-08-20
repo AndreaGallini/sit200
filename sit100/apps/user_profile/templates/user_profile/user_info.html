@@ -1,0 +1,82 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Profilo Utente
+{% endblock %}
+{% block content %}
+{% load static %}
+<div>
+    {% if request.user_agent.is_mobile %}
+    <div class="back_mobile">
+        <a href="/user/user_dashboard" class="font-bold text-main_color text-[14px] absolute top-[60px] left-[20px]">Torna indietro</a>
+    </div>
+    {% else %}
+
+    {% endif %}
+    <h1 class="mt-3 mb-[50px] md:mt-0 h3 md:text-left">Profilo Utente</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            {% if form.errors %}
+            <div id="error-message" class="relative px-4 py-3 mb-4 text-red-700 bg-red-100 rounded border border-red-400 w-fit">
+                <span>Errore nella compilazione dei campi, riprovare</span>
+            </div>
+        
+            {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+                <div id="success-message" class="relative px-4 py-3 mb-4 text-green-700 bg-green-100 rounded border border-green-400 w-fit">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+                <div class="input_user_profile">
+                    <div class="label_user_info">
+                        <label class="p" for="{{ form.username.id_for_label }}">Nome utente: <br> <span style="font-size: 10px !important;">senza spazi</span></label>
+                    </div>
+                    <div class="form_user_info">
+                        {{ form.username }}
+                        {% if form.message.errors %}
+                        <p class="text-xs italic text-red-500">{{ form.message.errors }}</p>
+                    {% endif %}
+                    </div>
+                </div>
+                <div class="input_user_profile">
+                    <div class="label_user_info">
+                        <label class="p" for="{{ form.email.id_for_label }}">Email:</label>
+                    </div>
+                    <div class="form_user_info form_deactive">
+                        {{ form.email }}
+                    </div>
+                </div>
+        </div>
+        <div class="flex justify-center w-full md:justify-start">
+            <button type="submit" class="mt-[50px] btn btn-primary">Salva</button>
+        </div>
+        <!-- Add this before the end of the form or in an appropriate location -->
+        <div class="mt-[50px] border-t border-gray-200 pt-5">
+            <h3 class="mb-3 text-red-600 h5">Warning Zone</h3>
+            <p class="mb-4 p">L'eliminazione dell'account è un'azione permanente e non può essere annullata.</p>
+            <a href="/user/delete_account/" class="inline-block px-4 py-2 text-white bg-red-600 rounded hover:bg-red-700">Elimina account</a>
+        </div>
+    </form>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("success-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 5000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("error-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 5000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+</script>
+{% endblock %}

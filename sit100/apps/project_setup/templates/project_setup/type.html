@@ -1,0 +1,275 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Tipologia di impianto
+{% endblock %}
+{% block content %}
+{% load static %}
+<div class="inner_form_div">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="mb-6 titles_forms">Tipologia dell'impianto*</h1>
+        <a href="/documentazione/#tipo" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>
+
+    <div class="container_form">
+        <div class="flex justify-around w-full form_inner">
+            <!-- Grid connected -->
+            <div class="type">
+                <label class="w-full text-center">
+                    <p class="mb-6 p h-[40px]">L'impianto è connesso alla rete?</p>
+                    <div class="flex justify-center items-end">
+                        <input type="checkbox" id="grid-connected" onchange="handleToggle(this)" class="toggle toggle-primary toggle-xl" disabled />
+                    </div>
+                </label>
+            </div>
+            <!-- Storage (Battery) -->
+            <div class="type">
+                <label class="w-full text-center">
+                    <p class="mb-6 p h-[40px]">L'impianto ha un sistema di accumulo?</p>
+                    <div class="flex justify-center items-end">
+                        <input type="checkbox" id="battery" onchange="handleToggle(this)" class="toggle toggle-primary toggle-xl" />
+                    </div>
+                </label>
+            </div>
+            <!-- Self-consumption -->
+            <div class="type">
+                <label class="w-full text-center">
+
+                    <p class="mb-6 p h-[40px]">È previsto l'autoconsumo?</p>
+                    <div class="flex justify-center items-end">
+                        <input type="checkbox" id="autoconsumo" onchange="handleToggle(this)" class="toggle toggle-primary toggle-xl" />
+                    </div>
+                </label>
+            </div>
+            <!-- RID (Energy Sale) -->
+            <div class="type">
+                <label class="w-full text-center">
+                    <p class="mb-6 p h-[40px]">È prevista la vendita di energia tramite ritiro dedicato (RID)?</p>
+                    <div class="flex justify-center items-end">
+                        <input type="checkbox" id="rid" onchange="handleToggle(this)" class="toggle toggle-primary toggle-xl" />
+                    </div>
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="flex justify-center form_inner mb-[30px]">
+        <div class="flex gap-x-[50px]">
+            <img src="{% static 'image/type/grid_connected.svg' %}" alt="grid_connected_battery" id="grid_connected_former"
+                class=" h-[100px]">
+                <img src="{% static 'image/type/battery.svg' %}" alt="grid_connected_battery" id="battery_former"
+                class=" h-[100px]">
+                <img src="{% static 'image/type/self_use.svg' %}" alt="grid_connected_battery" id="self_use_former"
+                class=" h-[100px]">
+                <img src="{% static 'image/type/ssp.svg' %}" alt="grid_connected_battery" id="rid_former"
+                class=" h-[100px]">
+        </div>
+    </div>
+    <div class="text-center frase">
+        <p class="p" id="frase_full"> <span id="frase_grid_connected"></span><span id="frase_battery"></span><span id="frase_self_use"></span><span id="frase_rid"></span></p>
+    </div>
+
+        {% include 'components/navigation_btn.html' with backroute='/project/dove/' %}
+</div>
+
+<script>
+    const grid_connected_former = document.getElementById('grid_connected_former');
+    const battery_former = document.getElementById('battery_former');
+    const self_use_former = document.getElementById('self_use_former');
+    const rid_former = document.getElementById('rid_former');
+    var project_code = parseFloat('{{ project_code|escapejs }}');
+    localStorage.setItem('visited_tipo', 'true');
+
+    // Set all checkboxes to checked on page load
+    document.addEventListener('DOMContentLoaded', function() {
+    const grid_connected = '{{ grid_connected|default:1|escapejs }}';
+    const storage = '{{ storage|default:1|escapejs }}';
+    const self_consumption = '{{ self_consumption|default:1|escapejs }}';
+    const rid = '{{ rid|default:0|escapejs }}';
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+    const grid_connected_value_from_session = grid_connected === '1' ? true : false;
+    const storage_value_from_session = storage === '1' ? true : false;
+    const self_consumption_value_from_session = self_consumption === '1' ? true : false;
+    const rid_value_from_session = rid === '1' ? true : false;
+
+    if(grid_connected === 'none' && storage === 'none' && self_consumption === 'none' && rid === 'none'){
+        document.getElementById('rid').checked = true;
+        rid_former.classList.remove('hidden'); // CORRETTO: mostra l'immagine quando è checked   
+        document.getElementById('rid').closest('.type').classList.add('selected');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.id !== 'rid') {
+                checkbox.checked = false;
+            }
+        });
+    } else {
+        checkboxes.forEach(checkbox => {
+            if (checkbox.id === 'grid-connected') {
+                checkbox.checked = grid_connected_value_from_session;
+                if (grid_connected_value_from_session) {
+                    grid_connected_former.classList.remove('hidden');
+                    checkbox.closest('.type').classList.add('selected');
+                } else {
+                    grid_connected_former.classList.add('hidden');
+                }
+            } else if (checkbox.id === 'battery') {
+                checkbox.checked = storage_value_from_session;
+                if (storage_value_from_session) {
+                    battery_former.classList.remove('hidden');
+                    checkbox.closest('.type').classList.add('selected');
+                } else {
+                    battery_former.classList.add('hidden');
+                }
+            } else if (checkbox.id === 'autoconsumo') {
+                checkbox.checked = self_consumption_value_from_session;
+                if (self_consumption_value_from_session) {
+                    self_use_former.classList.remove('hidden');
+                    checkbox.closest('.type').classList.add('selected');
+                } else {
+                    self_use_former.classList.add('hidden');
+                }
+            } else if (checkbox.id === 'rid') {
+                checkbox.checked = rid_value_from_session;
+                if (rid_value_from_session) {
+                    rid_former.classList.remove('hidden');
+                    checkbox.closest('.type').classList.add('selected');
+                } else {
+                    rid_former.classList.add('hidden');
+                }
+            }
+        });
+    }
+}); 
+
+// Function to handle toggle button change
+function handleToggle(checkbox) {
+    const nextButton = document.getElementById('nextButton');
+    nextButton.classList.remove('disabled');
+
+    // Get the parent type div
+    const typeDiv = checkbox.closest('.type');
+
+    // Update selected state
+    document.querySelectorAll('.type').forEach(div => {
+        div.classList.remove('selected');
+    });
+
+    typeDiv.classList.add('selected');
+
+    if(checkbox.checked) {
+        if (checkbox.id === 'grid-connected') {
+            grid_connected_former.classList.remove('hidden');
+            document.getElementById('rid').checked = true;
+            rid_former.classList.remove('hidden'); 
+        } else if (checkbox.id === 'battery') {
+            battery_former.classList.remove('hidden');
+        } else if (checkbox.id === 'autoconsumo') {
+            self_use_former.classList.remove('hidden');
+        } else if (checkbox.id === 'rid') {
+            rid_former.classList.remove('hidden');
+        }
+    } else {
+        if (checkbox.id === 'grid-connected') {
+            grid_connected_former.classList.add('hidden');
+            document.getElementById('rid').checked = false;
+            rid_former.classList.add('hidden');
+        } else if (checkbox.id === 'battery') {
+            battery_former.classList.add('hidden');
+        } else if (checkbox.id === 'autoconsumo') {
+            document.getElementById('battery').checked = false;
+            battery_former.classList.add('hidden');
+            self_use_former.classList.add('hidden');
+        } else if (checkbox.id === 'rid') {
+            rid_former.classList.add('hidden');
+        }
+    }
+}
+
+    function enableNextButton() {
+        const nextButton = document.getElementById('nextButton');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let anyChecked = false;
+
+        checkboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                anyChecked = true;
+            }
+        });
+
+        if (anyChecked) {
+            nextButton.classList.remove('disabled');
+        } else {
+            nextButton.classList.add('disabled');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const nextButton = document.getElementById('nextButton');
+        nextButton.classList.remove('disabled');
+        
+        const checkedCheckbox = document.querySelector('input[type="checkbox"]:checked');
+        if (checkedCheckbox) {
+            const nextButton = document.getElementById('nextButton');
+            nextButton.classList.remove('disabled');
+            checkedCheckbox.closest('.type').classList.add('selected');
+        }
+
+        document.querySelectorAll('.type').forEach(typeDiv => {
+            typeDiv.addEventListener('click', function (e) {
+                const checkbox = this.querySelector('input[type="checkbox"]');
+                if (checkbox && !checkbox.disabled) {
+                    enableNextButton();
+                }
+            });
+        });
+    });
+
+
+    function submitSelection() {
+    const grid_connected = document.getElementById('grid-connected').checked;
+    const battery = document.getElementById('battery').checked;
+    const autoconsumo = document.getElementById('autoconsumo').checked;
+    const rid = document.getElementById('rid').checked;
+    const grid_connected_value = grid_connected ? 1 : 0;
+    const battery_value = battery ? 1 : 0;
+    const autoconsumo_value = autoconsumo ? 1 : 0;
+    const rid_value = rid ? 1 : 0;
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    fetch('/save_type/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrftoken
+        },
+        body: new URLSearchParams({
+            'grid_connected': grid_connected_value,
+            'storage': battery_value,
+            'self_consumption': autoconsumo_value,
+            'rid': rid_value,
+            'project_code': project_code
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.message) {
+            window.location.href = '/project/subfields_conf/';
+        } else {
+            console.error(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+</script>
+
+{% endblock %}

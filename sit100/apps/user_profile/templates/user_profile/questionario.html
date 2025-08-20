@@ -1,0 +1,150 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Questionario
+{% endblock %}
+{% block content %}
+{% load static %}
+<h1 class="mb-6 text-2xl font-bold h2">Questionario di Feedback</h1>
+{% if messages %}
+{% for message in messages %}
+    <div class="relative px-4 py-3 mb-4 {% if message.tags == 'success' %}text-green-700 bg-green-100 border-green-400{% else %}text-red-700 bg-red-100 border-red-400{% endif %} rounded border w-full">
+        <span class="block sm:inline">{{ message }}</span>
+    </div>
+{% endfor %}
+{% endif %}
+<div class="w-[600px] px-4 py-8 mx-auto">
+    <form method="POST" action="{% url 'questionario' %}" class="space-y-6">
+        {% csrf_token %}
+        
+        <!-- Valutazione intuitività -->
+        <div class="p-4 rounded-lg shadow-md bg-base-100">
+            <label class="block mb-2 font-medium">Quanto è stato intuitivo il processo di input dati utente?</label>
+            <p class="mb-3 text-sm text-gray-500">Scala 1-5 (1 basso - 5 alto)</p>
+            <div class="flex justify-center space-x-4">
+                {% for i in "12345" %}
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="intuitivita_{{ i }}" name="intuitivita" value="{{ i }}" class="w-4 h-4" required>
+                    <label for="intuitivita_{{ i }}" class="ml-2">{{ i }}</label>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Difficoltà navigazione -->
+        <div class="p-4 rounded-lg shadow-md bg-base-100">
+            <label class="block mb-2 font-medium">Hai trovato difficoltà a navigare nella piattaforma?</label>
+            <div class="flex justify-center space-x-4">
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="difficolta_si" name="difficolta_navigazione" value="Si" class="w-4 h-4" required>
+                    <label for="difficolta_si" class="ml-2">Si</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="difficolta_no" name="difficolta_navigazione" value="No" class="w-4 h-4">
+                    <label for="difficolta_no" class="ml-2">No</label>
+                </div>
+            </div>
+            
+            <div id="difficolta_dettagli_container" class="hidden mt-3">
+                <label for="difficolta_dettagli" class="block mb-2">Se sì, specifica quali:</label>
+                <textarea id="difficolta_dettagli" name="difficolta_dettagli" rows="3" class="textarea textarea-primary"></textarea>
+            </div>
+        </div>
+        
+        <!-- Problemi tecnici -->
+        <div class="p-4 rounded-lg shadow-md bg-base-100">
+            <label class="block mb-2 font-medium">Hai riscontrato problemi tecnici durante il test?</label>
+            <div class="flex justify-center space-x-4">
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="problemi_si" name="problemi_tecnici" value="Si" class="w-4 h-4" required>
+                    <label for="problemi_si" class="ml-2">Si</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="problemi_no" name="problemi_tecnici" value="No" class="w-4 h-4">
+                    <label for="problemi_no" class="ml-2">No</label>
+                </div>
+            </div>
+            
+            <div id="problemi_dettagli_container" class="hidden mt-3">
+                <label for="problemi_dettagli" class="block mb-2">Se sì, descrivili:</label>
+                <textarea id="problemi_dettagli" name="problemi_dettagli" rows="3" class="textarea textarea-primary"></textarea>
+            </div>
+        </div>
+        
+        <!-- Consigliare la piattaforma -->
+        <div class="p-4 rounded-lg shadow-md bg-base-100">
+            <label class="block mb-2 font-medium">Consiglieresti la piattaforma ad altri utenti?</label>
+            <div class="flex justify-center space-x-4">
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="consiglio_si" name="consiglio_piattaforma" value="Si" class="w-4 h-4" required>
+                    <label for="consiglio_si" class="ml-2">Si</label>
+                </div>
+                <div class="flex items-center">
+                    <input type="radio" class="radio radio-primary" id="consiglio_no" name="consiglio_piattaforma" value="No" class="w-4 h-4">
+                    <label for="consiglio_no" class="ml-2">No</label>
+                </div>
+            </div>
+            
+            <div id="consiglio_dettagli_container" class="hidden mt-3">
+                <label for="consiglio_dettagli" class="block mb-2">Se no, Perché?</label>
+                <textarea id="consiglio_dettagli" name="consiglio_dettagli" rows="3" class="textarea textarea-primary"></textarea>
+            </div>
+        </div>
+        
+        <!-- Suggerimenti miglioramenti -->
+        <div class="p-4 rounded-lg shadow-md bg-base-100">
+            <label for="suggerimenti" class="block mb-2 font-medium">Cosa miglioreresti: suggerimenti, consigli, commenti e contributi</label>
+            <textarea id="suggerimenti" name="suggerimenti" rows="4" class="textarea textarea-primary"></textarea>
+        </div>
+        
+        <div class="text-center">
+            <button type="submit" class="btn btn-primary">
+                Invia Feedback
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Show/hide conditional fields based on radio selection
+    document.addEventListener('DOMContentLoaded', function() {
+        // Difficoltà navigazione
+        const difficoltaSi = document.getElementById('difficolta_si');
+        const difficoltaNo = document.getElementById('difficolta_no');
+        const difficoltaDettagliContainer = document.getElementById('difficolta_dettagli_container');
+        
+        difficoltaSi.addEventListener('change', function() {
+            difficoltaDettagliContainer.classList.remove('hidden');
+        });
+        
+        difficoltaNo.addEventListener('change', function() {
+            difficoltaDettagliContainer.classList.add('hidden');
+        });
+        
+        // Problemi tecnici
+        const problemiSi = document.getElementById('problemi_si');
+        const problemiNo = document.getElementById('problemi_no');
+        const problemiDettagliContainer = document.getElementById('problemi_dettagli_container');
+        
+        problemiSi.addEventListener('change', function() {
+            problemiDettagliContainer.classList.remove('hidden');
+        });
+        
+        problemiNo.addEventListener('change', function() {
+            problemiDettagliContainer.classList.add('hidden');
+        });
+        
+        // Consiglio piattaforma
+        const consiglioSi = document.getElementById('consiglio_si');
+        const consiglioNo = document.getElementById('consiglio_no');
+        const consiglioDettagliContainer = document.getElementById('consiglio_dettagli_container');
+        
+        consiglioSi.addEventListener('change', function() {
+            consiglioDettagliContainer.classList.add('hidden');
+        });
+        
+        consiglioNo.addEventListener('change', function() {
+            consiglioDettagliContainer.classList.remove('hidden');
+        });
+    });
+</script>
+{% endblock %}

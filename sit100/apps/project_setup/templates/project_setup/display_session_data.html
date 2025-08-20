@@ -1,0 +1,29 @@
+<!-- templates/project_setup/display_session_data.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualizza Dati del Progetto</title>
+</head>
+<body>
+    <h1>Dati del Progetto</h1>
+    {% if session_data %}
+        {% for key, value in session_data %}
+            {% if key == 'project' %}
+                <h2>{{ key }}</h2>
+                {% if value.items %}
+                    <ul>
+                        {% for proj_key, proj_value in value.items %}
+                            <li><strong>{{ proj_key }}:</strong> {{ proj_value }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>{{ value }}</p>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>Non ci sono dati di sessione disponibili.</p>
+    {% endif %}
+</body>
+</html>

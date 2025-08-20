@@ -1,0 +1,381 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Configurazione
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+
+<style>
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+    }
+    .range-container {
+        width: 80%;
+        margin: 0 auto;
+    }
+    
+</style>
+
+<div class="inner_form_div">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Configurazione dei sottocampi*</h1>
+        <a href="/documentazione/#inclinazione" target="_blank">
+        <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] "  alt="" >
+        </a>
+</div>   
+    <div class="container_form_no_flex pr-[100px]">
+        {% for field_name, field_data in generator.items %}
+            <div class="mb-6 w-full">
+                <h2 class="mb-4 h2">Campo: {{ field_name }}</h2>
+                
+                <div class="w-full">
+                    {% for subfield_name, subfield_data in field_data.items %}
+                        <div class="p-4 rounded-lg">
+                            <h3 class="mb-6 h3_light">Sottocampo: {{ subfield_name }} - {{subfield_data.name}}</h3>
+                            <div class="grid grid-cols-3 gap-20">
+                                <!-- Select per il tipo di pannello -->
+                                <div class="mb-3">
+                                    <h4 class="text-center h4">Inclinazione</h4>
+                                    <p class="text-center p text-[14px]">Inclinazione dei pannelli fotovoltaici</p>
+                                    <div class="flex flex-col justify-center items-center mt-4">
+                                        <img src="{% static 'image/icons/inclination.svg' %}" alt="" class="h-[60px] my_dark:invert">
+                                        <div class="mt-[15px] p" id="angle-label-{{ subfield_name }}">{{ subfield_data.inclination|default:30 }}°</div>
+                                        <div class="range-container">
+                                            <input type="range"  id="angle-range-{{ subfield_name }}" min="0" max="60" value="{{ subfield_data.inclination|default:30 }}" step="1" data-subfield="{{ subfield_name }}" class="range range-primary range-xs" />
+                                            <div class="range-values">
+                                                <span>0°</span>
+                                                <span>60°</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        
+                                    </script>
+                                </div>
+                                <div class="mb-3">
+                                    <h4 class="text-center h4">Orientamento</h4>
+                                    <p class="text-center p text-[14px]">Orientamento dei pannelli fotovoltaici</p>
+                                    <div class="flex flex-col justify-center items-center mt-4">
+                                        <img src="{% static 'image/icons/orientation.svg' %}" alt="" class="h-[60px] my_dark:invert">
+                                        {% with orientation_value=subfield_data.orientation|default:180 %}
+                                        {% with azimuth=orientation_value|add:"-180" %}
+                                        <div class="mt-[15px] p" id="orientation-label-{{ subfield_name }}">{{ azimuth }}° {% if azimuth > -22.5 and azimuth <= 22.5 %}(Sud){% elif azimuth > 22.5 and azimuth <= 67.5 %}(Sud-Ovest){% elif azimuth > 67.5 and azimuth <= 112.5 %}(Ovest){% elif azimuth > 112.5 and azimuth <= 157.5 %}(Nord-Ovest){% elif azimuth <= -157.5 or azimuth > 157.5 %}(Nord){% elif azimuth > -157.5 and azimuth <= -112.5 %}(Nord-Est){% elif azimuth > -112.5 and azimuth <= -67.5 %}(Est){% elif azimuth > -67.5 and azimuth <= -22.5 %}(Sud-Est){% endif %}</div>
+                                        <div class="range-container">
+                                            <input type="range"  id="orientation-range-{{ subfield_name }}" min="0" max="360" value="{{ orientation_value }}" step="1" data-subfield="{{ subfield_name }}"class="range range-primary range-xs" />
+                                        {% endwith %}
+                                        {% endwith %}
+                                            <div class="range-values">
+                                                <span>-180° (Nord)</span>
+                                                <span>180° (Nord)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <h4 class="text-center h4">Ombreggiamento da ostacoli</h4>
+                                    <p class="text-center p text-[14px]">Livello di ombreggiamento</p>
+                                    <div class="flex flex-col justify-center items-center mt-4">
+                                        <img src="{% static 'image/icons/cloude_sun.svg' %}" alt="" class="h-[60px] my_dark:invert">    
+                                        <div id="range-description-shading_obstacles_{{ subfield_name }}" class="mt-[15px] p">
+                                            {% with shading=subfield_data.shading_obstacles|default:0 %}
+                                            {% if shading < 5 %}
+                                                Minimo ({{ shading }}%)
+                                            {% elif shading < 15 %}
+                                                Moderato ({{ shading }}%)
+                                            {% elif shading < 20 %}
+                                                Significativo ({{ shading }}%)
+                                            {% else %}
+                                                Grave ({{ shading }}%)
+                                            {% endif %}
+                                            {% endwith %}
+                                        </div>
+                                        <div class="range-container">
+                                            <input type="range" id="myRange_shading_obstacles_{{ subfield_name }}" min="0" max="25" step="1" value="{{ subfield_data.shading_obstacles|default:0 }}" data-subfield="{{ subfield_name }}" class="range range-primary range-xs" />
+                                            <div class="range-values">
+                                                <span>0% (Minimo)</span>
+                                                <span>25% (Grave)</span>
+                                            </div>
+                                        </div>
+                                        <p id="error_shading_obstacles_{{ subfield_name }}" class="py-3 text-center p">
+                                            {% if subfield_data.shading_obstacles >= 20 %}
+                                            Attenzione: l'ombreggiamento selezionato è molto grave e compromette fortemente la produzione energetica.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+            <!-- Pulsanti di navigazione -->
+            {% include 'components/navigation_btn.html' with backroute='/project/tipo/' %}
+</div>
+
+<script>
+    // Usa i dati del progetto già disponibili dal context processor
+    var project = JSON.parse('{{ project_json|escapejs }}');
+    localStorage.setItem('visited_sottocampi', 'true');
+
+    // Funzione per inizializzare i valori dai dati esistenti
+    function initializeValuesFromData() {
+        if (project && project.generator) {
+            for (const [fieldName, fieldData] of Object.entries(project.generator)) {
+                for (const [subfieldName, subfieldData] of Object.entries(fieldData)) {
+                    // Inizializza inclinazione
+                    const angleRange = document.getElementById(`angle-range-${subfieldName}`);
+                    const angleLabel = document.getElementById(`angle-label-${subfieldName}`);
+                    if (angleRange && subfieldData.inclination !== undefined) {
+                        angleRange.value = subfieldData.inclination;
+                        angleLabel.textContent = `${subfieldData.inclination}°`;
+                    }
+
+                    // Inizializza orientamento
+                    const orientationRange = document.getElementById(`orientation-range-${subfieldName}`);
+                    const orientationLabel = document.getElementById(`orientation-label-${subfieldName}`);
+                    if (orientationRange && subfieldData.orientation !== undefined) {
+                        orientationRange.value = subfieldData.orientation;
+                        // Aggiorna l'etichetta dell'orientamento
+                        const degree_180 = subfieldData.orientation - 180;
+                        const cardinalPoint = getCardinalPoint(degree_180);
+                        orientationLabel.textContent = `${degree_180}° (${cardinalPoint})`;
+                    }
+
+                    // Inizializza ombreggiamento
+                    const shadingRange = document.getElementById(`myRange_shading_obstacles_${subfieldName}`);
+                    if (shadingRange && subfieldData.shading_obstacles !== undefined) {
+                        shadingRange.value = subfieldData.shading_obstacles;
+                        // Aggiorna la descrizione dell'ombreggiamento
+                        updateDescriptionobstacle(subfieldData.shading_obstacles, subfieldName);
+                    }
+                }
+            }
+        }
+    }
+
+    // Funzione per aggiornare la descrizione dell'ombreggiamento (spostata fuori dal DOMContentLoaded)
+    function updateDescriptionobstacle(value, subfield) {
+        const descriptionElement = document.getElementById(`range-description-shading_obstacles_${subfield}`);
+        const errorElement = document.getElementById(`error_shading_obstacles_${subfield}`);
+        
+        let description = '';
+        if (value >= 0 && value < 5) {
+            description = `Minimo (${value}%)`;
+        } else if (value >= 5 && value < 15) {
+            description = `Moderato (${value}%)`;
+        } else if (value >= 15 && value < 20) {
+            description = `Significativo (${value}%)`;
+        } else if (value >= 20) {
+            description = `Grave (${value}%)`;
+        }
+        descriptionElement.textContent = description;
+        
+        if (value >= 25) {
+            errorElement.innerText = "Attenzione: l'ombreggiamento selezionato è molto grave e compromette fortemente la produzione energetica.";
+        } else {
+            errorElement.innerText = '';
+        }
+    }
+
+    // Funzione per ottenere il punto cardinale (spostata fuori dal DOMContentLoaded)
+    function getCardinalPoint(degree) {
+        // Normalizza il grado tra -180 e 180
+        if (degree > 180) degree = degree - 360;
+        
+        // Sud è 0°, Nord è ±180°
+        if (degree > -22.5 && degree <= 22.5) return "Sud";
+        if (degree > 22.5 && degree <= 67.5) return "Sud-Ovest";
+        if (degree > 67.5 && degree <= 112.5) return "Ovest";
+        if (degree > 112.5 && degree <= 157.5) return "Nord-Ovest";
+        if (degree <= -157.5 || degree > 157.5) return "Nord";
+        if (degree > -157.5 && degree <= -112.5) return "Nord-Est";
+        if (degree > -112.5 && degree <= -67.5) return "Est";
+        if (degree > -67.5 && degree <= -22.5) return "Sud-Est";
+        return "Sud"; // fallback
+    }
+
+    //funzione per gestire i range dell'inclinazione
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inizializza i valori dai dati esistenti
+        initializeValuesFromData();
+
+        // Seleziona tutti i range slider dell'inclinazione
+        document.querySelectorAll('input[type="range"][id^="angle-range-"]').forEach(function(angleRange) {
+            const subfieldName = angleRange.dataset.subfield;
+            const angleLabel = document.getElementById(`angle-label-${subfieldName}`);
+
+            angleRange.addEventListener('input', function() {
+                const angleValue = this.value;
+                angleLabel.textContent = `${angleValue}°`;
+            });
+        });
+    });
+
+    //funzione per gestire i range dell'orientamento
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleziona tutti i range di orientamento
+        document.querySelectorAll('input[type="range"][id^="orientation-range-"]').forEach(function(orientationRange) {
+            const subfieldName = orientationRange.dataset.subfield;
+            const orientationLabel = document.getElementById(`orientation-label-${subfieldName}`);
+
+            function getCardinalPoint(degree) {
+                // Normalizza il grado tra -180 e 180
+                if (degree > 180) degree = degree - 360;
+                
+                // Sud è 0°, Nord è ±180°
+                if (degree > -22.5 && degree <= 22.5) return "Sud";
+                if (degree > 22.5 && degree <= 67.5) return "Sud-Ovest";
+                if (degree > 67.5 && degree <= 112.5) return "Ovest";
+                if (degree > 112.5 && degree <= 157.5) return "Nord-Ovest";
+                if (degree <= -157.5 || degree > 157.5) return "Nord";
+                if (degree > -157.5 && degree <= -112.5) return "Nord-Est";
+                if (degree > -112.5 && degree <= -67.5) return "Est";
+                if (degree > -67.5 && degree <= -22.5) return "Sud-Est";
+                return "Sud"; // fallback
+            }
+
+            // Imposta il valore iniziale
+            const initialDegree = orientationRange.value;
+            const initial_180 = initialDegree - 180;
+            const initialCardinal = getCardinalPoint(initial_180);
+            orientationLabel.textContent = `${initial_180}° (${initialCardinal})`;
+
+            // Aggiorna il valore quando cambia il range
+            orientationRange.addEventListener('input', function() {
+                const degree = this.value;
+                const degree_180 = degree - 180;
+                const cardinalPoint = getCardinalPoint(degree_180);
+                orientationLabel.textContent = `${degree_180}° (${cardinalPoint})`;
+            });
+        });
+    });
+
+    //funzione per gestire il selettore di ombreggiamento
+    document.addEventListener('DOMContentLoaded', function() {
+        // Seleziona tutti i range di ombreggiamento
+        const rangeElements = document.querySelectorAll('input[type="range"][id^="myRange_shading_obstacles_"]');
+        const saveButton = document.getElementById('nextButton');
+        
+        function checkAllRanges() {
+            let hasGraveOmbreggiamento = false;
+            rangeElements.forEach(function(range) {
+                if (parseInt(range.value) >= 25) {
+                    hasGraveOmbreggiamento = true;
+                }
+            });
+            
+            if (hasGraveOmbreggiamento) {
+                saveButton.classList.add('disabled');
+            } else {
+                saveButton.classList.remove('disabled');
+            }
+        }
+        
+        rangeElements.forEach(function(rangeElement) {
+            const subfield = rangeElement.getAttribute('data-subfield');
+            const descriptionElement = document.getElementById(`range-description-shading_obstacles_${subfield}`);
+            const errorElement = document.getElementById(`error_shading_obstacles_${subfield}`);
+
+            function updateDescriptionobstacle(value) {
+                let description = '';
+                if (value >= 0 && value < 5) {
+                    description = `Minimo (${value}%)`;
+                } else if (value >= 5 && value < 15) {
+                    description = `Moderato (${value}%)`;
+                } else if (value >= 15 && value < 20) {
+                    description = `Significativo (${value}%)`;
+                } else if (value >= 20) {
+                    description = `Grave (${value}%)`;
+                }
+                descriptionElement.textContent = description;
+                
+                if (value >= 25) {
+                    errorElement.innerText = "Attenzione: l'ombreggiamento selezionato è molto grave e compromette fortemente la produzione energetica.";
+                } else {
+                    errorElement.innerText = '';
+                }
+
+                // Controlla tutti i range ogni volta che uno viene modificato
+                checkAllRanges();
+            }
+
+            // Aggiorna il valore quando cambia il range
+            rangeElement.addEventListener('input', function() {
+                const value = parseInt(this.value, 10);
+                updateDescriptionobstacle(value);
+            });
+
+            // Imposta il valore iniziale
+            const initialValue = parseInt(rangeElement.value, 10);
+            updateDescriptionobstacle(initialValue);
+        });
+
+        // Controlla tutti i range all'avvio
+        checkAllRanges();
+    });
+
+
+    // Funzione per salvare i dati di configurazione dei sottocampi
+    function submitSelection() {
+        const subfieldsData = {};
+        
+        // Raccogli i dati per ogni sottocampo
+        document.querySelectorAll('[data-subfield]').forEach(element => {
+            const subfield = element.getAttribute('data-subfield');
+            
+            // Inizializza l'oggetto per questo sottocampo se non esiste
+            if (!subfieldsData[subfield]) {
+                subfieldsData[subfield] = {};
+            }
+            
+            // In base all'ID dell'elemento, salva il valore appropriato
+            if (element.id.includes('angle-range')) {
+                subfieldsData[subfield].inclination = parseInt(element.value);
+            } else if (element.id.includes('orientation-range')) {
+                const orientationValue = parseInt(element.value);
+                subfieldsData[subfield].orientation = orientationValue;
+                subfieldsData[subfield].azimuth = orientationValue - 180; // Calcola l'azimuth
+            } else if (element.id.includes('myRange_shading_obstacles')) {
+                subfieldsData[subfield].shading_obstacles = parseInt(element.value);
+            }
+        });
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        // Invia i dati al backend
+        fetch('/save_subfields_configuration/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                subfields_data: subfieldsData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = '/project/solare_ed_ombreggiamento/';
+            } else {
+                console.error('Errore nel salvataggio:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Errore nella richiesta:', error);
+        });
+    }
+
+</script>
+
+{% endblock %}

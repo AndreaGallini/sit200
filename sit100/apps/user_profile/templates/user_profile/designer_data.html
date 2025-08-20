@@ -1,0 +1,216 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Dati anagrafici
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+<div class="relative inner_form_div" style="height: 100vh !important; padding: 50px 70px;">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Salva i tuoi dati da progettista</h1>
+    </div>
+    
+    <div id="designer-saved" {% if not designer %}style="display: none;"{% endif %}>
+        <p class="h5 mb-[50px] text-center">I tuoi dati da progettista sono stati salvati con successo.</p>
+        <div class="flex justify-center w-full">
+            <button id="edit-button" class="mt-5 btn btn-primary">Modifica</button>
+        </div>
+    </div>
+    
+    <div id="designer-form" class="relative" {% if designer %}style="display: none;"{% endif %}>
+        <form method="post" action="{% url 'save_designer_data' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Sezione per gli errori generali del form -->
+            {% if form.non_field_errors %}
+                <div class="error">
+                    <ul>
+                        {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            
+            <!-- Sezione per gli errori dal context -->
+            {% if error %}
+                <div class="mb-4 alert alert-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <!-- Campo Nominativo -->
+                <div class="flex justify-center mb-4 w-full">
+                    <label class="floating-label">
+                        <input type="text" name="designer_name" placeholder="Nominativo" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="designer_name" value="{{ form.designer_name|default:'' }}" required />
+                        <span>Nominativo*</span>
+                      </label>
+                </div>
+                
+                <!-- Textarea Ulteriori info -->
+                <div class="flex justify-center mb-4 w-full">
+                    <label class="floating-label">
+                        <textarea name="designer_additional_info" placeholder="Indirizzo, mail, tel, pec, ecc." class="input input-primary w-[300px] h-[150px]" id="designer_additional_info" rows="4">{{ form.designer_additional_info|default:'' }}</textarea>
+                        <span>Indirizzo, mail, tel, pec, ecc.</span>
+                      </label>
+                </div>
+                
+                <!-- Input Logo -->
+                <div class="flex justify-center mb-4 w-full">
+                    <div class="flex flex-col">
+                        <span class="p">Logo</span>
+                        <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="designer_logo" name="designer_logo" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                        <small class="file-info">Formati accettati: jpg,jpeg,png. Max 6MB</small>
+                        <div class="file-name" id="fileNameDisplay" style="display: none;">
+                            {% if designer.logo %}
+                            Logo caricato: {{ designer.logo.name|extract_filename }}
+                            {% else %}
+                            
+                            {% endif %}
+                        </div>
+                        <div id="preview_designer_logo" class="mt-2">
+                            {% if images_url.designer_logo %}
+                            <div class="text-sm text-base-content">Logo caricato:</div>
+                            <div class="flex justify-center w-full">
+                                <img src="{{images_url.designer_logo}}" alt="" class="max-w-full h-[100px] rounded border border-gray-300 text-center">
+                            </div>
+                            {% else %}
+                            <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                            {% endif %}
+                        </div>
+                      </div>
+                </div>
+                
+                <div class="flex justify-around w-full">
+                    <button type="submit" class="btn btn-primary">Salva</button>   
+                    <button class="btn btn-secondary" id="annulla">Annulla</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    // Funzione per gestire il toggle tra form e messaggio salvato
+    document.addEventListener('DOMContentLoaded', function() {
+        const designerSavedDiv = document.getElementById('designer-saved');
+        const designerFormDiv = document.getElementById('designer-form');
+        const editButton = document.getElementById('edit-button');
+        const annullaButton = document.getElementById('annulla');
+        
+        // Controlla se la sezione "Designer salvato" è visibile
+        if (designerSavedDiv.style.display !== 'none') {
+            // Nascondi il form all'inizio se i dati esistono
+            designerFormDiv.style.display = 'none';
+        }
+
+        // Aggiungi un listener al pulsante "Modifica"
+        editButton.addEventListener('click', function() {
+            designerSavedDiv.style.display = 'none';
+            designerFormDiv.style.display = 'block';
+        });
+        
+        // Aggiungi un listener al pulsante "Annulla"
+        annullaButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            designerSavedDiv.style.display = 'block';
+            designerFormDiv.style.display = 'none';
+        });
+    });
+
+    // Gestione del file logo
+    document.getElementById('designer_logo').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const maxSize = 3 * 1024 * 1024; // 3MB in bytes
+        
+        if (file && file.size > maxSize) {
+            alert('Il file è troppo grande! La dimensione massima è 3MB');
+            this.value = ''; // Resetta l'input
+            return;
+        }
+    });
+
+    // Configurazione per i file input
+    const fileInputs = [
+        { inputId: 'designer_logo', nameClass: 'file-name' },
+    ];
+
+    // Funzione per mostrare l'anteprima dell'immagine
+    function showImagePreview(input, previewId) {
+        const previewElement = document.getElementById(previewId);
+        if (!previewElement) return;
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewElement.innerHTML = `
+                    <div class="text-sm text-base-content">Anteprima:</div>
+                    <div class="flex justify-center w-full">
+                        <img src="${e.target.result}" alt="Anteprima" class="max-w-full h-[100px] rounded border border-gray-300">
+                    </div>
+                `;
+            };
+            
+            reader.readAsDataURL(file);
+        } else {
+            previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+        }
+    }
+
+    // Funzione per gestire il cambio del file
+    function handleFileChange(input, nameElement) {
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            
+            // Controlla la dimensione del file (3MB = 3145728 bytes)
+            if (file.size > 3145728) {
+                alert('Il file è troppo grande. La dimensione massima è 3MB');
+                input.value = '';
+                nameElement.textContent = 'Logo';
+                return;
+            }
+
+            // Controlla l'estensione del file
+            const validExtensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExtension)) {
+                alert('Formato file non valido. Utilizzare jpg, jpeg o png');
+                input.value = '';
+                nameElement.textContent = 'Logo';
+                return;
+            }
+
+            nameElement.textContent = file.name;
+            
+            // Mostra l'anteprima dell'immagine
+            showImagePreview(input, 'preview_designer_logo');
+        } else {
+            nameElement.textContent = 'Logo';
+            // Rimuovi l'anteprima se presente
+            const previewElement = document.getElementById('preview_designer_logo');
+            if (previewElement) {
+                previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+            }
+        }
+    }
+
+    // Inizializza tutti i file input
+    document.addEventListener('DOMContentLoaded', function() {
+        fileInputs.forEach(config => {
+            const input = document.getElementById(config.inputId);
+            const nameElement = document.querySelector('.' + config.nameClass);
+            
+            if (input && nameElement) {
+                // Aggiungi l'event listener
+                input.addEventListener('change', function() {
+                    handleFileChange(this, nameElement);
+                });
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

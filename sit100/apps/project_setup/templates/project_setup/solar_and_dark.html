@@ -1,0 +1,298 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Albedo ed ombreggiamento
+{% endblock %}
+{% block content %}
+{% load static %}
+
+<style>
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px) translateX(-50%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) translateX(-50%);
+        }
+    }
+
+    .disabled_for_error {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    .disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
+
+    .shading_obstacle {
+        width: 100%;
+        accent-color: #f0b90b;
+    }
+
+    .sun_and_dark {
+        width: 33%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        position: relative;
+        height: 300px;
+    }
+</style>
+<div class="mx-auto inner_form_div">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Albedo ed ombreggiamento</h1>
+        <a href="/documentazione/#albedo" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>
+    <div class="flex items-center justify-center container_form_flex gap-x-20 mx-[50px]">
+        <div class="albedo sun_and_dark">
+            <h3 class="h4 mb-[50px] font-normal ">Albedo (riflettanza)*</h3>
+            <select name="albedo" id="albedo" class="select select-primary">
+                <option value="1" disabled selected>Seleziona un valore</option>
+                <option value="standard" {% if albedo == "standard" %}selected{% endif %}>Standard</option>
+                <option value="neve" {% if albedo == "neve" %}selected{% endif %}>Neve (caduta di fresco o film
+                    di ghiaccio)</option>
+                <option value="superfici-acquose" {% if albedo == "superfici-acquose" %}selected{% endif %}>
+                    Superfici acquose</option>
+                <option value="suolo" {% if albedo == "suolo" %}selected{% endif %}>Suolo (creta,marne)</option>
+                <option value="strada-sterrata" {% if albedo == "strada-sterrata" %}selected{% endif %}>Strade
+                    sterrate</option>
+                <option value="bosco-conifere-inverno" {% if albedo == "bosco-conifere-inverno" %}selected{% endif %}>Bosco di conifere d'inverno</option>
+                <option value="bosco-autunno-campi-raccolti" {% if albedo == "bosco-autunno-campi-raccolti" %}selected{% endif %}>Bosco in autunno / campi con raccolti maturi e piante</option>
+                <option value="asfalto-invecchiato" {% if albedo == "asfalto-invecchiato" %}selected{% endif %}>
+                    Asfalto invecchiato</option>
+                <option value="calcestruzzo-invecchiato" {% if albedo == "calcestruzzo-invecchiato" %}selected{% endif %}>Calcestruzzo invecchiato</option>
+                <option value="foglie-morte" {% if albedo == "foglie-morte" %}selected{% endif %}>Foglie morte
+                </option>
+                <option value="erba-secca" {% if albedo == "erba-secca" %}selected{% endif %}>Erba secca</option>
+                <option value="erba-verde" {% if albedo == "erba-verde" %}selected{% endif %}>Erba verde</option>
+                <option value="tetti-terrazzi-bitume" {% if albedo == "tetti-terrazzi-bitume" %}selected{% endif %}>Tetti o terrazzi in bitume</option>
+                <option value="pietrisco" {% if albedo == "pietrisco" %}selected{% endif %}>Pietrisco</option>
+                <option value="superfici-scure" {% if albedo == "superfici-scure" %}selected{% endif %}>Superfici
+                    scure di edifici (mattoni scuri, vernice scura, ecc.)</option>
+                <option value="superfici-chiare" {% if albedo == "superfici-chiare" %}selected{% endif %}>
+                    Superfici chiare di edifici (mattoni chiari, vernici chiare, ecc.)</option>
+            </select>
+        </div>
+        <div class="shading_horizon sun_and_dark">
+            <h3 class="font-normal h4">Ombreggiamento clinometrico*</h3>
+            <div id="range-description-shading_horizon" class="py-4 p">Seleziona un valore</div>
+                <input type="range" id="myRange_shading_horizon" min="0" max="20" step="1"
+                value="{{ shading_horizon }}" class="range range-primary" />
+                <p id="error_shading_horizon" class="py-3 text-center p"></p>
+            <div class="flex justify-start w-full">
+                <div class="flex justify-start w-full mt-[10px]">
+                    <button class="tooltip-trigger" data-tooltip-id="shading-info-3">
+                        <img src="{% static 'image/icons/arrow_down.svg' %}" alt="" class="hidden dark:block">
+                        <img src="{% static 'image/icons/arrow_down_light.svg' %}" alt="" class="block dark:hidden">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full mt-[45px]">
+        <div class="tooltip-content p" id="shading-info-1">
+            <div class="tooltip-item">
+                <h3>Ombreggiamento Minimo Perdite</h3>
+                <p>
+                    < 5% dovuto a piccoli ostacoli come pali della luce o antenne che non incidono significativamente
+                        sulla produzione energetica.</p>
+            </div>
+        </div>
+        <div class="tooltip-content p" id="shading-info-3">
+            <div class="tooltip-item">
+                <h3>Ombreggiamento Minimo Perdite</h3>
+                <p>
+                    < 5% dovuto a piccoli ostacoli come pali della luce o antenne che non incidono significativamente
+                        sulla produzione energetica.</p>
+            </div>
+        </div>
+    </div>
+
+    {% include 'components/navigation_btn.html' with backroute='/project/subfields_conf/' %}
+</div>
+
+<script>
+    var project_code = parseFloat('{{ project_code|escapejs }}');
+    localStorage.setItem('visited_ombreggiamento', 'true');
+
+    function enableNextButton() {
+        const nextButton = document.getElementById('nextButton');
+        const albedoSelect = document.getElementById('albedo');
+        const myRangeHorizon = document.getElementById('myRange_shading_horizon');
+
+        // Controlla se l'albedo non è standard
+        const isAlbedoValid = albedoSelect && albedoSelect.value !== '1';
+        const horizonValue = parseInt(myRangeHorizon.value);
+        const isHorizonValid = horizonValue < 20;
+
+        if (isAlbedoValid && isHorizonValid) {
+            nextButton.classList.remove('disabled');
+            nextButton.classList.remove('disabled_for_error');
+        } else {
+            if (!isAlbedoValid) {
+                nextButton.classList.add('disabled');
+            }
+            if (!isHorizonValid) {
+                nextButton.classList.add('disabled_for_error');
+            }
+        }
+    }
+    function submitSelection() {
+        const albedoValue = document.getElementById('albedo').value;
+        const rangeValueHorizon = parseInt(document.getElementById('myRange_shading_horizon').value);
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/save_solar_data/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                albedo: albedoValue,
+                // range_value: rangeValue,  // Commentato il valore dell'ombreggiamento da ostacoli
+                rangeValueHorizon: rangeValueHorizon,
+                project_code: project_code
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    window.location.href = '/project/configurazione_impianto';
+                } else {
+                    console.error(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const myRangeElement = document.getElementById('myRange_shading_horizon');
+        if (myRangeElement) {
+            function updateDescriptionOrizon(value) {
+                let description = '';
+                if (value >= 0 && value < 5) {
+                    description = `Minimo (${value}%)`;
+                } else if (value >= 5 && value < 15) {
+                    description = `Moderato (${value}%)`;
+                } else if (value >= 15 && value < 20) {
+                    description = `Significativo (${value}%)`;
+                } else if (value >= 20) {
+                    description = `Grave (${value}%)`;
+                }
+                document.getElementById('range-description-shading_horizon').textContent = description;
+                if (value >= 20) {
+                    const error_shading_horizon = document.getElementById('error_shading_horizon')
+                    error_shading_horizon.innerText = "Attenzione: l'ombreggiamento selezionato è molto grave e compromette fortemente la produzione energetica."
+                    enableNextButton();
+                } else {
+                    error_shading_horizon.innerText = ''
+                    enableNextButton();
+                }
+            }
+
+            myRangeElement.addEventListener('input', function () {
+                const value = parseInt(this.value, 10);
+                updateDescriptionOrizon(value);
+                enableNextButton();
+            });
+
+            const initialValue = parseInt(myRangeElement.value, 10);
+            updateDescriptionOrizon(initialValue);
+            enableNextButton();
+        } else {
+            console.error('Elemento con ID "myRange_shading_horizon" non trovato nel DOM.');
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const triggers = document.querySelectorAll('.tooltip-trigger');
+        const tooltips = document.querySelectorAll('.tooltip-content');
+
+        // Inizializza lo stato del pulsante Next
+        enableNextButton();
+
+        triggers.forEach(trigger => {
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const tooltipId = this.getAttribute('data-tooltip-id');
+                const tooltip = document.getElementById(tooltipId);
+
+                tooltips.forEach(t => {
+                    if (t !== tooltip) {
+                        t.classList.remove('active');
+                    }
+                });
+
+                tooltip.classList.toggle('active');
+            });
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.tooltip-content') && !e.target.closest('.tooltip-trigger')) {
+                tooltips.forEach(tooltip => {
+                    tooltip.classList.remove('active');
+                });
+            }
+        });
+
+        // Aggiungo listener per il cambio dell'albedo
+        const albedoSelect = document.getElementById('albedo');
+        if (albedoSelect) {
+            albedoSelect.addEventListener('change', enableNextButton);
+        }
+    });
+
+    function updateTooltipText(tooltipId, title, content) {
+        const tooltip = document.getElementById(tooltipId);
+        const tooltipTitle = tooltip.querySelector('.tooltip-item h3');
+        const tooltipContent = tooltip.querySelector('.tooltip-item p');
+
+        tooltipTitle.textContent = title;
+        tooltipContent.innerHTML = content;
+    }
+
+    updateTooltipText('shading-info-3', '', ` <div class="flex justify-around gap-x-[30px] mx-[20px]">
+        <!-- Card 1 -->
+        <div class="p-6>
+            <h2 class="mb-[30px] font-bold p">Minimo</h2>
+            <p class="p mt-[20px]">
+                Ombreggiamento clinometrico Minimo: Aree aperte e pianeggianti senza rilievi significativi. Conformazione del terreno uniforme e priva di ostacoli naturali o artificiali. Pianure agricole, deserti, praterie e superfici piane ad alta quota. Ostacoli: Praticamente assenti. 
+            </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="p-6>
+            <h2 class="mb-[30px] font-bold p">Moderato </h2>
+            <p class="p mt-[20px]">
+                Ombreggiamento clinometrico Moderato: Terreni leggermente ondulati o collinari con lievi variazioni altimetriche. Aree suburbane con poche costruzioni o alberi di altezza media. Colline basse, aree periferiche di città con spazi aperti, campi coltivati con alberi sparsi. Ostacoli: Colline basse, alberi di media altezza, edifici bassi e sparsi.
+            </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="p-6>
+            <h2 class="mb-[30px] font-bold p">Significativo  </h2>
+            <p class="p mt-[20px]">
+Ombreggiamento clinometrico Significativo: Aree con rilievi più pronunciati e variazioni altimetriche evidenti. Zone montuose di media altitudine, aree urbane dense con edifici alti. Terreni montuosi, valli profonde, aree urbane con edifici di media altezza, boschi densi. Ostacoli: Montagne, colline alte, edifici alti, fitte aree boschive.            </p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="p-6>
+            <h2 class="mb-[30px] font-bold p">Grave</h2>
+            <p class="p mt-[20px]">
+Ombreggiamento clinometrico Grave: Aree con rilievi estremamente pronunciati e profondi, presenza di ostacoli alti e vicini che causano ombreggiamento prolungato. Valli profonde e strette, aree urbane molto dense con grattacieli. Valli strette e profonde, pendii montuosi ripidi, centri urbani con grattacieli, aree forestali molto fitte con alberi molto alti. Ostacoli: Grattacieli, montagne alte e ripide, foreste con alberi molto alti e densi.             </p>
+        </div>
+    </div>`);
+</script>
+
+{% endblock %}

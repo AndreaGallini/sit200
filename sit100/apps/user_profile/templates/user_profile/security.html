@@ -1,0 +1,134 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Sicurezza
+{% endblock %}
+{% block content %}
+{% load static %}
+<div>
+    {% if request.user_agent.is_mobile %}
+    <div class="back_mobile">
+        <a href="/user/user_dashboard" class="font-bold text-main_color text-[14px] absolute top-[60px] left-[20px]">Torna indietro</a>
+    </div>
+    {% else %}
+
+    {% endif %}
+    <h1 class="mb-[50px] h3 md:text-left">Sicurezza</h1>
+    <h4 class="mb-2 h4 md:text-left">Cambio password</h4>
+    {% if form.errors %}
+    <div id="error-message" class="relative px-4 py-3 mb-4 text-red-700 bg-red-100 rounded border border-red-400 w-fit">
+        <span>Errore nella compilazione dei campi, riprovare</span>
+    </div>
+
+    {% endif %}
+    {% if messages %}
+        {% for message in messages %}
+            <div id="success-message" class="relative px-4 py-3 mb-4 text-green-700 bg-green-100 rounded border border-green-400 w-fit">
+                <span class="block sm:inline">{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" >
+        {% csrf_token %}
+
+        <div class="input_user_profile">
+            <div class="label_user_info">
+                <label class="p" for="{{ form.old_password.id_for_label }}">Password attuale:</label>
+            </div>
+            <div class="relative form_user_info">
+                {{ form.old_password }}
+                <button type="button" class="flex absolute inset-y-0 right-2 items-center pr-3 toggle-password">
+                    <i class="fas fa-eye"></i>
+                </button>
+                {% if form.message.errors %}
+                <p class="text-xs italic text-red-500">{{ form.message.errors }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="input_user_profile">
+            <div class="label_user_info">
+                <label class="p" for="{{ form.new_password1.id_for_label }}">Nuova password:</label>
+            </div>
+            <div class="relative form_user_info">
+                {{ form.new_password1 }}
+                <button type="button" class="flex absolute inset-y-0 right-2 items-center pr-3 toggle-password">
+                    <i class="fas fa-eye"></i>
+                </button>
+                {% if form.message.errors %}
+                <p class="text-xs italic text-red-500">{{ form.message.errors }}</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="input_user_profile">
+            <div class="label_user_info">
+                <label class="p" for="{{ form.new_password2.id_for_label }}">Conferma password:</label>
+            </div>
+            <div class="relative form_user_info">
+                {{ form.new_password2 }}
+                <button type="button" class="flex absolute inset-y-0 right-2 items-center pr-3 toggle-password">
+                    <i class="fas fa-eye"></i>
+                </button>
+                {% if form.message.errors %}
+                <p class="text-xs italic text-red-500">{{ form.message.errors }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex justify-center w-full md:justify-start">
+            <button type="submit" class="mt-[50px] btn btn-primary">Salva</button>
+        </div>
+    </form>
+    <!-- <h4 class="mb-2 mt-[50px] h4 md:text-left">2FA</h4> -->
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("success-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 10000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("error-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 10000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+
+    // Password visibility toggle
+    document.querySelectorAll('.toggle-password').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const passwordField = this.parentElement.querySelector('input');
+            const icon = this.querySelector('i');
+            
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+    });
+
+    // Ensure password fields are properly set to type password
+    document.addEventListener("DOMContentLoaded", function() {
+        var passwordFields = [
+            document.getElementById('{{ form.old_password.id_for_label }}'),
+            document.getElementById('{{ form.new_password1.id_for_label }}'),
+            document.getElementById('{{ form.new_password2.id_for_label }}')
+        ];
+        
+        passwordFields.forEach(function(field) {
+            if (field) {
+                field.type = 'password';
+            }
+        });
+    });
+</script>
+{% endblock %}

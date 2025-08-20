@@ -1,0 +1,187 @@
+.margin {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+.file-name {
+  background-color: #e0e0e0;
+  padding: 10px;
+  border-radius: 5px;
+  flex-grow: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 282px;
+}
+
+.button {
+  background-color: #ffcc00;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 15px;
+  text-overflow: ellipsis;
+  border: 1px solid #525252;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+  position: relative;
+  padding-left: 15px !important;
+  padding-right: 40px !important;
+}
+
+.custom-input:focus {
+  border-color: #ffcc00;
+  outline: none;
+}
+
+.floating-label {
+  position: absolute;
+  left: 15px;
+  top: 30%;
+  transform: translateY(-1%);
+  font-size: 16px;
+  color: #525252;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.custom-input:focus + .floating-label,
+.custom-input:not(:placeholder-shown) + .floating-label {
+  top: 0;
+  font-size: 12px;
+  color: #525252;
+}
+
+.clear-button {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #525252;
+  font-size: 18px;
+  display: none;
+  padding: 5px;
+}
+
+.clear-button:hover {
+  color: #333;
+}
+
+.custom-input:not(:placeholder-shown) ~ .clear-button {
+  display: block;
+}
+.input-container {
+  position: relative;
+  width: 100%;
+}
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.input-container textarea.custom-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 15px 40px 15px 15px; /* Aggiunto padding destro per la X */
+  resize: vertical;
+  line-height: 1.4;
+  border: 1px solid #525252;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.input-container textarea.custom-input:focus {
+  border-color: #525252;
+  outline: none;
+}
+
+/* Posizione della label */
+.floating-label {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  font-size: 16px;
+  color: #525252;
+  pointer-events: none;
+  transition: all 0.3s ease;
+  padding: 0 4px;
+  line-height: 1.4;
+}
+
+.input-container textarea.custom-input:focus + .floating-label,
+.input-container
+  textarea.custom-input:not(:placeholder-shown)
+  + .floating-label {
+  top: 2px;
+  font-size: 12px;
+  background-color: white;
+  color: #525252;
+}
+
+/* Stili per il pulsante X */
+.clear-button {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #525252;
+  font-size: 18px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.clear-button:hover {
+  color: #333;
+}
+
+.custom-input:not(:placeholder-shown) ~ .clear-button {
+  display: flex;
+}
+.input-container input[type="date"].custom-input {
+  /* Rimuove lo stile predefinito del calendario */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* Rimuove l'icona del calendario in Chrome */
+.input-container input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.3;
+  cursor: pointer;
+  position: absolute;
+  right: 40px; /* Spazio per la X */
+  height: 20px;
+  width: 20px;
+}
+
+.input-container input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 0.6;
+}
+
+/* Assicura che il valore della data abbia lo stesso colore del testo normale */
+.input-container input[type="date"]:valid {
+  color: inherit;
+}
+
+

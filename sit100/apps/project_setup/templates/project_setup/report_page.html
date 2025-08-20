@@ -1,0 +1,416 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Report
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+<div class="container_form_no_flex_center p">
+    <h1 class="titles_forms">Riepilogo dei dati inseriti</h1>
+    <p class="h4 mb-[30px]">Controllare con attenzione i dati prima dell'avvio della simulazione</p>
+
+    <div class="w-full max-w-[1200px] p-4 mx-auto space-y-3">
+        <!-- Sezione 1 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(1)">
+                <span class="flex gap-x-4 items-center h5"> <svg width="14" height="20" viewBox="0 0 14 20" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M7 9.5C6.33696 9.5 5.70107 9.23661 5.23223 8.76777C4.76339 8.29893 4.5 7.66304 4.5 7C4.5 6.33696 4.76339 5.70107 5.23223 5.23223C5.70107 4.76339 6.33696 4.5 7 4.5C7.66304 4.5 8.29893 4.76339 8.76777 5.23223C9.23661 5.70107 9.5 6.33696 9.5 7C9.5 7.3283 9.43534 7.65339 9.3097 7.95671C9.18406 8.26002 8.99991 8.53562 8.76777 8.76777C8.53562 8.99991 8.26002 9.18406 7.95671 9.3097C7.65339 9.43534 7.3283 9.5 7 9.5ZM7 0C5.14348 0 3.36301 0.737498 2.05025 2.05025C0.737498 3.36301 0 5.14348 0 7C0 12.25 7 20 7 20C7 20 14 12.25 14 7C14 5.14348 13.2625 3.36301 11.9497 2.05025C10.637 0.737498 8.85652 0 7 0Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Localizzazione</span>
+                <svg id="arrow-1" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-1" class="hidden inner_accordion">
+                <p class="p"> Lat: {{project.latitude|floatformat:6}}</p>
+                <p class="p"> Lng: {{project.longitude|floatformat:6}}</p>
+                {% if project.altitude == 'undefined' %}
+                <p class="p"> Altitude: N.D.</p>
+                {% else %}
+                <p class="p"> Altitude: {{project.altitude}} m</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sezione 2 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(2)">
+                <span class="flex gap-x-4 items-center h5"><svg width="18" height="21" viewBox="0 0 18 21" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18 3.63861V10.2921L12.4 13.6188V7.06931L18 3.63861ZM11.8 7.06931V13.6188L6.2 10.2921V3.63861L11.8 7.06931ZM11.8 14.3465V21L6.2 17.6733V11.0198L11.8 14.3465ZM5.6 3.32673V9.9802L0 6.65347V0L5.6 3.32673Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Aree di interesse</span>
+                <svg id="arrow-2" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-2" class="hidden inner_accordion">
+                {% for main_key, main_value in project.generator.items %}
+                    <div class="mb-6">
+                        <h3 class="mb-3 text-lg font-semibold text-main_color">Campo {{ main_key }}</h3>
+                        <div class="grid grid-cols-4">
+                            {% for sub_key, sub_value in main_value.items %}
+                                <div class="mb-4 rounded">
+                                    <h4 class="mb-2 font-medium">Sottocampo {{ sub_key }}</h4>
+                                    <div class="">
+                                        <p class="p"><strong>Nome:</strong> {{ sub_value.name }}</p>
+                                        <p class="p"><strong>Area:</strong> {{ sub_value.area|floatformat:2 }} mq</p>
+                                        <p class="p"><strong>Inclinazione:</strong> {{ sub_value.inclination }}°</p>
+                                        <p class="p"><strong>Orientamento:</strong> {{ sub_value.orientation }}°</p>
+                                        <p class="p"><strong>Ombreggiamento da ostacoli:</strong> {{ sub_value.shading_obstacles }} %</p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sezione 3 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(3)">
+                <span class="flex gap-x-4 items-center h5">
+                    <svg width="20" height="17" viewBox="0 0 20 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 17V11H12V17H17V9H20L10 0L0 9h4V17H8Z" fill="#EFB90B" />
+                    </svg>
+                    Dove verrà installato l'impianto?</span>
+                <svg id="arrow-3" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-3" class="hidden inner_accordion">
+                <p class="p">Posizione di installazione dei pannelli fotovoltaici:
+                    {{project.mounting|format_location}}</p>
+            </div>
+        </div>
+
+        <!-- Sezione 4 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(4)">
+                <span class="flex gap-x-4 items-center h5"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.33008 14H9.00008V11H2.00008L1.33008 14Z" fill="#EFB90B" />
+                        <path d="M11 14H18.67L18 11H11V14Z" fill="#EFB90B" />
+                        <path d="M19.11 16H11V20H20L19.11 16Z" fill="#EFB90B" />
+                        <path d="M0 20H9V16H0.89L0 20Z" fill="#EFB90B" />
+                        <path d="M11 6H9V9H11V6Z" fill="#EFB90B" />
+                        <path d="M15.1788 3.79088L13.7646 5.20508L15.8859 7.32638L17.3001 5.91218L15.1788 3.79088Z"
+                            fill="#EFB90B" />
+                        <path d="M4.82638 3.79081L2.70508 5.91211L4.11928 7.32631L6.24058 5.20501L4.82638 3.79081Z"
+                            fill="#EFB90B" />
+                        <path d="M4 0H1V2H4V0Z" fill="#EFB90B" />
+                        <path d="M19 0H16V2H19V0Z" fill="#EFB90B" />
+                        <path d="M10 5C12.76 5 15 2.76 15 0H5C5 2.76 7.24 5 10 5Z" fill="#EFB90B" />
+                    </svg>
+                    Tipologia d'impianto</span>
+                <svg id="arrow-4" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-4" class="hidden inner_accordion">
+                <p class="p">Tipologia di impianto che si vuole installare:                         
+                <p class="p">{% if project.grid_connected == '1' %} Connesso alla rete{% else %} Non connesso alla rete{% endif %}</p>
+                <p class="p">{% if project.storage == '1' %} Con sistema di accumulo{% else %} Senza sistema di accumulo{% endif %}</p>
+                <p class="p"></p>
+                <p class="p">{% if project.self_consumption == '1' %} Con autoconsumo{% else %} Senza autoconsumo{% endif %}</p>
+                <p class="p">{% if project.rid == '1' %} Con RID{% else %} Senza RID{% endif %}</p></p>
+            </div>
+        </div>
+
+        <!-- Sezione 5 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(5)">
+                <span class="flex gap-x-4 items-center h5"><svg width="18" height="21" viewBox="0 0 18 21" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18 3.63861V10.2921L12.4 13.6188V7.06931L18 3.63861ZM11.8 7.06931V13.6188L6.2 10.2921V3.63861L11.8 7.06931ZM11.8 14.3465V21L6.2 17.6733V11.0198L11.8 14.3465ZM5.6 3.32673V9.9802L0 6.65347V0L5.6 3.32673Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Configurazione campi e sottocampi</span>
+                <svg id="arrow-5" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-5" class="hidden inner_accordion">
+                <p class="p">Configurazione dettagliata per ogni sottocampo:</p>
+                {% for field_name, field_data in project.generator.items %}
+                    <div class="mb-6">
+                        <h4 class="mb-3 h4">Campo {{ field_name }}</h4>
+                        {% for subfield_name, subfield_data in field_data.items %}
+                            <div class="p-3 mb-4 rounded-lg">
+                                <h5 class="mb-2 h5">{{ subfield_name }} - {{ subfield_data.name|default:"Nome non specificato" }}</h5>
+                                <div class="grid grid-cols-1 gap-4">
+                                    <div>
+                                        <span class="p pr-[30px]"><strong>Area:</strong> {{ subfield_data.area|floatformat:2 }} mq</span>
+                                        <span class="p pr-[30px]"><strong>Inclinazione:</strong> {{ subfield_data.inclination }}°</span>
+                                        <span class="p pr-[30px]"><strong>Orientamento:</strong> {{ subfield_data.orientation }}°</span>
+                                        <span class="p"><strong>Ombreggiamento ostacoli:</strong> {{ subfield_data.shading_obstacles }}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% empty %}
+                    <p class="p">Nessun campo configurato.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sezione 6 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(6)">
+                <span class="flex gap-x-4 items-center h5"><svg width="21" height="21" viewBox="0 0 21 21" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M11.7396 4.47031C14.0996 5.50031 15.3496 8.03031 14.9196 10.4603C16.1896 11.5603 16.9996 13.1903 16.9996 15.0003V15.1703C17.3096 15.0603 17.6496 15.0003 17.9996 15.0003C18.7952 15.0003 19.5583 15.3164 20.1209 15.879C20.6835 16.4416 20.9996 17.2047 20.9996 18.0003C20.9996 18.796 20.6835 19.559 20.1209 20.1216C19.5583 20.6842 18.7952 21.0003 17.9996 21.0003H4.99957C3.9387 21.0003 2.92129 20.5789 2.17114 19.8287C1.421 19.0786 0.99957 18.0612 0.99957 17.0003C0.99957 15.9394 1.421 14.922 2.17114 14.1719C2.92129 13.4217 3.9387 13.0003 4.99957 13.0003H5.26957C3.99957 11.4503 3.59957 9.24031 4.49957 7.26031C5.71957 4.50031 8.96957 3.24031 11.7396 4.47031ZM10.9296 6.30031C9.15957 5.50031 7.08957 6.31031 6.30957 8.07031C5.84957 9.09031 5.92957 10.2203 6.40957 11.1303C7.49957 9.83031 9.15957 9.00031 10.9996 9.00031C11.6996 9.00031 12.3796 9.12031 12.9996 9.34031C12.9396 8.06031 12.1796 6.86031 10.9296 6.30031ZM12.5496 2.64031C11.9996 2.40031 11.4496 2.23031 10.8796 2.12031L13.3696 0.820312L14.2696 3.71031C13.7596 3.29031 13.1896 2.93031 12.5496 2.64031ZM5.08957 3.44031C4.59957 3.79031 4.16957 4.19031 3.79957 4.63031L3.90957 1.82031L6.86957 2.50031C6.24957 2.71031 5.64957 3.03031 5.08957 3.44031ZM16.9996 8.71031C16.9096 8.12031 16.7796 7.55031 16.5896 7.00031L18.9696 8.50031L16.9196 10.7303C17.0296 10.0803 17.0496 9.40031 16.9996 8.71031ZM2.03957 10.3003C2.10957 10.9003 2.23957 11.4703 2.42957 12.0003L0.0595703 10.5003L2.09957 8.28031C1.99957 8.93031 1.96957 9.61031 2.03957 10.3003ZM17.9996 17.0003H14.9996V15.0003C14.9996 13.9394 14.5781 12.922 13.828 12.1719C13.0779 11.4217 12.0604 11.0003 10.9996 11.0003C9.9387 11.0003 8.92129 11.4217 8.17114 12.1719C7.421 12.922 6.99957 13.9394 6.99957 15.0003H4.99957C4.46914 15.0003 3.96043 15.211 3.58536 15.5861C3.21028 15.9612 2.99957 16.4699 2.99957 17.0003C2.99957 17.5307 3.21028 18.0395 3.58536 18.4145C3.96043 18.7896 4.46914 19.0003 4.99957 19.0003H17.9996C18.2648 19.0003 18.5191 18.895 18.7067 18.7074C18.8942 18.5199 18.9996 18.2655 18.9996 18.0003C18.9996 17.7351 18.8942 17.4807 18.7067 17.2932C18.5191 17.1057 18.2648 17.0003 17.9996 17.0003Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Albedo e ombreggiamento</span>
+                <svg id="arrow-6" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-6" class="hidden inner_accordion">
+                <p class="mb-2 p"> Albedo: {{project.albedo|format_albedo}}</p>
+                <p class="p"> Ombreggiamento clinometrico: {{project.shading_horizon|format_shading_horizon}}
+                    ({{project.shading_horizon}}%)</p>
+            </div>
+        </div>
+
+        <!-- Sezione 7 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(7)">
+                <span class="flex gap-x-4 items-center h5"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M17.0917 15.9096L15.9083 17.093C15.7522 17.2482 15.541 17.3353 15.3208 17.3353C15.1007 17.3353 14.8895 17.2482 14.7333 17.093L4.83334 7.20964C4.56235 7.28814 4.28211 7.33018 4.00001 7.33464C3.46943 7.33426 2.9466 7.20723 2.475 6.96411C2.0034 6.72098 1.59665 6.3688 1.28856 5.93683C0.980476 5.50485 0.779959 5.00558 0.703682 4.48051C0.627404 3.95544 0.677571 3.41975 0.85001 2.91797L2.96668 5.03464L3.40834 4.59297L4.59168 3.40964L5.03334 2.96797L2.91668 0.851302C3.41845 0.678863 3.95415 0.628697 4.47922 0.704974C5.00429 0.781251 5.50356 0.981768 5.93553 1.28985C6.3675 1.59794 6.71969 2.00469 6.96281 2.47629C7.20593 2.9479 7.33296 3.47072 7.33334 4.0013C7.32889 4.2834 7.28685 4.56365 7.20834 4.83464L17.0917 14.7346C17.2469 14.8908 17.334 15.102 17.334 15.3221C17.334 15.5423 17.2469 15.7535 17.0917 15.9096ZM0.908343 14.7346C0.753134 14.8908 0.666016 15.102 0.666016 15.3221C0.666016 15.5423 0.753134 15.7535 0.908343 15.9096L2.09168 17.093C2.24781 17.2482 2.45902 17.3353 2.67918 17.3353C2.89933 17.3353 3.11054 17.2482 3.26668 17.093L7.82501 12.543L5.46668 10.1846M15.6667 0.667969L12.3333 2.33464V4.0013L10.525 5.80964L12.1917 7.4763L14 5.66797H15.6667L17.3333 2.33464L15.6667 0.667969Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Configurazione impianto</span>
+                <svg id="arrow-7" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-7" class="hidden inner_accordion">
+                <p class="p">Potenza nominale: {{project.peak_power.value}} {{project.peak_power.unit}}</p>
+                {% if project.plant_scope != ' ' %}
+                <p class="p">Scopo: {{project.plant_scope|format_plant_scope}}</p>
+                {% else %}
+                <p class="p">Scopo non selezionato </p>
+                {% endif %}
+                {% if project.auto_consumption != ' ' %}
+                <p class="p">Livello di autoconsumo: {{project.auto_consumption|format_plant_scope}}</p>
+                {% else %}
+                <p class="p">Livello di autoconsumo non selezionato </p>
+                {% endif %}
+                {% if project.private_house != ' ' %}
+                <p class="p">Abitazione privata: {{project.private_house|format_plant_scope}}</p>
+                {% else %}
+                <p class="p">Proprietà della struttura non selezionata </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sezione 8 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(8)">
+                <span class="flex gap-x-4 items-center h5"><svg width="20" height="19" viewBox="0 0 20 19" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M13.333 6.5013H17.9163L13.333 1.91797V6.5013ZM5.83301 0.667969H14.1663L19.1663 5.66797V14.0013C19.1663 14.4433 18.9907 14.8673 18.6782 15.1798C18.3656 15.4924 17.9417 15.668 17.4997 15.668H5.83301C4.90801 15.668 4.16634 14.918 4.16634 14.0013V2.33464C4.16634 1.89261 4.34194 1.46868 4.6545 1.15612C4.96706 0.843563 5.39098 0.667969 5.83301 0.667969ZM2.49967 4.0013V17.3346H17.4997V19.0013H2.49967C2.05765 19.0013 1.63372 18.8257 1.32116 18.5131C1.0086 18.2006 0.833008 17.7767 0.833008 17.3346V4.0013H2.49967Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Dati generali di progetto</span>
+                <svg id="arrow-8" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-8" class="hidden inner_accordion">
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Titolo progetto: <br> {{project.general_data.project_title}}</p>
+                    <p class="p">Denominazione progetto: <br> {{project.general_data.project_acronym}}</p>
+                    <p class="p">Codice identificativo di progetto: <br> {{project.general_data.identification_code}}
+                    </p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Indirizzo: <br> {{project.general_data.address}}</p>
+                    <p class="p">Comune: <br> {{project.general_data.municipality}}</p>
+                    <p class="p">Provincia: <br> {{project.general_data.province}}</p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Regione: <br> {{project.general_data.region}}</p>
+                    <p class="p">Riferimenti catastali: <br> {{project.general_data.cadastral_references}}</p>
+                    <p class="p">Immagine di copertina: <br> <img class="h-max-[200px]"
+                            src="{{project.images_url.cover_image}}" alt=""></p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Ambito d'intervento: <br> {{project.general_data.intervention_scope}}</p>
+                    <p class="p">Informazioni logistiche: <br> {{project.general_data.site_information}}</p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Data di revisione: <br> {{project.general_data.revision_date}}</p>
+                    <p class="p">Numero di revisione: <br> {{project.general_data.revision_number}}</p>
+                    <p class="p">Approvato da: <br> {{project.general_data.approved_by}}</p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Redatto da: <br> {{project.general_data.edit_by}}</p>
+                    <p class="p">Verificato da: <br> {{project.general_data.verified_by}}</p>
+                    <p class="p"></p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Logo 1: <br> <img class="h-[100px]"
+                            src="{{project.images_url.cover_logo_1}}" alt="">
+                    </p>
+                    <p class="p">Logo 2: <br> <img class="h-[100px]"
+                            src="{{project.images_url.cover_logo_2}}" alt="">
+                    </p>
+                    <p class="p">Logo 3: <br> <img class="h-[100px]"
+                            src="{{project.images_url.cover_logo_3}}" alt="">
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione 9 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(9)">
+                <span class="flex gap-x-4 items-center h5"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M8 0C9.06087 0 10.0783 0.421427 10.8284 1.17157C11.5786 1.92172 12 2.93913 12 4C12 5.06087 11.5786 6.07828 10.8284 6.82843C10.0783 7.57857 9.06087 8 8 8C6.93913 8 5.92172 7.57857 5.17157 6.82843C4.42143 6.07828 4 5.06087 4 4C4 2.93913 4.42143 1.92172 5.17157 1.17157C5.92172 0.421427 6.93913 0 8 0ZM8 10C12.42 10 16 11.79 16 14V16H0V14C0 11.79 3.58 10 8 10Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Committente e proponente</span>
+                <svg id="arrow-9" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-9" class="hidden inner_accordion">
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Denominazione Committente: <br> {{project.client_data.client_name}}</p>
+                    <p class="p">Altre informazioni: <br> {{project.client_data.client_additional_info}}</p>
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Logo: <br> <img class="h-[100px] "
+                            src="{{project.images_url.client_logo}}" alt=""></p>
+                    <p class="p"></p>
+                    <p class="p"></p>
+                </div>
+                <h4 class="h4 mb-[50px]">Proponente</h4>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Denominazione Proponente: <br> {{project.proposer_data.proposer_name}}</p>
+                    <p class="p">Altre informazioni: <br> {{project.proposer_data.proposer_additional_info}}</p>
+
+                </div>
+                <div class="grid grid-cols-3 gap-x-[150px] mb-[50px]">
+                    <p class="p">Logo: <br> <img class="h-[100px]"
+                            src="{{project.images_url.proposer_logo}}" alt="">
+                    </p>
+                    <p class="p"></p>
+                    <p class="p"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sezione 10 -->
+        <div class="outer_accordion_report">
+            <button class="btn_accordion_report" onclick="toggleAccordion(10)">
+                <span class="flex gap-x-4 items-center h5"><svg width="20" height="15" viewBox="0 0 20 15" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M14 13.0001V15.0001H0V13.0001C0 13.0001 0 9.00005 7 9.00005C14 9.00005 14 13.0001 14 13.0001ZM10.5 3.50005C10.5 2.80782 10.2947 2.13113 9.91014 1.55556C9.52556 0.979985 8.97893 0.531381 8.33939 0.266474C7.69985 0.00156766 6.99612 -0.067744 6.31718 0.0673043C5.63825 0.202353 5.01461 0.535695 4.52513 1.02518C4.03564 1.51466 3.7023 2.1383 3.56725 2.81724C3.4322 3.49617 3.50152 4.1999 3.76642 4.83944C4.03133 5.47899 4.47993 6.02561 5.0555 6.4102C5.63108 6.79478 6.30777 7.00005 7 7.00005C7.92826 7.00005 8.8185 6.6313 9.47487 5.97493C10.1313 5.31855 10.5 4.42831 10.5 3.50005ZM13.94 9.00005C14.5547 9.4758 15.0578 10.0805 15.4137 10.7716C15.7696 11.4626 15.9697 12.2233 16 13.0001V15.0001H20V13.0001C20 13.0001 20 9.37005 13.94 9.00005ZM13 5.2579e-05C12.3117 -0.00378014 11.6385 0.202008 11.07 0.590053C11.6774 1.43879 12.0041 2.45634 12.0041 3.50005C12.0041 4.54377 11.6774 5.56132 11.07 6.41005C11.6385 6.7981 12.3117 7.00389 13 7.00005C13.9283 7.00005 14.8185 6.6313 15.4749 5.97493C16.1313 5.31855 16.5 4.42831 16.5 3.50005C16.5 2.57179 16.1313 1.68156 15.4749 1.02518C14.8185 0.368802 13.9283 5.2579e-05 13 5.2579e-05Z"
+                            fill="#EFB90B" />
+                    </svg>
+                    Progettisti e collaboratori</span>
+                <svg id="arrow-10" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6" />
+                </svg>
+            </button>
+            <div id="content-10" class="hidden inner_accordion">
+                <h4 class="h4 mb-[30px] mt-[50px]">Progettisti</h4>
+                {% for designer in project.designers_data %}
+                <div class="p-4 mb-8 rounded-lg border border-gray-300">
+                    <h5 class="mb-3 h5">{{ designer.designer_name }}</h5>
+                    {% if designer.designer_additional_info %}
+                        <div class="p">
+                            <strong>Ulteriori informazioni:</strong><br>
+                            <p class="mt-2 text-sm leading-relaxed">{{ designer.designer_additional_info|linebreaksbr }}</p>
+                        </div>
+                    {% endif %}
+                    <div class="p">
+                        <p class="p">Logo: <br> <img class="h-max-[200px] w-[200px]"
+                            src="{{designer.designer_logo_url}}" alt="">
+                    </p>
+                    </div>
+
+                </div>
+                {% empty %}
+                <p class="p">Nessun progettista inserito.</p>
+                {% endfor %}
+                
+                {% if project.collaborators_data %}
+                <h4 class="h4 mb-[30px] mt-[50px]">Collaboratori</h4>
+                {% for collaborator in project.collaborators_data %}
+                <div class="p-3 mb-4 rounded-lg border border-gray-300">
+                    <p class="p">{{ collaborator.name }}</p>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="flex justify-center w-full">
+            <button id="nextButton" class="mt-6 btn btn-primary" onclick="submitSelection()">Inizia la
+                simulazione</button>
+        </div>
+
+    </div>
+
+    <script>
+        let activeAccordion = null;
+
+        function toggleAccordion(index) {
+            const content = document.getElementById(`content-${index}`);
+            const icon = document.getElementById(`arrow-${index}`);
+
+            // Se c'è un accordion attivo e non è quello cliccato, chiudilo
+            if (activeAccordion && activeAccordion !== index) {
+                const activeContent = document.getElementById(`content-${activeAccordion}`);
+                const activeIcon = document.getElementById(`arrow-${activeAccordion}`);
+                activeContent.classList.add('hidden');
+                // Ripristina l'icona + per l'accordion precedentemente attivo
+                activeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/>';
+            }
+
+            // Toggle dell'accordion corrente
+            content.classList.toggle('hidden');
+
+            // Cambia l'icona in base allo stato
+            if (!content.classList.contains('hidden')) {
+                // Se l'accordion è aperto, mostra il -
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h12"/>';
+                activeAccordion = index;
+            } else {
+                // Se l'accordion è chiuso, mostra il +
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v12m6-6H6"/>';
+                activeAccordion = null;
+            }
+        }
+        localStorage.setItem('visited_final_report', 'true');
+        function submitSelection() {
+            window.location.href = '/project/project_pipeline';  // Redirect to the next page
+        }
+    </script>
+
+</div>
+<style>
+    .space-y-3> :not([hidden])~ :not([hidden]) {
+        margin-top: 0px !important;
+    }
+</style>
+{% endblock %}

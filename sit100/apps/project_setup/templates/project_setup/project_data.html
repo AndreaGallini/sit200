@@ -1,0 +1,402 @@
+{% extends "project_setup_layout.html" %}
+{% block title %}
+Dati generali di progetto
+{% endblock %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+
+<form id="projectDataForm" class="inner_form_div form-group">
+    <div class="relative flex items-center justify-center mb-[30px]">
+        <h1 class="titles_forms">Dati generali di progetto</h1>
+        <a href="/documentazione/#dati_generali" target="_blank">
+            <img src="{%  static 'image/icons/tooltip.svg' %}" class="cursor-pointer w-[20px] dark:invert" alt="">
+        </a>
+    </div>
+    <div class="container_form_no_flex_center">
+        <div class="flex justify-start w-full pl-[80px] mb-[20px]">
+            <h2 class="justify-self-start items-start h4">Dati identificativi di progetto</h2>
+        </div>
+        <div class="my_row">
+            <label class="floating-label">
+                <input type="text" placeholder="Titolo di progetto" class="input input-primary w-[300px] h-[50px]" maxlength="200" id="project_title" name="project_title" {% if 'project_title' in required_fields %} required{% endif %} value="{{ project_title }}" />
+                <span>Titolo di progetto {% if 'project_title' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Acronimo di progetto" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="project_acronym" name="project_acronym" {% if 'project_acronym' in required_fields %} required{% endif %} value="{{ project_acronym }}" />
+                <span>Acronimo di progetto {% if 'project_acronym' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Codice identificativo" class="input input-primary w-[300px] h-[50px]" maxlength="20" id="identification_code" name="identification_code" {% if 'identification_code' in required_fields %} required{% endif %} value="{{ identification_code }}" />
+                <span>Codice identificativo {% if 'identification_code' in required_fields %}*{% endif %}</span>
+              </label>
+        </div>
+        <div class="my_row">
+            <label class="floating-label">
+                <input type="text" placeholder="Indirizzo d'installazione" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="address" name="address" {% if 'address' in required_fields %} required{% endif %} value="{{ address }}" />
+                <span>Indirizzo d'installazione {% if 'address' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Comune" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="municipality" name="municipality" {% if 'municipality' in required_fields %} required{% endif %} value="{{ municipality }}" />
+                <span>Comune {% if 'municipality' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Provincia" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="province" name="province" {% if 'province' in required_fields %} required{% endif %} value="{{ province }}" />
+                <span>Provincia {% if 'province' in required_fields %}*{% endif %}</span>
+              </label>
+        </div>
+        <div class="my_row">
+            <label class="floating-label">
+                <input type="text" placeholder="Regione" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="region" name="region" {% if 'region' in required_fields %} required{% endif %} value="{{ region }}" />
+                <span>Regione {% if 'region' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Riferimenti catastali" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="cadastral_references" name="cadastral_references" {% if 'cadastral_references' in required_fields %} required{% endif %}   value="{{ cadastral_references }}" />
+                <span>Riferimenti catastali {% if 'cadastral_references' in required_fields %}*{% endif %}</span>
+              </label>
+              <div class="flex flex-col">
+                <span class="p">Immagine di copertina</span>
+                <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="cover_image" name="cover_image" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                <small class="file-info">Formati accettati: jpg,jpeg,png. Max 6MB</small>
+                <div class="file-name" id="fileNameDisplay1" style="display: none;">
+                    {% if cover_image %}
+                    Immagine caricata : {{ cover_image|split:'/' }}
+                    {% if project.images_paths.cover_image %}
+                    <br><small class="text-blue-600">Percorso DigitalOcean: {{ project.images_paths.cover_image }}</small>
+                    {% endif %}
+                    {% else %}
+                    
+                    {% endif %}
+                </div>
+              </div>
+        </div>
+        <div class="my_row">
+            <div class="w-[300px]"></div>
+            <div class="w-[300px]"></div>
+            <div class="h-[100px] w-[300px] flex flex-col items-start">
+                <div id="preview_cover_image" class="mb-2 text-xs">
+                    {% if project.images_url.cover_image %}
+                    Immagine caricata:
+                    <img src="{{project.images_url.cover_image}}" alt="" class="max-w-full h-[150px]">
+                    {% else %}
+                    <div class="text-sm text-gray-500">Nessuna immagine caricata</div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+        <div class="flex justify-start w-full pl-[80px] mb-[20px]">
+            <h2 class="justify-self-start items-start text-left h4">Informazioni generali</h2>
+        </div>
+        <div class="my_row">
+            <label class="floating-label">
+                <textarea type="text" placeholder="Ambito d'intervento" class="input input-primary w-[300px] h-[150px]" id="intervention_scope" maxlength="2000"  name="intervention_scope" placeholder=" " {% if 'intervention_scope' in required_fields %} required{% endif %}>{{intervention_scope}}</textarea>
+                <span>Ambito di intervento {% if 'intervention_scope' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <textarea type="text" placeholder="Informazioni logistiche" class="input input-primary w-[300px] h-[150px]" id="site_information" maxlength="2000" name="site_information" placeholder=" " {% if 'site_information' in required_fields %} required{% endif %}>{{site_information}}</textarea>
+                <span>Informazioni logistiche {% if 'site_information' in required_fields %}*{% endif %}</span>
+              </label>
+              <div class="w-[300px]"></div>
+        </div>
+        <div class="flex justify-start w-full pl-[80px] mb-[20px] mt-[50px]">
+            <h2 class="justify-self-start items-start text-left h4">Revisione</h2>
+        </div>
+        
+        <div class="my_row">
+            <label class="input input-primary w-[300px] h-[50px]">
+                <span class="label">Data revisione</span>
+                <input type="date"  id="revision_date" name="revision_date" {% if 'revision_date' in required_fields %} required{% endif %} value="{{ revision_date }}" />
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Numero di revisione" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="revision_number" name="revision_number" {% if 'revision_number' in required_fields %} required{% endif %} value="{{ revision_number }}" />
+                <span>Numero revisione {% if 'revision_number' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Approvato da" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="approved_by" name="approved_by" {% if 'approved_by' in required_fields %} required{% endif %} value="{{ approved_by }}" />
+                <span>Approvato da {% if 'approved_by' in required_fields %}*{% endif %}</span>
+              </label>
+        </div>
+        <div class="my_row">
+            <label class="floating-label">
+                <input type="text" placeholder="Redatto da" class="input input-primary w-[300px] h-[50px]" maxlength="100" id="edit_by" name="edit_by" {% if 'edit_by' in required_fields %} required{% endif %} value="{{ edit_by }}" />
+                <span>Redatto da {% if 'edit_by' in required_fields %}*{% endif %}</span>
+              </label>
+              <label class="floating-label">
+                <input type="text" placeholder="Verificato da" class="input input-primary w-[300px] h-[50px]" maxlength="50" id="verified_by" name="verified_by" {% if 'verified_by' in required_fields %} required{% endif %} value="{{ verified_by }}" />
+                <span>Verificato da {% if 'verified_by' in required_fields %}*{% endif %}</span>
+              </label>
+              <div class="w-[300px]"></div>
+        </div>
+
+        <div class="flex justify-start w-full pl-[80px] mb-[20px]">
+            <h2 class="justify-self-start items-start h4">Loghi ufficiali per la copertina di progetto</h2>
+        </div>
+        <div class="h-full my_row">
+                          <div class="flex flex-col">
+                <span class="p">Logo 1</span>
+                <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="cover_logo_1" name="cover_logo_1" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                <small class="file-info">Formati accettati: jpg,jpeg,png. Max 6MB</small>
+                <div class="file-name file-name1" id="fileNameDisplay2" style="display: none;">
+                    {% if cover_logo_1 %}
+                    Logo caricato: {{ cover_logo_1|split:'/' }}
+                    {% else %}
+                    {% endif %}
+                </div>
+                </div>
+                            <div class="flex flex-col">
+                <span class="p">Logo 2</span>
+                <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="cover_logo_2" name="cover_logo_2" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                <small class="file-info">Formati accettati: jpg,jpeg,png. Max 6MB</small>
+                <div class="file-name file-name2" id="fileNameDisplay3" style="display: none;">
+                    {% if cover_logo_2 %}
+                    Logo caricato: {{ cover_logo_2|split:'/' }}
+                    {% else %}
+                    {% endif %}
+                </div>
+                </div>
+                            <div class="flex flex-col">
+                <span class="p">Logo 3</span>
+                <input type="file" class="file-input file-input-primary w-[300px] h-[50px]" id="cover_logo_3" name="cover_logo_3" accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" max-size="6291456" />       
+                <small class="file-info">Formati accettati: jpg,jpeg,png. Max 6MB</small>
+                <div class="file-name file-name3" id="fileNameDisplay4" style="display: none;">
+                    {% if cover_logo_3 %}
+                        Logo caricato: {{ cover_logo_3|split:'/' }}
+                    {% else %}
+                        
+                    {% endif %}
+                </div>
+                </div>
+        </div>
+        <div class="h-full my_row">
+            <div class="h-[150px] w-[300px]">
+                <div id="preview_logo_1" class="flex flex-col items-start mb-2 text-xs">
+                    {% if project.images_url.cover_logo_1 %}
+                    Logo caricato:
+                    <img src="{{project.images_url.cover_logo_1}}" alt="" class="max-w-full h-[100px]">
+                    {% else %}
+                    <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="h-[150px] w-[300px]">
+                <div id="preview_logo_2" class="flex flex-col items-start mb-2 text-xs">
+                    {% if project.images_url.cover_logo_2 %}
+                    Logo caricato:
+                    <img src="{{project.images_url.cover_logo_2}}" alt="" class="max-w-full h-[100px]">
+                    {% else %}
+                    <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="h-[150px] w-[300px]">
+                <div id="preview_logo_3" class="flex flex-col items-start mb-2 text-xs">
+                    {% if project.images_url.cover_logo_3 %}
+                    Logo caricato:
+                    <img src="{{project.images_url.cover_logo_3}}" alt="" class="max-w-full h-[100px]">
+                    {% else %}
+                    <div class="text-sm text-gray-500">Nessun logo caricato</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+   
+        <div class="flex justify-start w-full pl-[80px] mb-[20px] mt-[50px]">
+            <h2 class="justify-self-start items-start h4">Scelta copertina</h2>
+            
+        </div>
+        <div class="flex justify-around mt-5 w-full">
+            <div class="flex gap-x-12">
+                <div class="flex flex-col items-center copertina_1">
+                    <input type="radio" class="radio radio-primary" name="copertina" id="copertina_1" value="copertina_1" {% if copertina == 'copertina_1' %} checked {% endif %} disabled>
+                    <label class="flex-col my_label_where p">
+                        <img src="{% static 'image/cover/copertina1.png' %}" alt="" class="mt-2 w-[300px] max-h-[410px]">
+                    </label>
+                </div>
+                <div class="flex flex-col items-center copertina_2">
+                    <label class="flex-col my_label_where p">
+                        <input type="radio" class="radio radio-primary" name="copertina" id="copertina_2" value="copertina_2" {% if copertina == 'copertina_2' %} checked {% endif %} disabled>
+                        <img src="{% static 'image/cover/copertina2.png' %}" alt="" class="mt-2 w-[300px] max-h-[410px]">
+                    </label>
+                </div>
+                <div class="flex flex-col items-center copertina_3">
+                    <label class="flex-col my_label_where p">
+                        <input type="radio" class="radio radio-primary" name="copertina" id="copertina_3" value="copertina_3" {% if copertina == 'copertina_3' %} checked {% endif %} disabled>
+                        <img src="{% static 'image/cover/copertina4.png' %}" alt="" class="mt-2 w-[300px] max-h-[410px]">
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    {% include 'components/navigation_btn.html' with backroute='/project/configurazione_impianto/' %}
+</form>
+
+<script>
+    const required_fields = {{ required_fields|safe }};
+// Array con le configurazioni dei file input
+const fileInputs = [
+    { inputId: 'cover_image', nameClass: 'file-name' },
+    { inputId: 'cover_logo_1', nameClass: 'file-name1' },
+    { inputId: 'cover_logo_2', nameClass: 'file-name2' },
+    { inputId: 'cover_logo_3', nameClass: 'file-name3' }
+];
+
+// Funzione per mostrare l'anteprima dell'immagine
+function showImagePreview(input, previewId) {
+    const previewElement = document.getElementById(previewId);
+    if (!previewElement) return;
+    
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const isCoverImage = previewId === 'preview_cover_image';
+            const imageHeight = isCoverImage ? '150px' : '100px';
+            const textLabel = isCoverImage ? 'Anteprima immagine:' : 'Anteprima:';
+            
+            previewElement.innerHTML = `
+                <div class="text-sm text-base-content">${textLabel}</div>
+                <img src="${e.target.result}" alt="Anteprima" class="max-w-full h-auto rounded border border-gray-300" style="height:100px !important;">
+            `;
+        };
+        
+        reader.readAsDataURL(file);
+    } else {
+        const isCoverImage = previewId === 'preview_cover_image';
+        const noImageText = isCoverImage ? 'Nessuna immagine caricata' : 'Nessun logo caricato';
+        previewElement.innerHTML = `<div class="text-sm text-gray-500">${noImageText}</div>`;
+    }
+}
+
+// Funzione per rimuovere l'anteprima dell'immagine
+function removeImagePreview(input) {
+    const inputId = input.id;
+    let previewId = '';
+    
+    if (inputId === 'cover_image') previewId = 'preview_cover_image';
+    else if (inputId === 'cover_logo_1') previewId = 'preview_logo_1';
+    else if (inputId === 'cover_logo_2') previewId = 'preview_logo_2';
+    else if (inputId === 'cover_logo_3') previewId = 'preview_logo_3';
+    
+    if (previewId) {
+        const previewElement = document.getElementById(previewId);
+        if (previewElement) {
+            if (inputId === 'cover_image') {
+                previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessuna immagine caricata</div>';
+            } else {
+                previewElement.innerHTML = '<div class="text-sm text-gray-500">Nessun logo caricato</div>';
+            }
+        }
+    }
+}
+
+// Funzione per gestire il cambio del file
+function handleFileChange(input, nameElement) {
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        
+        // Controlla la dimensione del file (6MB = 6291456 bytes)
+        if (file.size > 6291456) {
+            alert('Il file è troppo grande. La dimensione massima è 6MB');
+            input.value = '';
+            nameElement.textContent = 'Nessun file selezionato';
+            // Rimuovi l'anteprima se presente
+            removeImagePreview(input);
+            return;
+        }
+
+        // Controlla l'estensione del file
+        const validExtensions = ['jpg', 'jpeg', 'png', 'JPG', 'JPEG', 'PNG'];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!validExtensions.includes(fileExtension)) {
+            alert('Formato file non valido. Utilizzare jpg, jpeg o png');
+            input.value = '';
+            nameElement.textContent = 'Nessun file selezionato';
+            // Rimuovi l'anteprima se presente
+            removeImagePreview(input);
+            return;
+        }
+
+        nameElement.textContent = file.name;
+        
+        // Mostra l'anteprima dell'immagine
+        const inputId = input.id;
+        if (inputId === 'cover_image') {
+            showImagePreview(input, 'preview_cover_image');
+        } else if (inputId === 'cover_logo_1') {
+            showImagePreview(input, 'preview_logo_1');
+        } else if (inputId === 'cover_logo_2') {
+            showImagePreview(input, 'preview_logo_2');
+        } else if (inputId === 'cover_logo_3') {
+            showImagePreview(input, 'preview_logo_3');
+        }
+        
+    } else {
+        nameElement.textContent = 'Nessun file selezionato';
+        // Rimuovi l'anteprima se presente
+        removeImagePreview(input);
+    }
+}
+
+// Inizializza tutti i file input
+document.addEventListener('DOMContentLoaded', function() {
+    fileInputs.forEach(config => {
+        const input = document.getElementById(config.inputId);
+        const nameElement = document.querySelector('.' + config.nameClass);
+        
+        if (input && nameElement) {
+            // Aggiungi l'event listener
+            input.addEventListener('change', function() {
+                handleFileChange(this, nameElement);
+            });
+
+            // Imposta il nome iniziale se c'è un file già caricato
+            if (input.dataset.filename) {
+                nameElement.textContent = input.dataset.filename;
+            }
+        }
+    });
+});
+
+var project_code = parseFloat('{{ project_code|escapejs }}');
+localStorage.setItem('visited_project_data', 'true');
+
+document.getElementById('projectDataForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    // Check required fields
+    const required_fields = {{ required_fields|safe }};
+    const missingFields = [];
+    
+    const formData = new FormData(this);
+    formData.append('project_code', project_code);
+
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    // Effettua la richiesta POST per caricare i dati e l'immagine
+    fetch('/save_general_data/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        },
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            window.location.href = '/project/user_choise/';
+        } else {
+            console.error(data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
+
+
+{% endblock %}

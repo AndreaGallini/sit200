@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="it" data-theme="{{currentTheme}}">
+<head>
+    <script>
+        // Script per controllare il tema corrente - eseguito prima del caricamento del DOM
+        const currentTheme = localStorage.getItem('theme');
+        // Imposta immediatamente il tema sull'elemento HTML se presente nel localStorage
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+        }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'image/logos/favicon.ico' %}">
+    <link href="{% static 'output.css' %}?v={{ time.time }}" rel="stylesheet">
+    <link href="{% static 'style/style.css' %}" rel="stylesheet">
+    <script src="{% static 'js/functions.js' %}" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Logout {{APP_NAME}}</title>
+</head>
+
+<!-- header dell'autenticazione  -->   
+<nav class="flex justify-center mt-[50px] ">
+    <div class="">
+        <div class="logo">
+            <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden my_dark:block">
+            <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block my_dark:hidden">
+
+    </div>
+
+</nav>
+
+<body class="text-center background_our_main font-nunito-sans">
+    <div class="pt-[200px]">
+        <h1 class="h1">Logout avvenuto con successo</h1>
+        <p class="p" id="redirect-message">Verrai reindirizzato alla pagina di login tra <span id="countdown">5</span> secondi...</p>
+    </div>
+</body>
+
+<script>
+let countdown = 5;
+const countdownElement = document.getElementById('countdown');
+const redirectMessageElement = document.getElementById('redirect-message');
+const intervalId = setInterval(() => {
+    countdown--;
+    if (countdown > 0) {
+        countdownElement.textContent = countdown;
+    } else {
+        redirectMessageElement.textContent = 'Stai per essere reindirizzato...';
+        clearInterval(intervalId);
+    }
+}, 1000);
+
+
+setTimeout(function() {
+    window.location.href = "{% url 'login' %}";
+}, 6000);
+function enableDarkMode() {
+document.documentElement.classList.add('dark');
+localStorage.setItem('theme', 'dark');
+}
+
+// Funzione per attivare il tema light
+function disableDarkMode() {
+document.documentElement.classList.remove('dark');
+localStorage.setItem('theme', 'light');
+}
+
+// Controlla il tema salvato e applicalo
+function applySavedTheme() {
+const savedTheme = localStorage.getItem('theme');
+if (savedTheme === 'dark') {
+    enableDarkMode();
+} else {
+    disableDarkMode();
+}
+}
+
+// Applica il tema salvato all'inizio
+applySavedTheme();
+</script>
+</html>

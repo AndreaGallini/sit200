@@ -1,0 +1,81 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Assistenza
+{% endblock %}
+{% block content %}
+{% load static %}
+<div>
+    {% if request.user_agent.is_mobile %}
+    <div class="back_mobile">
+        <a href="/user/user_dashboard" class="font-bold text-main_color text-[14px] absolute top-[60px] left-[20px]">Torna indietro</a>
+    </div>
+    {% else %}
+
+    {% endif %}
+    <h4 class="mb-[20px] h3 md:mt-0 md:text-left">Assistenza</h4>
+    <h1 class="h4 mb-[20px] md:text-left">Compila il form per ricevere assistenza</h1>
+    <p class="p md:text-left">Puoi contattarci attraverso uno dei seguenti canali:</p>
+    <p class="p md:text-left"><strong>Email:</strong> scrivici ad <a href="mailto:assistenza@kwh91.com">assistenza@kwh91.com</a></p>
+    <p class="p md:text-left"><strong>Whatsapp:</strong> inviaci un messaggio al +39 339 315 8203</p>
+    <p class="p md:text-left mb-[50px]"><strong>Modulo di assistenza:</strong> compila il form qui sotto</p>
+        {% if messages %}
+            {% for message in messages %}
+                <div id="success-message" class="relative px-4 py-3 mb-4 text-green-700 bg-green-100 rounded border border-green-400 w-fit">
+                    <span class="block sm:inline">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+        {% if form.errors %}
+        <div id="error-message" class="relative px-4 py-3 mb-4 text-red-700 bg-red-100 rounded border border-red-400 w-fit">
+            <span>Errore nella compilazione dei campi, riprovare</span>
+        </div>
+    
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="input_form_assistence">
+                <label for="{{ form.dropdown.id_for_label }}" class="mb-[15px] p md:text-left">Selezionare l'area per cui richiedi assistenza:</label>
+                {{ form.dropdown }}
+                {% if form.dropdown.errors %}
+                    <p class="text-xs italic text-red-500">{{ form.dropdown.errors }}</p>
+                {% endif %}
+            </div>
+            <div class="input_form_assistence">
+                <label for="{{ form.subject.id_for_label }}" class="mb-[15px] p md:text-left">Descrivi brevemente il problema (max 50 caratteri):</label>
+                {{ form.subject }}
+                {% if form.subject.errors %}
+                    <p class="text-xs italic text-red-500">{{ form.subject.errors }}</p>
+                {% endif %}
+            </div>
+            <div class="input_form_assistence">
+                <label for="{{ form.message.id_for_label }}" class="mb-[15px] p md:text-left">Descrivi il problema più nel dettaglio:</label>
+                {{ form.message }}
+                {% if form.message.errors %}
+                    <p class="text-xs italic text-red-500">{{ form.message.errors }}</p>
+                {% endif %}
+            </div>
+            <div class="md:flex md:justify-start md:w-full md:mt-[50px]">
+                <button type="submit" class="btn btn-primary">Invia Email</button>
+
+            </div>
+        </form>
+</div>
+<script>
+            document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("success-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 5000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var message = document.getElementById("error-message");
+        if (message) {
+            setTimeout(function() {
+                message.style.display = 'none';
+            }, 5000); // Nasconde il messaggio dopo 5 secondi
+        }
+    });
+</script>
+{% endblock %}

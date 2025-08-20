@@ -1,0 +1,27 @@
+{% extends "layout_user.html" %}
+{% block title %}
+    Sicurezza
+{% endblock %}
+{% block content %}
+{% load static %}
+<div>
+    <div class="flex flex-col divide-y">
+        <h1 class="p-4 text-2xl font-bold h2">Area personale</h1>
+        <a href="/user" class="p-4 p">Profilo</a>
+        <a href="/user/sicurezza/" class="p-4 p">Cambio password</a>
+        <a href="/user/logs" class="p-4 p">Log accessi</a>
+       <!-- <a href="/user/save_designer_data" class="p-4 p">Dati personali</a>-->
+        <!--<a href="/settings" class="p-4 p">Impostazioni</a>-->
+        <a href="/user/sicurezza/" class="p-4 p">Sicurezza</a>
+        <a href="/user/assistenza/" class="p-4 p">Assistenza</a>
+        <!-- <a href="/user/questionario/" class="p-4 p">Questionario Feedback</a>-->
+        <!--         <a href="/documents" class="p-4 p">Documenti</a>
+        <a href="/shared" class="p-4 p">Cartella condivisa</a>
+        <a href="/admin" class="p-4 p">Amministrazione</a>
+        <a href="/billing" class="p-4 p">Fatturazione</a>
+        <a href="/permissions" class="p-4 p">Permessi utente</a> -->
+
+    </div>
+</div>
+
+{% endblock %}

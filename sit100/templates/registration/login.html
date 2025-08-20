@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+
+<div class="flex justify-center items-center p-4 h-calc-100-minus-100">
+   <div class="p-6 w-full max-w-md rounded-lg shadow bg-base-100">
+       {% if form.errors %}
+       <div role="alert" class="alert alert-error">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Username e password non corrispondono. Riprova.</span>
+      </div>
+       {% endif %}
+
+       {% if next %}
+           {% if user.is_authenticated %}
+           <div role="alert" class="alert alert-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>Il tuo account non ha accesso a questa pagina.</span>
+          </div>
+           {% else %}
+           <div role="alert" class="alert alert-info">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="w-6 h-6 stroke-current shrink-0">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>Effettua il login per vedere questa pagina.</span>
+          </div>
+           {% endif %}
+       {% endif %}
+
+       <h3 class="text-center h3 mt-5mb-6">Benvenuto, effettua l'accesso test2</h3>       
+       <form method="post" action="{% url 'login' %}" class="space-y-4">
+           {% csrf_token %}
+           
+           <div class="input_form">
+               {{ form.username }}
+           </div>
+
+           <div class="relative input_form">
+               {{ form.password }}
+               <span class="flex absolute inset-y-0 right-0 items-center pr-3">
+                   <i class="cursor-pointer far fa-eye" id="toggle-password"></i>
+               </span>
+           </div>
+
+           <div class="text-right">
+               <a href="{% url 'password_reset' %}" class="text-main_color hover:underline">
+                   Password dimenticata?
+               </a>
+           </div>
+
+           <div class="pt-4">
+               <input type="submit" value="Accedi" class="w-full btn btn-primary">
+           </div>
+
+           <input type="hidden" name="next" value="{{ next }}">
+       </form>
+   </div>
+</div>
+<script>
+    // Carica il tema salvato
+  
+
+        // JavaScript per alternare la visibilità della password
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordField = document.getElementById('id_password');
+
+togglePassword.addEventListener('click', function () {
+    // Verifica che entrambi gli elementi esistano
+    if (passwordField && togglePassword) {
+        // Cambia il tipo del campo password
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            togglePassword.classList.remove('fa-eye');
+            togglePassword.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            togglePassword.classList.remove('fa-eye-slash');
+            togglePassword.classList.add('fa-eye');
+        }
+    } else {
+        console.error('Elementi password o toggle non trovati');
+    }
+});
+</script>
+{% endblock %}

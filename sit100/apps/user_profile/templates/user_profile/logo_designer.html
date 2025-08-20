@@ -1,0 +1,19 @@
+<div class="container_general_data_flex input_form">
+    <div class="container">
+        <div class="file-name" id="fileNameDisplay">
+            {% if logo_name %}
+                {{ logo_name|split:'/' }}
+            {% else %}
+                Logo
+            {% endif %}
+        </div>
+        <label for="designer_logo" class="button">Scegli file</label>
+        <input id="designer_logo" name="designer_logo"
+               type="file" 
+               style="display:none;" 
+               accept=".jpg,.jpeg,.png,.JPG,.JPEG,.PNG" 
+               max-size="6291456">
+    </div>
+    <small class="file-info">Formati accettati: jpg,jpeg,png. Dimensione massima: 3MB</small>
+</div>
+<div id="designer_logo_preview" class="hidden mt-2" style="display: none !important;"></div>

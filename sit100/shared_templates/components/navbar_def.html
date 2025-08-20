@@ -1,0 +1,280 @@
+{% load static %}
+{% if user.is_authenticated %}
+<nav class="main_navbar">
+    <div class="inner_navbar">
+        <div class="logo w-[200px] h-[100px]">
+            <a href="/dashboard/" class="h-[100px] block relative">
+                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden my_dark:block">
+                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block my_dark:hidden">
+            </a>
+        </div>
+        <div class="hamburger">
+            <button id="menu-toggle" class="sm:block md:block lg:hidden">
+                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="hamburger-icon">
+                    <path class="line top" d="M0 0H18V2H0V0Z" fill="#EFB90B" transform-origin="9 1"/>
+                    <path class="line middle" d="M0 5H18V7H0V5Z" fill="#EFB90B" transform-origin="9 6"/>
+                    <path class="line bottom" d="M0 10H18V12H0V10Z" fill="#EFB90B" transform-origin="9 11"/>
+                </svg>
+            </button>
+            <div id="mobile-menu" class="hidden menu_mobile z-[9999]">
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="/project/archivio_progetti"><img src="{% static 'image/navbar/mobile_menu/project_light.svg' %}" alt="" >Progetti</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="/project/archivio_progetti"><img src="{% static 'image/navbar/mobile_menu/project_dark.svg' %}" alt="" class="navbar_image_dark">Progetti</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="/user/user_dashboard/"><img src="{% static 'image/navbar/mobile_menu/user_dark.svg' %}" alt="">Area personale</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="/user"><img src="{% static 'image/navbar/mobile_menu/user_light.svg' %}" alt="" class="navbar_image_dark">Area personale</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="{% url 'terms_conditions' %}"><img src="{% static 'image/navbar/mobile_menu/legal_dark.svg' %}" alt="">Termini e Condizioni</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="{% url 'terms_conditions' %}"><img src="{% static 'image/navbar/mobile_menu/legal_light.svg' %}" alt="">Termini e Condizioni</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="{% url 'privacy' %}"><img src="{% static 'image/navbar/mobile_menu/privacy_dark.svg' %}" alt="">Privacy</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="{% url 'privacy' %}"><img src="{% static 'image/navbar/mobile_menu/privacy_light.svg' %}" alt="">Privacy</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="{% url 'cookies' %}"><img src="{% static 'image/navbar/mobile_menu/cookies_dark.svg' %}" alt="">Cookies</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="{% url 'cookies' %}"><img src="{% static 'image/navbar/mobile_menu/cookies_light.svg' %}" alt="">Cookies</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="#" id="theme-toggle-dropdown-my_dark"><img src="{% static 'image/navbar/mobile_menu/sun.svg' %}" alt="" class="c_none">Light mode</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="#" id="theme-toggle-dropdown-my_light"><img src="{% static 'image/navbar/mobile_menu/sun_light.svg' %}" alt=""class="c_none">Dark mode</a>
+                </div>
+                <div class="hidden menu_mobile_voice my_dark:flex">
+                    <a href="{% url 'logout' %}"><img src="{% static 'image/navbar/mobile_menu/logout_dark.svg' %}" alt="">Log out</a>
+                </div>
+                <div class="flex menu_mobile_voice my_dark:hidden">
+                    <a href="{% url 'logout' %}"><img src="{% static 'image/navbar/mobile_menu/logout_light.svg' %}" alt="">Log out</a>
+                </div>
+            </div>
+        </div>
+        <div class="center_menu">
+            <div class="btn btn-neutral border-1 border-neutral-content">
+                <a class="flex gap-1" href="/project/archivio_progetti" class="text_navbar"><img src="{% static 'image/navbar/button_vector/Eye.svg' %}"  alt="">Visualizza tutti i progetti</a>
+            </div>
+            <div class="btn btn-primary">
+                <a class="flex gap-1" href="/project/clear_session"><img src="{% static 'image/navbar/button_vector/Plus.svg' %}" class="" alt="">Crea nuovo progetto</a>
+            </div>
+            <div class="btn btn-neutral border-1 border-neutral-content">
+                <a class="flex gap-1" href="/documentazione/" target="_blank" class="text_navbar"><img src="{% static 'image/navbar/button_vector/Eye.svg' %}"  alt="">Documentazione</a>
+            </div>
+            
+        </div>
+        <div class="user_menu">
+            <div class="profile_btn">
+                <a href="/user" class="text_navbar">{{ user.username }} <img src="{% static 'image/navbar/profile_picture.svg' %}" alt="" class="navbar_images_dark"><img src="{% static 'image/navbar/profile_picture_light.svg' %}" alt="" class="navbar_images_light"></a>
+            </div>
+            <label class="toggle text-base-content">
+                <input type="checkbox" value="my_light" class="theme-controller" data-toggle-theme="my_light,my_dark"/>
+              
+                <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></g></svg>
+              
+                <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></g></svg>
+              
+            </label>
+            <a href="{% url 'logout' %}">
+                <img src="{% static 'image/navbar/Logout.svg' %}" alt="" class="hidden my_dark:block">
+                <img src="{% static 'image/navbar/Logout-light.svg' %}" alt="" class="block my_dark:hidden">
+            </a>
+
+        </div>
+    </div>
+
+</nav>
+{% else %}
+<nav class="fixed top-0 left-0 w-full main_navbar">
+    <div class="inner_navbar">
+        <div class="logo w-[200px] h-[100px]">
+            <a href="/login/" class="h-[100px] block relative">
+                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden my_dark:block">
+                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block my_dark:hidden">
+            </a>
+        </div>
+        <div class="color">
+            <label class="toggle text-base-content">
+                <input type="checkbox" value="my_light" class="theme-controller" data-toggle-theme="my_light,my_dark"/>
+              
+                <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></g></svg>
+              
+                <svg aria-label="moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></g></svg>
+              
+            </label>
+        </div>
+    </div>
+
+</nav>
+{% endif %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleziona gli elementi del toggle
+    const themeToggles = document.querySelectorAll('.theme-controller');
+    
+    // Funzione per stampare il tema corrente dal localStorage
+
+
+    // Funzione per impostare il tema
+    function setTheme(theme) {
+        // Imposta direttamente il tema usando l'API di DaisyUI
+        if (window.daisyui && window.daisyui.setTheme) {
+            window.daisyui.setTheme(theme);
+        } else {
+            // Fallback se l'API DaisyUI non è disponibile
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+        
+        // Sincronizza anche la classe my_dark di Tailwind
+        if (theme === 'my_dark') {
+            document.documentElement.classList.add('my_dark');
+        } else {
+            document.documentElement.classList.remove('my_dark');
+        }
+        
+        // Sincronizza lo stato dei toggle
+        themeToggles.forEach(toggle => {
+            if ((theme === 'my_dark' && toggle.value === 'my_dark') || 
+                (theme === 'my_light' && toggle.value === 'my_light')) {
+                toggle.checked = true;
+            } else {
+                toggle.checked = false;
+            }
+        });
+        
+        // Salva la preferenza
+        localStorage.setItem('theme', theme);
+    }
+    
+    // Carica il tema preferito o usa il default
+    const savedTheme = localStorage.getItem('theme');
+    
+    // Usa il tema salvato o default
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        // Usa le preferenze di sistema come fallback
+        const prefersDark = window.matchMedia('(prefers-color-scheme: my_dark)').matches;
+        setTheme(prefersDark ? 'my_dark' : 'my_light');
+    }
+    
+    // Aggiungi listeners ai toggle
+    themeToggles.forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            // Determina il tema in base al valore del toggle
+            const newTheme = this.checked ? 
+                (this.value === 'my_light' ? 'my_light' : 'my_dark') : 
+                (this.value === 'my_light' ? 'my_dark' : 'my_light');
+            
+            setTheme(newTheme);
+        });
+    });
+    
+    // Gestisci anche i toggle del menu mobile
+    const darkToggle = document.getElementById('theme-toggle-dropdown-my_dark');
+    const lightToggle = document.getElementById('theme-toggle-dropdown-my_light');
+    
+    if (darkToggle) {
+        darkToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            setTheme('my_light'); // Passa a my_light mode
+        });
+    }
+    
+    if (lightToggle) {
+        lightToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            setTheme('my_dark'); // Passa a my_dark mode
+        });
+    }
+});
+</script>
+
+<!-- JavaScript per gestire il menu hamburger mobile -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Seleziona gli elementi del menu hamburger
+    const menuToggle = document.getElementById('menu-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.querySelector('.hamburger-icon');
+    
+    if (menuToggle && mobileMenu && hamburgerIcon) {
+        menuToggle.addEventListener('click', function() {
+            // Toggle della visibilità del menu
+            mobileMenu.classList.toggle('hidden');
+            
+            // Toggle della classe per l'animazione dell'hamburger
+            hamburgerIcon.classList.toggle('open');
+            
+        });
+        
+        // Chiudi il menu quando si clicca fuori da esso
+        document.addEventListener('click', function(event) {
+            if (!menuToggle.contains(event.target) && !mobileMenu.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+                hamburgerIcon.classList.remove('open');
+            }
+        });
+        
+        // Chiudi il menu quando si preme ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                mobileMenu.classList.add('hidden');
+                hamburgerIcon.classList.remove('open');
+            }
+        });
+    }
+});
+</script>
+
+<style>
+    .hamburger-icon {
+      cursor: pointer;
+    }
+    
+    .hamburger-icon .line {
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    /* Classe da aggiungere quando il menu è aperto */
+    .hamburger-icon.open .top {
+      transform: rotate(45deg) translate(1.5px, 4px);
+    }
+    
+    .hamburger-icon.open .middle {
+      transform: scaleX(0);
+    }
+    
+    .hamburger-icon.open .bottom {
+      transform: rotate(-45deg) translate(1.5px, -4px);
+    }
+    .fa-sun::before{
+        display: none;
+    }
+    .fa-moon::before{
+        display: none;
+    }
+    [data-theme="my_dark"] .hidden.my_dark\:block {
+    display: block !important;
+    }
+    [data-theme="my_dark"] .block.my_dark\:hidden {
+    display: none !important;
+    }    
+    [data-theme="my_light"] .hidden.my_dark\:block {
+    display: none !important;
+    }
+    [data-theme="my_light"] .block.my_dark\:hidden {
+    display: block !important;
+    }
+
+    </style>

@@ -1,0 +1,25 @@
+{% load static %}
+<div class="navigation_buttons" style="margin-top: 50px !important; margin-bottom: 30px !important;">
+    <button id="backBtn" class="button_back">
+        <svg width="8" height="12" viewBox="0 0 8 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M7.41004 1.42L2.83003 6L7.41003 10.59L6.00003 12L3.48568e-05 6L6.00004 -1.23266e-07L7.41004 1.42Z"
+                fill="#EFB90B" />
+        </svg>
+        Back
+    </button>
+    <button id="nextButton" class="disabled btn btn-primary h-[50px] w-[150px]" onclick="submitSelection()">
+        Salva
+        <img src="{% static 'image/icons/arrowr.png' %}" alt="" class="h-[15px]">
+    </button>
+</div>
+<script>
+
+    const backroute = "{{ backroute|default:'/project/'|escapejs }}";
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('backBtn').addEventListener('click', function () {
+            window.location.href = backroute;
+        });
+    });
+</script>
