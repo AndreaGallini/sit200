@@ -28,7 +28,7 @@
 }
 
 /* Utility semplici - singole proprietà */
-  .text-base-content {
+@utility text-base-content {
   color: oklch(var(--color-base-content));
 }
 
@@ -214,28 +214,28 @@
     @apply flex flex-col md:pl-[30px] sm:pl-0 gap-[20px] h-full;
   }
 
-  .input_user_profile {
+@utility input_user_profile {
   @apply flex flex-col md:flex-row py-5 items-center h-[100px];
 }
 
-  .label_user_info {
+@utility label_user_info {
   @apply w-full  md:w-[180px] flex items-center h-[40px] justify-center md:justify-start pb-[10px] md:pb-0;
 }
 
-  .form_user_info {
+@utility form_user_info {
   @apply w-[400px];
   & input {
     @apply md:w-[400px] input input-primary w-[350px];
   }
 }
 
-  .form_deactive {
+@utility form_deactive {
   & input {
     @apply bg-gray-500;
   }
 }
 
-  .input_form_assistence {
+@utility input_form_assistence {
   @apply flex flex-col md:w-1/2 sm:w-full mb-[30px];
 
   & select {
@@ -251,140 +251,140 @@
   }
 }
 
-  .map-container {
+@utility map-container {
   /*  mappa e controlli*/
   @apply w-full h-full;
 }
 
-  .input_form_1_project {
+@utility input_form_1_project {
   @apply w-[135px] h-[35px] placeholder:px-0 pl-2;
   & input[type='text'] {
     @apply w-[135px] h-[35px] placeholder:px-0;
   }
 }
 
-  .input_container_project_form {
+@utility input_container_project_form {
   @apply flex justify-between pt-2;
 }
 
-  .address-menu {
+@utility address-menu {
   @apply bg-base-100;
 }
 
-  .address-menu2 {
+@utility address-menu2 {
   @apply bg-base-100;
 }
 
-  .inner_form_lat_long {
+@utility inner_form_lat_long {
   @apply flex gap-x-[15px] pr-2 pl-[40px] w-[333px];
 }
 
-  .inner_form_poligon {
+@utility inner_form_poligon {
   @apply w-[75%];
 }
 
-  .btn_pol {
+@utility btn_pol {
   @apply text-sm p-3 mb-2;
 }
 
-  .address_input_map {
+@utility address_input_map {
   @apply w-[283px];
 }
 
-  .ext_map {
+@utility ext_map {
   @apply w-full h-calc-100-minus-30;
 }
 
-  .report_box {
+@utility report_box {
   @apply h-[30px] w-full flex justify-between px-[30px] items-center my-auto;
 }
 
-  .my_label_where {
+@utility my_label_where {
   @apply flex items-center mb-[20px] justify-start;
 }
 
-  .img_form_where {
+@utility img_form_where {
   @apply mb-[50px] p-[50px];
 }
 
-  .sfondo {
+@utility sfondo {
   @apply bg-base-100;
 }
 
-  .container_form {
+@utility container_form {
   @apply flex justify-around items-start h-full pb-[100px];
 }
 
-  .container_form_no_flex {
+@utility container_form_no_flex {
   @apply flex flex-col items-start gap-y-[50px] pt-[50px] pl-[100px];
 }
 
-  .container_form_no_flex_center {
+@utility container_form_no_flex_center {
   @apply flex flex-col items-center gap-y-[10px] pt-[50px];
 }
 
-  .input_config_container {
+@utility input_config_container {
   @apply flex flex-col items-center w-[50%] justify-between mx-auto gap-y-10;
 }
 
-  .inner_form_div {
+@utility inner_form_div {
   margin-left: 20px;
   margin-right: 20px;
   position: relative;
   height: calc(100% - 100px);
 }
 
-  .dashboard_container {
+@utility dashboard_container {
   @apply px-[50px] pt-[50px] bg-base-100  h-calc-100-minus-100 flex justify-center;
 }
 
-  .container_general_data_flex {
+@utility container_general_data_flex {
   @apply flex flex-col gap-y-[10px] items-start w-[400px];
 }
 
-    .titles_forms {
-    @apply text-center mt-7 sm:text-[28px] md:text-[28px] lg:text-[30px] text-base-content relative mr-[10px];
-  }
+@utility titles_forms {
+  @apply text-center mt-7  h2 relative mr-[10px];
+}
 
-  .file-info {
+@utility file-info {
   @apply sm:text-[12px] md:text-[12px] lg:text-[12px] text-base-content;
 }
 
-  .inner_navbar {
+@utility inner_navbar {
   @apply flex justify-between items-center w-full;
 }
 
-  .center_menu {
+@utility center_menu {
   @apply hidden lg:flex gap-x-[15px];
 }
 
-  .profile_btn {
+@utility profile_btn {
   & a {
     @apply flex items-center  gap-x-[10px];
   }
 }
 
-  .user_menu {
+@utility user_menu {
   @apply hidden lg:flex items-center gap-x-[20px];
 }
 
-  .navbar_images_light {
+@utility navbar_images_light {
   @apply block;
 }
 
-  .navbar_images_dark {
+@utility navbar_images_dark {
   @apply hidden;
 }
 
-  .text_navbar {
+@utility text_navbar {
   @apply text-[14px] font-semibold font-inter text-base-content;
 }
 
-  .menu_mobile {
+@utility menu_mobile {
   @apply absolute top-[100px] w-screen right-0  bg-base-100  z-9999;
 }
 
-  .menu_mobile_voice {
+@utility menu_mobile_voice {
   @apply h-[60px] bg-base-100  hover:bg-base-100/20 flex items-center justify-center text-base-content  transition-all border-b border-secondary  last:border-none hover:bg-primary;
   & a {
     @apply flex items-center text-[20px] gap-x-[20px] w-[230px];
@@ -394,139 +394,117 @@
   }
 }
 
-  .hamburger {
+@utility hamburger {
   @apply block lg:hidden;
 }
 
-  .inner_dashboard {
+@utility inner_dashboard {
   @apply w-[600px] text-center flex flex-col items-center gap-y-5 z-9998;
 }
 
-  .top_map {
+@utility top_map {
   @apply h-[100px] justify-between pr-[35px];
   & .left {
     @apply w-[220px] pl-[45px] pt-[5px];
   }
 }
 
-  .left {
+@utility left {
   .top_map & {
     @apply w-[220px] pl-[45px] pt-[5px];
   }
 }
 
-  .vertical_line {
+@utility vertical_line {
   @apply w-px h-[80px]  my-auto mx-0 text-black bg-black;
 }
 
-  .navigation_buttons {
+@utility navigation_buttons {
   @apply flex items-center justify-center gap-x-5 mt-[50px];
 }
 
-  .outer_accordion_report {
+@utility outer_accordion_report {
   @apply border-b! border-[#001522]!  mt-[0px]!;
 }
 
-  .btn_accordion_report {
+@utility btn_accordion_report {
   @apply flex items-center justify-between w-full px-4 py-3 bg-base-100 border-b-2 border-primary focus:outline-hidden;
 }
 
-  .inner_accordion {
+@utility inner_accordion {
   @apply px-4 py-3 bg-base-100;
 }
 
-  .tooltip-content {
+@utility tooltip-content {
   @apply hidden w-full max-w-[90%]  p-5 border-t border-b  mx-auto border-secondary;
 }
 
-  .collab_name {
+@utility collab_name {
   @apply w-[450px]!;
 }
 
-  .btn_download {
+@utility btn_download {
   @apply h-[40px] w-[250px] bg-secondary flex items-center cursor-pointer justify-around rounded-[5px];
 }
 
-  .download_btns {
+@utility download_btns {
   @apply w-[900px] flex justify-around;
 }
 
-  .result_big {
+@utility result_big {
   @apply text-[#efb90b] text-[40px] md:text-[70px] font-inter font-extralight;
 }
 
-  .unit {
+@utility unit {
   @apply text-base-content  text-3xl font-light font-inter mb-2;
 }
 
-  .title_result {
+@utility title_result {
   @apply text-base-content text-[22px] font-normal font-inter text-center;
 }
 
-  .big_result_div {
+@utility big_result_div {
   @apply flex flex-col justify-center items-center;
 }
 
-  .title_result_big {
+@utility title_result_big {
   @apply text-base-content text-3xl font-normal font-inter text-center;
 }
 
-  .docs_required {
+@utility docs_required {
   @apply h-[10px] w-[10px] bg-slate-300 p-1 rounded-xs text-base-content;
 }
 
-  .poligons {
+@utility poligons {
   @apply px-[44px] pt-[10px];
 }
 
-  .polygon-item {
-  @apply border p-2 rounded-[5px] flex gap-x-3 items-center border-primary h-[30px];
+@utility polygon-item {
+  @apply border p-2 rounded-[5px] flex gap-x-3 items-center border-black h-[30px];
 }
 
-  .where_form {
+@utility where_form {
   @apply min-h-[500px] border-r border-[#6B7280]/30 last:border-none;
 }
 
-  .reset_btn {
+@utility reset_btn {
   @apply w-fit h-[50px] bg-transparent border border-primary rounded-[5px] flex justify-center items-center gap-x-3 text-primary px-5;
 }
 
-  .next_btn_disable {
+@utility next_btn_disable {
   @apply bg-[#6B7280] text-[#081B2E] pointer-events-none;
 }
 
-  .button_general {
-    @apply w-[140px] h-[50px] bg-primary rounded-[5px] flex justify-center items-center gap-x-3 text-primary-content;
+@utility button_general {
+  @apply w-[140px] h-[50px] bg-primary rounded-[5px] flex justify-center items-center gap-x-3 text-primary-content;
 }
 
-  .border_button_general {
-    @apply w-[140px] h-[50px] bg-transparent border border-primary rounded-[5px] flex justify-center items-center gap-x-3 text-primary;
+@utility border_button_general {
+  @apply w-[140px] h-[50px] bg-transparent border border-primary rounded-[5px] flex justify-center items-center gap-x-3 text-primary;
 }
-  /* Selettori ID specifici */
-  [id^="designer-"]:not(
-      [id="designer-popup"],
-      [id="designer-saved"],
-      [id="designer-form"]
-    ) {
-    @apply border-b border-black w-[500px];
-  }
-  
-  [id^="designer-"]:not(
-      [id="designer-popup"],
-      [id="designer-saved"],
-      [id="designer-form"]
-    ) td {
-    @apply w-[200px];
-  }
-  
-  [id^="collaborator-"]:not([id="collaborator-popup"]) {
-    @apply border-b  border-black w-[500px];
-  }
-  
-  [id^="collaborator-"]:not([id="collaborator-popup"]) td {
-    @apply w-[50px];
-  }
-}
+
+
+
 
 
 /* Tema light personalizzato che sovrascrive quello standard di DaisyUI */
@@ -601,5 +579,34 @@
   --border: 1px;
   --depth: 0;
   --noise: 0;
+}
+@layer base{
+  * {
+    @apply font-inter;
+  }
+}
 
+@layer components {
+
+  [id^="designer-"]:not(
+      [id="designer-popup"],
+      [id="designer-saved"],
+      [id="designer-form"]
+    ) {
+    @apply border-b border-black w-[500px];
+  }
+  [id^="designer-"]:not(
+      [id="designer-popup"],
+      [id="designer-saved"],
+      [id="designer-form"]
+    )
+    td {
+    @apply w-[200px];
+  }
+  [id^="collaborator-"]:not([id="collaborator-popup"]) {
+    @apply border-b  border-black w-[500px];
+  }
+  [id^="collaborator-"]:not([id="collaborator-popup"]) td {
+    @apply w-[50px];
+  }
 }

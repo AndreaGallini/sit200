@@ -28,19 +28,11 @@ module.exports = {
     },
   },
   plugins: [
-    // Plugin temporaneamente disabilitati per la migrazione v4
-    // require('daisyui'),
-    // function({ addVariant }) {
-    //   addVariant('my_light', '[data-theme="my_light"] &')
-    //   addVariant('my_dark', '[data-theme="my_dark"] &')
-    // }
-  ],
-  // Configurazione DaisyUI temporaneamente disabilitata
-  // daisyui: {
-  //   themes: false,
-  //   darkTheme: "my_dark",
-  //   base: true,
-  //   styled: true,
-  //   utils: true,
-  // }
+    
+    // Plugin per le varianti dei temi standard sovrascitti
+    function({ addVariant }) {
+      addVariant('light', '[data-theme="light"] &')
+      addVariant('dark', '[data-theme="dark"] &')
+    }
+  ]
 }

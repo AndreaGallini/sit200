@@ -41,7 +41,7 @@ Risultati di progetto
     </div>
    </div>
    {% if project.keopebank.data.generator_power %}
-   <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+   <div class="w-[90%] mx-auto content_report pb-[30px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-1 mt-[30px] gap-6">
             <div class="big_result_div">
                 <p class="result_big">{{project.keopebank.first_subfield.generator_power}}</p>
@@ -60,7 +60,7 @@ Risultati di progetto
             </div>
         </div>
     </div>
-    <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[30px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
             <div class="flex justify-center items-center">
                 <p class="title_result_big">Producibilità specifica annua</p>
@@ -74,7 +74,7 @@ Risultati di progetto
             </div>
         </div>
     </div>
-    <div class="w-[90%] mx-auto content_report pb-[30px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[30px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
             <div class="flex justify-center items-center">
                 <p class="title_result_big">Irradianza sul piano dei moduli</p>
@@ -88,7 +88,7 @@ Risultati di progetto
             </div>
         </div>
     </div>
-    <div class="w-[90%] mx-auto content_report pb-[30px] mb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[30px] mb-[50px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-1 mt-[30px] gap-4">
             <div class="flex justify-center items-center">
                 <p class="title_result_big">Energia utile annua</p>
@@ -129,7 +129,7 @@ Risultati di progetto
         </a>
     </div>
     {% if project.keopebank.data.generator_power %}
-    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000]  border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b dark:border-[#fff] border-[#000]  border-opacity-15">
         <div class="grid w-full grid-cols-3 mt-[50px]">
             <div class="big_result_div">
                 <p class="result_big">{{project.keopebank.data.generator_power}}</p>
@@ -148,7 +148,7 @@ Risultati di progetto
             </div>
         </div>
     </div>
-    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-3 mt-[50px]">
             <div class="flex justify-center items-center left">
                 <p class="title_result_big">Producibilità specifica annua</p>
@@ -162,7 +162,7 @@ Risultati di progetto
             </div>
         </div>
     </div>
-    <div class="w-[90%] mx-auto content_report pb-[50px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+    <div class="w-[90%] mx-auto content_report pb-[50px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-3 mt-[50px]">
             <div class="flex justify-center items-center left">
                 <p class="title_result_big">Irradianza sul piano dei moduli</p>
@@ -177,7 +177,7 @@ Risultati di progetto
         </div>
     </div>
     <div
-        class="w-[90%] mx-auto content_report pb-[50px] mb-[100px] border-b my_dark:border-[#fff] border-[#000] border-opacity-15">
+        class="w-[90%] mx-auto content_report pb-[50px] mb-[100px] border-b dark:border-[#fff] border-[#000] border-opacity-15">
         <div class="grid w-full grid-cols-3 mt-[50px]">
             <div class="flex justify-center items-center left">
                 <p class="title_result_big">Energia utile annua</p>
@@ -254,7 +254,7 @@ Risultati di progetto
     var monthly_energy_yield_chart_max = ao1_data.first_subfield.monthly_energy_yield_chart_max
     var monthly_plane_of_array_irradiance_chart_max = ao1_data.first_subfield.monthly_plane_of_array_irradiance_chart_max
 
-    var previousTheme = localStorage.getItem('theme') || 'my_light';
+    var previousTheme = localStorage.getItem('theme') || 'light';
     var chartYield; // Per il primo grafico
     var chartIrradiance; // Per il secondo grafico
     var chartNetEnergy;
@@ -265,7 +265,7 @@ Risultati di progetto
         displayMonthlyChartNetEnergy(monthly_net_energy, monthly_net_energy_chart_max)
         // Controllo periodico del tema
         setInterval(function () {
-            var currentTheme = localStorage.getItem('theme') || 'my_light';
+            var currentTheme = localStorage.getItem('theme') || 'light';
             if (currentTheme !== previousTheme) {
                 previousTheme = currentTheme;
                 // Aggiorna i grafici e la tabella con il nuovo tema
@@ -278,13 +278,13 @@ Risultati di progetto
 
     function displayMonthlyChartEnergyYield(monthlyData, monthly_energy_yield_chart_max) {
         // Recupera il tema dal localStorage
-        var currentTheme = localStorage.getItem('theme') || 'my_light';
+        var currentTheme = localStorage.getItem('theme') || 'light';
 
         // Imposta le variabili per i colori in base al tema
-        var isDarkMode = currentTheme === 'my_dark';
+        var isDarkMode = currentTheme === 'dark';
         var textColor = isDarkMode ? '#fff' : '#000';
         var gridColor = isDarkMode ? '#555' : '#e0e0e0';
-        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var tooltipTheme = isDarkMode ? 'dark' : 'light';
         var bg_color = isDarkMode ? '#001622' : '#fff'
 
         // Ordine corretto dei mesi
@@ -413,13 +413,13 @@ Risultati di progetto
 
     function displayMonthlyChartIrradiance(monthlyData, monthly_plane_of_array_irradiance_chart_max) {
         // Recupera il tema dal localStorage
-        var currentTheme = localStorage.getItem('theme') || 'my_light';
+        var currentTheme = localStorage.getItem('theme') || 'light';
 
         // Imposta le variabili per i colori in base al tema
-        var isDarkMode = currentTheme === 'my_dark';
+        var isDarkMode = currentTheme === 'dark';
         var textColor = isDarkMode ? '#fff' : '#000';
         var gridColor = isDarkMode ? '#555' : '#e0e0e0';
-        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var tooltipTheme = isDarkMode ? 'dark' : 'light';
         var bg_color = isDarkMode ? '#001622' : '#fff'
 
         // Ordine corretto dei mesi
@@ -548,13 +548,13 @@ Risultati di progetto
 
     function displayMonthlyChartNetEnergy(monthlyData, monthly_net_energy_chart_max) {
         // Recupera il tema dal localStorage
-        var currentTheme = localStorage.getItem('theme') || 'my_light';
+        var currentTheme = localStorage.getItem('theme') || 'light';
 
         // Imposta le variabili per i colori in base al tema
-        var isDarkMode = currentTheme === 'my_dark';
+        var isDarkMode = currentTheme === 'dark';
         var textColor = isDarkMode ? '#fff' : '#000';
         var gridColor = isDarkMode ? '#555' : '#e0e0e0';
-        var tooltipTheme = isDarkMode ? 'my_dark' : 'my_light';
+        var tooltipTheme = isDarkMode ? 'dark' : 'light';
         var bg_color = isDarkMode ? '#001622' : '#fff'
 
         // Ordine corretto dei mesi

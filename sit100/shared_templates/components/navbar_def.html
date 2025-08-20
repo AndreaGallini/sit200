@@ -4,8 +4,8 @@
     <div class="inner_navbar">
         <div class="logo w-[200px] h-[100px]">
             <a href="/dashboard/" class="h-[100px] block relative">
-                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden my_dark:block">
-                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block my_dark:hidden">
+                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden dark:block">
+                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block dark:hidden">
             </a>
         </div>
         <div class="hamburger">
@@ -17,46 +17,46 @@
                 </svg>
             </button>
             <div id="mobile-menu" class="hidden menu_mobile z-[9999]">
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="/project/archivio_progetti"><img src="{% static 'image/navbar/mobile_menu/project_light.svg' %}" alt="" >Progetti</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="/project/archivio_progetti"><img src="{% static 'image/navbar/mobile_menu/project_dark.svg' %}" alt="" class="navbar_image_dark">Progetti</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="/user/user_dashboard/"><img src="{% static 'image/navbar/mobile_menu/user_dark.svg' %}" alt="">Area personale</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="/user"><img src="{% static 'image/navbar/mobile_menu/user_light.svg' %}" alt="" class="navbar_image_dark">Area personale</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="{% url 'terms_conditions' %}"><img src="{% static 'image/navbar/mobile_menu/legal_dark.svg' %}" alt="">Termini e Condizioni</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="{% url 'terms_conditions' %}"><img src="{% static 'image/navbar/mobile_menu/legal_light.svg' %}" alt="">Termini e Condizioni</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="{% url 'privacy' %}"><img src="{% static 'image/navbar/mobile_menu/privacy_dark.svg' %}" alt="">Privacy</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="{% url 'privacy' %}"><img src="{% static 'image/navbar/mobile_menu/privacy_light.svg' %}" alt="">Privacy</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="{% url 'cookies' %}"><img src="{% static 'image/navbar/mobile_menu/cookies_dark.svg' %}" alt="">Cookies</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="{% url 'cookies' %}"><img src="{% static 'image/navbar/mobile_menu/cookies_light.svg' %}" alt="">Cookies</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
-                    <a href="#" id="theme-toggle-dropdown-my_dark"><img src="{% static 'image/navbar/mobile_menu/sun.svg' %}" alt="" class="c_none">Light mode</a>
+                <div class="hidden menu_mobile_voice dark:flex">
+                    <a href="#" id="theme-toggle-dropdown-dark"><img src="{% static 'image/navbar/mobile_menu/sun.svg' %}" alt="" class="c_none">Light mode</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
-                    <a href="#" id="theme-toggle-dropdown-my_light"><img src="{% static 'image/navbar/mobile_menu/sun_light.svg' %}" alt=""class="c_none">Dark mode</a>
+                <div class="flex menu_mobile_voice dark:hidden">
+                    <a href="#" id="theme-toggle-dropdown-light"><img src="{% static 'image/navbar/mobile_menu/sun_light.svg' %}" alt=""class="c_none">Dark mode</a>
                 </div>
-                <div class="hidden menu_mobile_voice my_dark:flex">
+                <div class="hidden menu_mobile_voice dark:flex">
                     <a href="{% url 'logout' %}"><img src="{% static 'image/navbar/mobile_menu/logout_dark.svg' %}" alt="">Log out</a>
                 </div>
-                <div class="flex menu_mobile_voice my_dark:hidden">
+                <div class="flex menu_mobile_voice dark:hidden">
                     <a href="{% url 'logout' %}"><img src="{% static 'image/navbar/mobile_menu/logout_light.svg' %}" alt="">Log out</a>
                 </div>
             </div>
@@ -78,7 +78,7 @@
                 <a href="/user" class="text_navbar">{{ user.username }} <img src="{% static 'image/navbar/profile_picture.svg' %}" alt="" class="navbar_images_dark"><img src="{% static 'image/navbar/profile_picture_light.svg' %}" alt="" class="navbar_images_light"></a>
             </div>
             <label class="toggle text-base-content">
-                <input type="checkbox" value="my_light" class="theme-controller" data-toggle-theme="my_light,my_dark"/>
+                <input type="checkbox" value="light" class="theme-controller" data-toggle-theme="light,dark"/>
               
                 <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></g></svg>
               
@@ -86,8 +86,8 @@
               
             </label>
             <a href="{% url 'logout' %}">
-                <img src="{% static 'image/navbar/Logout.svg' %}" alt="" class="hidden my_dark:block">
-                <img src="{% static 'image/navbar/Logout-light.svg' %}" alt="" class="block my_dark:hidden">
+                <img src="{% static 'image/navbar/Logout.svg' %}" alt="" class="hidden dark:block">
+                <img src="{% static 'image/navbar/Logout-light.svg' %}" alt="" class="block dark:hidden">
             </a>
 
         </div>
@@ -99,13 +99,13 @@
     <div class="inner_navbar">
         <div class="logo w-[200px] h-[100px]">
             <a href="/login/" class="h-[100px] block relative">
-                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden my_dark:block">
-                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block my_dark:hidden">
+                <img src="{% static 'image/logos/'|add:APP_DARK_LOGO %}" alt="" class="h-[100px] hidden dark:block">
+                <img src="{% static 'image/logos/'|add:APP_LIGHT_LOGO %}" alt="" class="h-[100px] block dark:hidden">
             </a>
         </div>
         <div class="color">
             <label class="toggle text-base-content">
-                <input type="checkbox" value="my_light" class="theme-controller" data-toggle-theme="my_light,my_dark"/>
+                <input type="checkbox" value="light" class="theme-controller" data-toggle-theme="light,dark"/>
               
                 <svg aria-label="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g stroke-linejoin="round" stroke-linecap="round" stroke-width="2" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></g></svg>
               
@@ -135,17 +135,17 @@ document.addEventListener('DOMContentLoaded', function() {
             document.documentElement.setAttribute('data-theme', theme);
         }
         
-        // Sincronizza anche la classe my_dark di Tailwind
-        if (theme === 'my_dark') {
-            document.documentElement.classList.add('my_dark');
+        // Sincronizza anche la classe dark di Tailwind
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
         } else {
-            document.documentElement.classList.remove('my_dark');
+            document.documentElement.classList.remove('dark');
         }
         
         // Sincronizza lo stato dei toggle
         themeToggles.forEach(toggle => {
-            if ((theme === 'my_dark' && toggle.value === 'my_dark') || 
-                (theme === 'my_light' && toggle.value === 'my_light')) {
+            if ((theme === 'dark' && toggle.value === 'dark') || 
+                (theme === 'light' && toggle.value === 'light')) {
                 toggle.checked = true;
             } else {
                 toggle.checked = false;
@@ -164,8 +164,8 @@ document.addEventListener('DOMContentLoaded', function() {
         setTheme(savedTheme);
     } else {
         // Usa le preferenze di sistema come fallback
-        const prefersDark = window.matchMedia('(prefers-color-scheme: my_dark)').matches;
-        setTheme(prefersDark ? 'my_dark' : 'my_light');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light');
     }
     
     // Aggiungi listeners ai toggle
@@ -173,28 +173,28 @@ document.addEventListener('DOMContentLoaded', function() {
         toggle.addEventListener('change', function() {
             // Determina il tema in base al valore del toggle
             const newTheme = this.checked ? 
-                (this.value === 'my_light' ? 'my_light' : 'my_dark') : 
-                (this.value === 'my_light' ? 'my_dark' : 'my_light');
+                (this.value === 'light' ? 'light' : 'dark') : 
+                (this.value === 'light' ? 'dark' : 'light');
             
             setTheme(newTheme);
         });
     });
     
     // Gestisci anche i toggle del menu mobile
-    const darkToggle = document.getElementById('theme-toggle-dropdown-my_dark');
-    const lightToggle = document.getElementById('theme-toggle-dropdown-my_light');
+    const darkToggle = document.getElementById('theme-toggle-dropdown-dark');
+    const lightToggle = document.getElementById('theme-toggle-dropdown-light');
     
     if (darkToggle) {
         darkToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            setTheme('my_light'); // Passa a my_light mode
+            setTheme('light'); // Passa a light mode
         });
     }
     
     if (lightToggle) {
         lightToggle.addEventListener('click', function(e) {
             e.preventDefault();
-            setTheme('my_dark'); // Passa a my_dark mode
+            setTheme('dark'); // Passa a dark mode
         });
     }
 });
@@ -264,16 +264,16 @@ document.addEventListener('DOMContentLoaded', function() {
     .fa-moon::before{
         display: none;
     }
-    [data-theme="my_dark"] .hidden.my_dark\:block {
+    [data-theme="dark"] .hidden.dark\:block {
     display: block !important;
     }
-    [data-theme="my_dark"] .block.my_dark\:hidden {
+    [data-theme="dark"] .block.dark\:hidden {
     display: none !important;
     }    
-    [data-theme="my_light"] .hidden.my_dark\:block {
+    [data-theme="light"] .hidden.dark\:block {
     display: none !important;
     }
-    [data-theme="my_light"] .block.my_dark\:hidden {
+    [data-theme="light"] .block.dark\:hidden {
     display: block !important;
     }
 
